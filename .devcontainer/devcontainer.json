@@ -1,0 +1,37 @@
+{
+  "name": "section-video",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": "latest",
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+      ]
+    }
+  },
+  "postCreateCommand": "bash scripts/postinstall.sh",
+  "forwardPorts": [3000, 4096],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js App",
+      "onAutoForward": "openPreview",
+      "visibility": "public"
+    },
+    "4096": {
+      "label": "Opencode",
+      "onAutoForward": "openPreview",
+      "visibility": "public"
+    }
+  },
+  "remoteUser": "vscode"
+}

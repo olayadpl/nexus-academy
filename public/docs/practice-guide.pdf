@@ -1,0 +1,20 @@
+Se trata de una plataforma donde los usuarios basicamente podran explorar recursos agrupados por tematicas, y diferentes estructuras organizativas como cursos, rutas de aprendizaje, tutoriales, topicos, asignaturas, .... con el objetivo de agrupar de forma centralizada todos los recursos de informacion de calidad que se usaran dentro de la UCI en la docencia y de forma transversal a esta.  Tomamos inspiracion del diseno de la plataforma de app.uxcel.com
+
+los usuarios podran interactuar con los recursos de informacion, descargarlos, tomar annotaciones encima del documento, notas , compartir el link del recurso, buscar en el documento, guardar en carpetas para consultar mas tarde, interactuar con el propio documento, en el caso de materiales audioviusales las anotaciones podran ser tomadas respecto a marcas de tiempo tambien podran usar un asistente de inteligencia artificial para "conversar con los recursos" similar a aplicaicones como chatpdf pero de forma multimodal
+
+contara con una barra de busqueda que permitira hacer busquedas profundas vectoriales dentro el contenido de los propios recursos y obtener fragmentos relevantes en los resultados de busqueda, documentos relacionados, similar a como funciona Google, pero tambien estamos tomando inspiracion en apps como research Rabbit aqui. 
+
+Ademas de la búsqueda permitira el descubrimiento de nuevos recursos de forma natural durante la navegación en el sitio web proporcionando sugerencias/recomendaciones personalizadas. 
+
+Para el crecimiento rápido de los recursos, proporcionaremos un sistema de recompensas a las contribuciones de los usuarios, Tendremos una seccion donde se podrán acceder a las contribuciones que pasen cierto proceso de calidad, y tambien tendremos un proceso de calidad mas riguroso para los recursos certificados, los recuros tambien contaran con una clasificacion  y un feedback establecida por los usuarios similar a las apps en una tienda de aplicaciones
+
+Tendremos una seccion de Bookmarks donde el uusario podra organizar su propis colecciones de recursos para consultar y trabajar con ellos mas tarde. 
+El usuario tambien podra consultar los recursos que ha consultado en su historial
+
+La plataforma no funciona por si sola, sino que se integra en un ecosistema mas amplio de apliaciones de un CRAI, integrandose con otras apliaciones como gestores bibliograficos, y conectandose a otras que usen los propios recursos alojados en nuestra plataforma, similar a una red de datos enlazados, 
+
+A nivel tecnico la plataforma se sustentara en un arquitectura hibrida usando rust para el backend,  tauri, y nextjs y surrealDB, y n8n.  Tenemos la intencion de crear un app multiplataforma en la web y que a la vez pueda ser utilizada como aplicacion nativa de forma offline, que pueda ampliar sus funcionalidades cuando este online. 
+
+
+
+
