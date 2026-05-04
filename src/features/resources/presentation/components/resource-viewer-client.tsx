@@ -469,7 +469,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               </ResizablePanel>
 
               {/* Left handle */}
-              <ResizableHandle withHandle className="hidden lg:flex" />
+              <ResizableHandle withHandle hideSeparator className="hidden lg:flex" />
 
               {/* Main panel -- size depends on left/right percents */}
               <ResizablePanel id="main" key={`main-${leftSizePercent}-${rightSizePercent}-${leftCollapsed}-${rightCollapsed}`} 
