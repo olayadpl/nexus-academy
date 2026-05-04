@@ -455,7 +455,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
           <div className="w-full min-h-0 h-full relative" ref={containerRef}>
             <ResizablePanelGroup
               key={`group-${leftCollapsed}-${rightCollapsed}-${leftSizePercent}-${rightSizePercent}`}
-              className="w-full min-h-0 h-full gap-4"
+              className="w-full min-h-0 h-full gap-1"
               groupRef={groupRef}
               id={`resource-viewer-group`}
             >
