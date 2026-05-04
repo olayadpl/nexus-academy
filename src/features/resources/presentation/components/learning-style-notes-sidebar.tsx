@@ -83,7 +83,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
             size="icon"
             className="h-8 w-8 rounded-full"
             aria-label={collapsed ? "Expandir columna izquierda" : "Colapsar columna izquierda"}
-            onClick={onToggle}
+            onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
           >
             <PanelLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
           </Button>

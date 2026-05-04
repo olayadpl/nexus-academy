@@ -118,7 +118,7 @@ export default function LearningStyleRightPanel({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onToggle}
+            onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
             aria-label={collapsed ? "Expandir columna derecha" : "Colapsar columna derecha"}
             className="h-8 w-8 shrink-0"
           >
