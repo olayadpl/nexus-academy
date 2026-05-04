@@ -332,8 +332,8 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             if (w < SIDE_MIN_PX && !leftCollapsed && !isAutoCollapsingLeftRef.current) {
               isAutoCollapsingLeftRef.current = true
               try {
-                // use toggle so prev percent is saved and layout adjusted consistently
-                toggleLeft()
+                // pass current leftSizePercent so restore uses the pre-collapse size (avoid saving the already-small width)
+                toggleLeft({ forcePrevPercent: leftSizePercent })
               } catch (e) {}
               setTimeout(() => (isAutoCollapsingLeftRef.current = false), 300)
             }
@@ -341,7 +341,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             if (w < SIDE_MIN_PX && !rightCollapsed && !isAutoCollapsingRightRef.current) {
               isAutoCollapsingRightRef.current = true
               try {
-                toggleRight()
+                toggleRight({ forcePrevPercent: rightSizePercent })
               } catch (e) {}
               setTimeout(() => (isAutoCollapsingRightRef.current = false), 300)
             }
@@ -367,7 +367,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   }
 
   // Toggle collapse: measure current width and store percent before collapsing so we can restore
-  function toggleLeft() {
+  function toggleLeft(opts?: { forcePrevPercent?: number }) {
     const container = containerRef.current?.getBoundingClientRect()
     const leftRect = leftInnerRef.current?.getBoundingClientRect()
     if (!container) {
@@ -377,7 +377,9 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
     if (!leftCollapsed) {
       // collapsing: save percent then set collapsed percent based on COLLAPSED_PX
-      if (leftRect) {
+      if (opts?.forcePrevPercent != null) {
+        setLeftPrevPercent(Math.max(0, Math.round(opts.forcePrevPercent)))
+      } else if (leftRect) {
         const p = Math.max(0, Math.round((leftRect.width / container.width) * 100))
         setLeftPrevPercent(p)
       }
@@ -412,7 +414,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     }
   }
 
-  function toggleRight() {
+  function toggleRight(opts?: { forcePrevPercent?: number }) {
     const container = containerRef.current?.getBoundingClientRect()
     const rightRect = rightInnerRef.current?.getBoundingClientRect()
     if (!container) {
@@ -421,7 +423,9 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     }
 
     if (!rightCollapsed) {
-      if (rightRect) {
+      if (opts?.forcePrevPercent != null) {
+        setRightPrevPercent(Math.max(0, Math.round(opts.forcePrevPercent)))
+      } else if (rightRect) {
         const p = Math.max(0, Math.round((rightRect.width / container.width) * 100))
         setRightPrevPercent(p)
       }
