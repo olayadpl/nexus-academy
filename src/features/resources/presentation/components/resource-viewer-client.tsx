@@ -288,8 +288,15 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   const COLLAPSED_PX = 64 // icon width when collapsed
 
+  // Minimum side column width in pixels before auto-collapsing to avoid content deformation
+  const SIDE_MIN_PX = 200
+
   // collapsed minimum percent (based on COLLAPSED_PX and container width) to ensure panels never shrink smaller than the sidebar icon width
   const [collapsedMinPercent, setCollapsedMinPercent] = useState<number>(2)
+
+  // refs to avoid re-entrant auto-collapse
+  const isAutoCollapsingLeftRef = useRef(false)
+  const isAutoCollapsingRightRef = useRef(false)
 
   // update collapsedMinPercent whenever container width changes
   useEffect(() => {
@@ -310,6 +317,48 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       if (ro) ro.disconnect()
     }
   }, [containerRef, COLLAPSED_PX])
+
+  // auto-collapse side panels when their inner width goes below SIDE_MIN_PX to prevent layout breakage
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return
+    const observers: ResizeObserver[] = []
+
+    function observeSide(ref: React.RefObject<HTMLDivElement>, side: 'left' | 'right') {
+      if (!ref.current) return
+      const ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const w = entry.target.getBoundingClientRect().width
+          if (side === 'left') {
+            if (w < SIDE_MIN_PX && !leftCollapsed && !isAutoCollapsingLeftRef.current) {
+              isAutoCollapsingLeftRef.current = true
+              try {
+                // use toggle so prev percent is saved and layout adjusted consistently
+                toggleLeft()
+              } catch (e) {}
+              setTimeout(() => (isAutoCollapsingLeftRef.current = false), 300)
+            }
+          } else {
+            if (w < SIDE_MIN_PX && !rightCollapsed && !isAutoCollapsingRightRef.current) {
+              isAutoCollapsingRightRef.current = true
+              try {
+                toggleRight()
+              } catch (e) {}
+              setTimeout(() => (isAutoCollapsingRightRef.current = false), 300)
+            }
+          }
+        }
+      })
+      ro.observe(ref.current)
+      observers.push(ro)
+    }
+
+    observeSide(leftInnerRef, 'left')
+    observeSide(rightInnerRef, 'right')
+
+    return () => {
+      observers.forEach((o) => o.disconnect())
+    }
+  }, [leftInnerRef.current, rightInnerRef.current, leftCollapsed, rightCollapsed, toggleLeft, toggleRight])
 
   // helper to compute middle size given left/right
   const computeMiddlePercent = (l = leftSizePercent, r = rightSizePercent) => {
