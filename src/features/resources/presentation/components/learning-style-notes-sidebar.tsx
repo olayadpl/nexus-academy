@@ -117,14 +117,16 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               key={note.id}
               className={cn(
                 "relative rounded-xl border p-3 shadow-sm",
-                note.tone === "blue" ? "bg-blue-50/60 border-blue-100" : "bg-amber-50/60 border-amber-100"
+                note.tone === "blue"
+                  ? "bg-blue-50/60 border-blue-100 dark:bg-blue-900/20 dark:border-blue-700"
+                  : "bg-amber-50/60 border-amber-100 dark:bg-amber-900/20 dark:border-amber-700"
               )}
             >
-              {/* Línea de color ligeramente adentro, redondeada */}
+              {/* Línea de color ligeramente adentro, más fina y redondeada; adapta contraste en dark */}
               <span
                 className={cn(
-                  "absolute top-3 bottom-3 left-3 w-2 rounded-full",
-                  note.tone === "blue" ? "bg-blue-500" : "bg-amber-400"
+                  "absolute top-3 bottom-3 left-3 w-px rounded-full",
+                  note.tone === "blue" ? "bg-blue-500 dark:bg-blue-400" : "bg-amber-400 dark:bg-amber-300"
                 )}
               />
 
