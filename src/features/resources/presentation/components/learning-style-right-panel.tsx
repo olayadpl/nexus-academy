@@ -79,7 +79,7 @@ export default function LearningStyleRightPanel({
     <aside
       className={cn(
         "hidden lg:flex lg:h-full lg:flex-col rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden",
-        collapsed ? "lg:w-[72px] lg:justify-self-end" : "lg:w-auto"
+        collapsed ? "lg:w-[72px]" : "lg:w-auto"
       )}
     >
       <div className="border-b px-3 py-2.5">

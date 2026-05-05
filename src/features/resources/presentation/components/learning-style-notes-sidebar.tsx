@@ -46,7 +46,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
         collapsed ? "lg:w-[72px]" : "lg:w-auto"
       )}
     >
-      <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="flex items-center justify-between border-b px-3 py-2.5">
         {!collapsed ? (
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold">Notas</h2>
