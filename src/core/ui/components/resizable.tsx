@@ -52,7 +52,31 @@ function ResizableHandle({
       return
     }
 
+    // Temporarily patch setPointerCapture on the target element to avoid InvalidStateError
+    const target = e.currentTarget as HTMLElement & { setPointerCapture?: (id: number) => void }
+    const origSetPointerCapture = target && target.setPointerCapture
+    if (origSetPointerCapture) {
+      try {
+        target.setPointerCapture = (pointerId: number) => {
+          try {
+            origSetPointerCapture.call(target, pointerId)
+          } catch (err) {
+            // swallow InvalidStateError and others
+          }
+        }
+      } catch {}
+    }
+
     if (typeof onPointerDownCapture === "function") onPointerDownCapture(e)
+
+    // restore original on next tick
+    if (origSetPointerCapture) {
+      setTimeout(() => {
+        try {
+          target.setPointerCapture = origSetPointerCapture
+        } catch {}
+      }, 0)
+    }
   }
 
   const handlePointerDown = (e: React.PointerEvent) => {
