@@ -219,12 +219,12 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-muted/30 font-sans">
-      <div className="flex flex-1 min-h-0 w-full overflow-hidden p-4 md:p-6">
-        <div className="w-full min-h-0 h-[calc(100vh-56px)]">
-          <div className="w-full min-h-0 h-[calc(100vh-56px)] relative flex" ref={containerRef}>
+    <div className="flex h-[calc(100svh-3.5rem)] max-h-[calc(100svh-3.5rem)] min-h-0 flex-col overflow-hidden bg-muted/30 font-sans">
+      <div className="flex flex-1 min-h-0 overflow-hidden p-4 md:p-6">
+        <div className="w-full h-full min-h-0">
+          <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
             <div
-              className="hidden lg:flex lg:flex-col h-screen min-h-0 shrink-0 transition-[width] duration-150 relative max-h-screen"
+              className="hidden lg:flex lg:h-full lg:min-h-0 lg:max-h-full lg:flex-col shrink-0 transition-[width] duration-150 relative"
               style={{ width: leftCollapsed ? COLLAPSED_PX : leftWidthPx }}
             >
               <LearningStyleNotesSidebar
@@ -260,7 +260,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               }}
             />
 
+<<<<<<< HEAD
             <div className="relative min-w-0 min-h-0 h-[calc(100vh-56px)] max-h-[calc(100vh-56px)] flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
+=======
+            <div className="relative min-w-0 min-h-0 h-full max-h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
+>>>>>>> a583833 (corregido)
               <div className="h-full min-h-0 overflow-auto">
                 <LearningStyleCourseMain
                   course={courseModel}
@@ -292,7 +296,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             />
 
             <div
+<<<<<<< HEAD
               className="hidden lg:flex lg:flex-col h-screen min-h-0 shrink-0 transition-[width] duration-150 relative max-h-screen"
+=======
+              className="hidden lg:flex lg:h-full lg:min-h-0 lg:max-h-full lg:flex-col shrink-0 transition-[width] duration-150 relative"
+>>>>>>> a583833 (corregido)
               style={{ width: rightCollapsed ? COLLAPSED_PX : rightWidthPx }}
             >
               <LearningStyleRightPanel
