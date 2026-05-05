@@ -120,7 +120,7 @@ export default function LearningStyleRightPanel({
             size="icon"
             onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
             aria-label={collapsed ? "Expandir columna derecha" : "Colapsar columna derecha"}
-            className="h-8 w-8 shrink-0 relative z-40"
+            className="h-8 w-8 shrink-0 z-40 relative"
           >
             <PanelRight className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
           </Button>
