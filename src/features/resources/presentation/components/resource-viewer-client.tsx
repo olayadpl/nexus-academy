@@ -1,45 +1,18 @@
 "use client"
 
+<<<<<<< HEAD
 import Image from "next/image"
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react"
+=======
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+>>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
 import { toast } from "sonner"
-import {
-  Bookmark,
-  BookmarkCheck,
-  Bot,
-  Clock,
-  Download,
-  FileText,
-  MoreHorizontal,
-  NotebookPen,
-  PanelLeft,
-  PanelRight,
-  Play,
-  Plus,
-  SendHorizontal,
-  Share2,
-  Star,
-  ThumbsDown,
-  ThumbsUp,
-  Trash2,
-  Video,
-  X,
-} from "lucide-react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/src/core/ui/components/accordion"
-import { Badge } from "@/src/core/ui/components/badge"
-import { Button } from "@/src/core/ui/components/button"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/src/core/ui/components/breadcrumb"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/core/ui/components/tabs"
-import { Textarea } from "@/src/core/ui/components/textarea"
 import { Toaster } from "@/src/core/ui/components/sonner"
-import { cn } from "@/src/core/ui/lib/utils"
 import type { ResourceEntity } from "../../domain/entities/resource.entity"
 
 import LearningStyleNotesSidebar from "./learning-style-notes-sidebar"
 import LearningStyleCourseMain from "./learning-style-course-main"
 import LearningStyleRightPanel from "./learning-style-right-panel"
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/src/core/ui/components/resizable"
-import { usePanelRef, useGroupRef } from "react-resizable-panels"
 
 type ResourceViewerClientProps = {
   course: {
@@ -67,167 +40,6 @@ type ResourceCourseModel = {
   title: string
   bibliographicBase: string
   modules: ResourceLesson[]
-}
-
-type NoteCard = {
-  id: string
-  title: string
-  description: string
-  createdAt: string
-  tone: "blue" | "yellow"
-}
-
-type ChatMessage = {
-  id: string
-  text: string
-  time: string
-}
-
-type LearningNoteItem = {
-  id: number
-  timestamp: string
-  text: string
-  createdAt: string
-}
-
-type RelatedVideoItem = {
-  id: number
-  title: string
-  instructor: string
-  duration: string
-  rating: string
-  students: string
-  thumbnail: string
-  badge: string | null
-}
-
-const SEED_NOTES: NoteCard[] = [
-  {
-    id: "n1",
-    title: "Idea principal",
-    description: "Este recurso explica el flujo general y los conceptos base.",
-    createdAt: "Hace 2 horas",
-    tone: "blue",
-  },
-  {
-    id: "n2",
-    title: "Recordatorio",
-    description: "Revisar el ejemplo del minuto 04:30 para la tarea.",
-    createdAt: "Hace 1 hora",
-    tone: "yellow",
-  },
-]
-
-const INITIAL_MESSAGES: ChatMessage[] = [
-  {
-    id: "a1",
-    text: "¡Hola! Soy tu asistente. Pregúntame sobre este recurso.",
-    time: "Ahora",
-  },
-]
-
-const LEARNING_NOTES_SEED: LearningNoteItem[] = [
-  {
-    id: 1,
-    timestamp: "2:14",
-    text: "Key point: eye contact should be held for 3-5 seconds max before breaking naturally.",
-    createdAt: "Yesterday",
-  },
-  {
-    id: 2,
-    timestamp: "7:42",
-    text: "Open body language formula: uncrossed arms and a slight forward lean.",
-    createdAt: "Yesterday",
-  },
-  {
-    id: 3,
-    timestamp: "15:03",
-    text: "Mirror technique: matching the other person pace builds rapport.",
-    createdAt: "2 days ago",
-  },
-  {
-    id: 4,
-    timestamp: "22:55",
-    text: "FORD method for small talk: Family, Occupation, Recreation, Dreams.",
-    createdAt: "2 days ago",
-  },
-]
-
-const LEARNING_RELATED_VIDEOS: RelatedVideoItem[] = [
-  {
-    id: 1,
-    title: "The Science of First Impressions",
-    instructor: "Dr. Mark Elliot",
-    duration: "45 min",
-    rating: "4.8",
-    students: "98,402",
-    thumbnail: "/images/related-1.jpg",
-    badge: "Popular",
-  },
-  {
-    id: 2,
-    title: "Public Speaking Mastery: Zero to Hero",
-    instructor: "Sarah Connors",
-    duration: "2.1h",
-    rating: "4.7",
-    students: "210,115",
-    thumbnail: "/images/related-2.jpg",
-    badge: "Bestseller",
-  },
-  {
-    id: 3,
-    title: "Social Confidence Blueprint",
-    instructor: "James Harlow",
-    duration: "1.8h",
-    rating: "4.6",
-    students: "54,780",
-    thumbnail: "/images/related-3.jpg",
-    badge: null,
-  },
-]
-
-const LEARNING_DESCRIPTION_PARAGRAPHS = [
-  "In this comprehensive course, you will unlock the secrets of effortless communication in real situations.",
-  "You will practice body language fundamentals and rapport techniques to keep conversations natural.",
-]
-
-const LEARNING_WHAT_YOU_WILL_LEARN = [
-  "Master confident eye contact and open body language",
-  "Eliminate filler words and awkward pauses",
-  "Use the mirror technique to build instant rapport",
-  "Navigate difficult conversations with confidence",
-  "Apply the FORD method for engaging small talk",
-]
-
-const LEARNING_REQUIREMENTS = [
-  "No prior experience needed",
-  "A willingness to practice with real people",
-]
-
-function toYouTubeEmbedUrl(url: string): string | null {
-  try {
-    const parsed = new URL(url)
-    const host = parsed.hostname.replace("www.", "")
-
-    if (host === "youtu.be") {
-      const videoId = parsed.pathname.split("/").filter(Boolean)[0]
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-    }
-
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      if (parsed.pathname === "/watch") {
-        const videoId = parsed.searchParams.get("v")
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-      }
-      if (parsed.pathname.startsWith("/embed/")) {
-        return url
-      }
-    }
-  } catch {
-    return null
-  }
-
-  return null
 }
 
 function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
@@ -266,31 +78,18 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   const activeLesson = courseModel.modules.find((lesson) => lesson.id === activeResourceId) ?? null
 
-  // Refs and collapse state for custom resizable layout (no Sidebar component)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const leftInnerRef = useRef<HTMLDivElement | null>(null)
-  const rightInnerRef = useRef<HTMLDivElement | null>(null)
-
-  const leftPanelRef = usePanelRef()
-  const rightPanelRef = usePanelRef()
-  const groupRef = useGroupRef()
 
   const [leftCollapsed, setLeftCollapsed] = useState(false)
   const [rightCollapsed, setRightCollapsed] = useState(false)
-
-  // percent-based sizes (used as defaultSize for panels). Values are 0-100.
-  const [leftSizePercent, setLeftSizePercent] = useState<number>(20)
-  const [rightSizePercent, setRightSizePercent] = useState<number>(20)
-
-  // store previous sizes to restore after uncollapse
-  const [leftPrevPercent, setLeftPrevPercent] = useState<number | null>(null)
-  const [rightPrevPercent, setRightPrevPercent] = useState<number | null>(null)
-
-  const COLLAPSED_PX = 64 // icon width when collapsed
-
-  // Minimum side column width in pixels before auto-collapsing to avoid content deformation
+  const COLLAPSED_PX = 64
   const SIDE_MIN_PX = 200
+  const SIDE_DEFAULT_LEFT_PX = 280
+  const SIDE_DEFAULT_RIGHT_PX = 320
+  const RESIZER_PX = 4
+  const MAIN_MIN_PX = 420
 
+<<<<<<< HEAD
   // collapsed minimum percent (based on COLLAPSED_PX and container width) to ensure panels never shrink smaller than the sidebar icon width
   const [collapsedMinPercent, setCollapsedMinPercent] = useState<number>(2)
   const [sideMinPercent, setSideMinPercent] = useState<number>(10)
@@ -371,18 +170,27 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       } catch {}
       setLeftSizePercent(restore)
       setLeftPrevPercent(null)
-      setLeftCollapsed(false)
-    }
-  }
+=======
+  const [leftWidthPx, setLeftWidthPx] = useState<number>(SIDE_DEFAULT_LEFT_PX)
+  const [rightWidthPx, setRightWidthPx] = useState<number>(SIDE_DEFAULT_RIGHT_PX)
+  const [leftPrevWidthPx, setLeftPrevWidthPx] = useState<number>(SIDE_DEFAULT_LEFT_PX)
+  const [rightPrevWidthPx, setRightPrevWidthPx] = useState<number>(SIDE_DEFAULT_RIGHT_PX)
+  const [isResizingLeft, setIsResizingLeft] = useState(false)
+  const [isResizingRight, setIsResizingRight] = useState(false)
 
-  function toggleRight(opts?: { forcePrevPercent?: number }) {
-    const container = containerRef.current?.getBoundingClientRect()
-    const rightRect = rightInnerRef.current?.getBoundingClientRect()
-    if (!container) {
-      setRightCollapsed((c) => !c)
+  const toggleLeft = useCallback(() => {
+    if (leftCollapsed) {
+>>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
+      setLeftCollapsed(false)
+      setLeftWidthPx(Math.max(SIDE_MIN_PX, leftPrevWidthPx))
       return
     }
+    setLeftPrevWidthPx(leftWidthPx)
+    setLeftCollapsed(true)
+    setLeftWidthPx(COLLAPSED_PX)
+  }, [leftCollapsed, leftPrevWidthPx, leftWidthPx])
 
+<<<<<<< HEAD
     if (!rightCollapsed) {
       if (opts?.forcePrevPercent != null) {
         setRightPrevPercent(Math.max(0, Math.round(opts.forcePrevPercent)))
@@ -414,10 +222,20 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       } catch {}
       setRightSizePercent(restore)
       setRightPrevPercent(null)
+=======
+  const toggleRight = useCallback(() => {
+    if (rightCollapsed) {
+>>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
       setRightCollapsed(false)
+      setRightWidthPx(Math.max(SIDE_MIN_PX, rightPrevWidthPx))
+      return
     }
-  }
+    setRightPrevWidthPx(rightWidthPx)
+    setRightCollapsed(true)
+    setRightWidthPx(COLLAPSED_PX)
+  }, [rightCollapsed, rightPrevWidthPx, rightWidthPx])
 
+<<<<<<< HEAD
   // auto-collapse side panels when their inner width goes below SIDE_MIN_PX to prevent layout breakage
   useEffect(() => {
     if (typeof ResizeObserver === "undefined") return
@@ -455,20 +273,84 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   function handlePanelCollapseMeasure(side: "left" | "right") {
     // measure width of panel and update corresponding percent - used before collapsing
+=======
+  const stopResizing = useCallback(() => {
+    setIsResizingLeft(false)
+    setIsResizingRight(false)
+  }, [])
+
+  const handleResize = useCallback((event: MouseEvent) => {
+>>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
     const container = containerRef.current?.getBoundingClientRect()
     if (!container) return
-    if (side === "left") {
-      const r = leftInnerRef.current?.getBoundingClientRect()
-      if (r) setLeftSizePercent(Math.round((r.width / container.width) * 100))
-    } else {
-      const r = rightInnerRef.current?.getBoundingClientRect()
-      if (r) setRightSizePercent(Math.round((r.width / container.width) * 100))
-    }
-  }
 
-  function onPanelGroupKey() {
-    // noop placeholder if needed
-  }
+    const rightCurrent = rightCollapsed ? COLLAPSED_PX : rightWidthPx
+    const leftCurrent = leftCollapsed ? COLLAPSED_PX : leftWidthPx
+
+    if (isResizingLeft) {
+      const maxLeft = Math.max(
+        SIDE_MIN_PX,
+        container.width - rightCurrent - MAIN_MIN_PX - RESIZER_PX * 2
+      )
+      const nextWidth = event.clientX - container.left
+
+      if (nextWidth < SIDE_MIN_PX) {
+        if (!leftCollapsed) setLeftPrevWidthPx(leftWidthPx)
+        setLeftCollapsed(true)
+        setLeftWidthPx(COLLAPSED_PX)
+        setIsResizingLeft(false)
+        return
+      }
+
+      setLeftCollapsed(false)
+      setLeftWidthPx(Math.min(nextWidth, maxLeft))
+    }
+
+    if (isResizingRight) {
+      const maxRight = Math.max(
+        SIDE_MIN_PX,
+        container.width - leftCurrent - MAIN_MIN_PX - RESIZER_PX * 2
+      )
+      const nextWidth = container.right - event.clientX
+
+      if (nextWidth < SIDE_MIN_PX) {
+        if (!rightCollapsed) setRightPrevWidthPx(rightWidthPx)
+        setRightCollapsed(true)
+        setRightWidthPx(COLLAPSED_PX)
+        setIsResizingRight(false)
+        return
+      }
+
+      setRightCollapsed(false)
+      setRightWidthPx(Math.min(nextWidth, maxRight))
+    }
+  }, [
+    isResizingLeft,
+    isResizingRight,
+    leftCollapsed,
+    leftWidthPx,
+    rightCollapsed,
+    rightWidthPx,
+  ])
+
+  useEffect(() => {
+    if (!isResizingLeft && !isResizingRight) return
+
+    const onMouseMove = (event: MouseEvent) => handleResize(event)
+    const onMouseUp = () => stopResizing()
+
+    window.addEventListener("mousemove", onMouseMove)
+    window.addEventListener("mouseup", onMouseUp)
+    document.body.style.userSelect = "none"
+    document.body.style.cursor = "col-resize"
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove)
+      window.removeEventListener("mouseup", onMouseUp)
+      document.body.style.userSelect = ""
+      document.body.style.cursor = ""
+    }
+  }, [handleResize, isResizingLeft, isResizingRight, stopResizing])
 
   function handleSaveNote() {
     toast.success("Note saved", {
@@ -500,73 +382,76 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     <div className="flex h-screen flex-col overflow-hidden bg-muted/30 font-sans">
       <div className="flex flex-1 min-h-0 overflow-hidden p-4 md:p-6">
         <div className="w-full min-h-0">
-          {/* Custom resizable implementation using shadcn Resizable primitives. Collapse logic handled here. */}
-          <div className="w-full min-h-0 h-full relative" ref={containerRef}>
-            <ResizablePanelGroup
-              key={`group-${leftCollapsed}-${rightCollapsed}-${leftSizePercent}-${rightSizePercent}`}
-              className="w-full min-h-0 h-full gap-1"
-              groupRef={groupRef}
-              id={`resource-viewer-group`}
+          <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
+            <div
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150"
+              style={{ width: leftCollapsed ? COLLAPSED_PX : leftWidthPx }}
             >
-              {/* Left panel (always rendered; collapsed state represented by small percent) */}
-              <ResizablePanel id="left" key={`left-${leftSizePercent}-${leftCollapsed}`} panelRef={leftPanelRef} defaultSize={leftSizePercent} minSize={collapsedMinPercent} className="hidden lg:flex lg:flex-col h-full">
-                <div ref={leftInnerRef} className={cn("min-h-0 w-full h-full transition-all", leftCollapsed ? "overflow-hidden" : "")}>
-                  <div className={cn(leftCollapsed ? "w-16" : "w-full", "h-full")}>
-                    <LearningStyleNotesSidebar resourceId={activeResourceId} collapsed={leftCollapsed} onToggleCollapse={toggleLeft} disableInternalScroll={true} />
-                  </div>
-                </div>
-              </ResizablePanel>
+              <LearningStyleNotesSidebar
+                resourceId={activeResourceId}
+                collapsed={leftCollapsed}
+                onToggleCollapse={toggleLeft}
+                disableInternalScroll={true}
+              />
+            </div>
 
-              {/* Left handle */}
-              <ResizableHandle withHandle hideSeparator={leftCollapsed} className="hidden lg:flex" />
+            <div
+              className="hidden lg:block h-full shrink-0 cursor-col-resize hover:bg-border/60 active:bg-border/80"
+              style={{ width: RESIZER_PX }}
+              onMouseDown={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                setIsResizingLeft(true)
+              }}
+            />
 
-              {/* Main panel -- size depends on left/right percents */}
-              <ResizablePanel id="main" key={`main-${leftSizePercent}-${rightSizePercent}-${leftCollapsed}-${rightCollapsed}`} 
-                defaultSize={computeMiddlePercent(leftSizePercent, rightSizePercent)}
-                minSize={30}
-                className="min-w-0 h-full"
-              >
-                <div className="relative min-w-0 min-h-0 h-full rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm">
-                  <div className="h-full min-h-0 overflow-auto">
-                    <LearningStyleCourseMain
-                      course={courseModel}
-                      activeLesson={activeLesson}
-                      onSaveNote={handleSaveNote}
-                    />
-                  </div>
+            <div className="relative min-w-0 min-h-0 h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm">
+              <div className="h-full min-h-0 overflow-auto">
+                <LearningStyleCourseMain
+                  course={courseModel}
+                  activeLesson={activeLesson}
+                  onSaveNote={handleSaveNote}
+                />
+              </div>
 
-                  <div className="absolute top-4 right-4 z-20">
-                    <button
-                      onClick={handleMarkAsCompleted}
-                      disabled={!activeLesson || activeLesson.completed}
-                      className="h-8 rounded-md border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {activeLesson?.completed ? "Completado" : "Marcar completado"}
-                    </button>
-                  </div>
-                </div>
-              </ResizablePanel>
+              <div className="absolute top-4 right-4 z-20">
+                <button
+                  onClick={handleMarkAsCompleted}
+                  disabled={!activeLesson || activeLesson.completed}
+                  className="h-8 rounded-md border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {activeLesson?.completed ? "Completado" : "Marcar completado"}
+                </button>
+              </div>
+            </div>
 
-              {/* Right handle and panel (always rendered) */}
-              <ResizableHandle withHandle hideSeparator={rightCollapsed} className="hidden lg:flex" />
+            <div
+              className="hidden lg:block h-full shrink-0 cursor-col-resize hover:bg-border/60 active:bg-border/80"
+              style={{ width: RESIZER_PX }}
+              onMouseDown={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                setIsResizingRight(true)
+              }}
+            />
 
-              <ResizablePanel id="right" key={`right-${rightSizePercent}-${rightCollapsed}`} panelRef={rightPanelRef} defaultSize={rightSizePercent} minSize={collapsedMinPercent} className="hidden lg:flex lg:flex-col h-full">
-                <div ref={rightInnerRef} className={cn("min-h-0 w-full h-full transition-all", rightCollapsed ? "overflow-hidden" : "")}>
-                  <div className={cn(rightCollapsed ? "w-16" : "w-full", "h-full")}>
-                    <LearningStyleRightPanel
-                      course={courseModel}
-                      activeLessonId={activeResourceId}
-                      onSelectLesson={setActiveResourceId}
-                      collapsed={rightCollapsed}
-                      onToggleCollapse={toggleRight}
-                      disableInternalScroll={true}
-                    />
-                  </div>
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
+            <div
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150"
+              style={{ width: rightCollapsed ? COLLAPSED_PX : rightWidthPx }}
+            >
+              <LearningStyleRightPanel
+                course={courseModel}
+                activeLessonId={activeResourceId}
+                onSelectLesson={setActiveResourceId}
+                collapsed={rightCollapsed}
+                onToggleCollapse={toggleRight}
+                disableInternalScroll={true}
+              />
+            </div>
 
-            {/* Collapse toggle rails removed. Each sidebar component renders its own toggle control to avoid duplication. */}
+            {(isResizingLeft || isResizingRight) && (
+              <div className="hidden lg:block absolute inset-0 z-40 bg-transparent cursor-col-resize" />
+            )}
           </div>
         </div>
       </div>
