@@ -243,7 +243,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                     event.preventDefault()
                     event.stopPropagation()
                     leftResizeStartXRef.current = event.clientX
-                    leftMovedRef.current = false
                     setIsResizingLeft(true)
                   }}
                 />
@@ -257,7 +256,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 event.preventDefault()
                 event.stopPropagation()
                 leftResizeStartXRef.current = event.clientX
-                leftMovedRef.current = false
                 setIsResizingLeft(true)
               }}
             />
@@ -289,7 +287,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 event.preventDefault()
                 event.stopPropagation()
                 rightResizeStartXRef.current = event.clientX
-                rightMovedRef.current = false
                 setIsResizingRight(true)
               }}
             />
@@ -316,13 +313,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                     event.preventDefault()
                     event.stopPropagation()
                     rightResizeStartXRef.current = event.clientX
-                    rightMovedRef.current = false
                     setIsResizingRight(true)
                   }}
                   onTouchStart={(event) => {
                     event.preventDefault()
                     rightResizeStartXRef.current = event.touches?.[0]?.clientX ?? null
-                    rightMovedRef.current = false
                     setIsResizingRight(true)
                   }}
                 />
