@@ -85,6 +85,12 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const [isResizingLeft, setIsResizingLeft] = useState(false)
   const [isResizingRight, setIsResizingRight] = useState(false)
 
+  // Refs to detect small clicks vs drags when interacting with the resizer.
+  const leftResizeStartXRef = useRef<number | null>(null)
+  const rightResizeStartXRef = useRef<number | null>(null)
+  const leftMovedRef = useRef(false)
+  const rightMovedRef = useRef(false)
+
   const toggleLeft = useCallback(() => {
     if (leftCollapsed) {
       setLeftCollapsed(false)
@@ -108,9 +114,26 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   }, [rightCollapsed, rightPrevWidthPx, rightWidthPx])
 
   const stopResizing = useCallback(() => {
+    // If the user didn't move the pointer (a click) while a panel was marked as resizing,
+    // and that panel was collapsed, treat this as a toggle (expand) rather than a drag outcome.
+    if (isResizingLeft) {
+      if (!leftMovedRef.current && leftCollapsed) {
+        toggleLeft()
+      }
+    }
+    if (isResizingRight) {
+      if (!rightMovedRef.current && rightCollapsed) {
+        toggleRight()
+      }
+    }
+
     setIsResizingLeft(false)
     setIsResizingRight(false)
-  }, [])
+    leftResizeStartXRef.current = null
+    rightResizeStartXRef.current = null
+    leftMovedRef.current = false
+    rightMovedRef.current = false
+  }, [isResizingLeft, isResizingRight, leftCollapsed, rightCollapsed, toggleLeft, toggleRight])
 
   const handleResize = useCallback((event: MouseEvent) => {
     const container = containerRef.current?.getBoundingClientRect()
@@ -120,6 +143,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     const leftCurrent = leftCollapsed ? COLLAPSED_PX : leftWidthPx
 
     if (isResizingLeft) {
+      // detect movement to differentiate drag vs click
+      if (leftResizeStartXRef.current !== null) {
+        if (Math.abs(event.clientX - leftResizeStartXRef.current) > 4) leftMovedRef.current = true
+      }
+
       const maxLeft = Math.max(
         SIDE_MIN_PX,
         container.width - rightCurrent - MAIN_MIN_PX - RESIZER_PX * 2
@@ -139,6 +167,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     }
 
     if (isResizingRight) {
+      // detect movement to differentiate drag vs click
+      if (rightResizeStartXRef.current !== null) {
+        if (Math.abs(event.clientX - rightResizeStartXRef.current) > 4) rightMovedRef.current = true
+      }
+
       const maxRight = Math.max(
         SIDE_MIN_PX,
         container.width - leftCurrent - MAIN_MIN_PX - RESIZER_PX * 2
@@ -233,6 +266,14 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               onMouseDown={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
+                leftResizeStartXRef.current = event.clientX
+                leftMovedRef.current = false
+                setIsResizingLeft(true)
+              }}
+              onTouchStart={(event: React.TouchEvent) => {
+                event.preventDefault()
+                leftResizeStartXRef.current = event.touches[0]?.clientX ?? null
+                leftMovedRef.current = false
                 setIsResizingLeft(true)
               }}
             />
@@ -263,6 +304,14 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               onMouseDown={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
+                rightResizeStartXRef.current = event.clientX
+                rightMovedRef.current = false
+                setIsResizingRight(true)
+              }}
+              onTouchStart={(event: React.TouchEvent) => {
+                event.preventDefault()
+                rightResizeStartXRef.current = event.touches[0]?.clientX ?? null
+                rightMovedRef.current = false
                 setIsResizingRight(true)
               }}
             />
