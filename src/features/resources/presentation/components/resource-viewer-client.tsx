@@ -71,7 +71,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const [leftCollapsed, setLeftCollapsed] = useState(false)
   const [rightCollapsed, setRightCollapsed] = useState(false)
 
-  const COLLAPSED_PX = 64
+  const COLLAPSED_PX = 72
   const SIDE_MIN_PX = 200
   const SIDE_DEFAULT_LEFT_PX = 280
   const SIDE_DEFAULT_RIGHT_PX = SIDE_DEFAULT_LEFT_PX
