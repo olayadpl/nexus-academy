@@ -84,36 +84,43 @@ export default function LearningStyleRightPanel({
     >
       <div className="border-b px-3 py-2.5">
         <div className={cn("flex items-center gap-2", collapsed ? "justify-center" : "justify-between")}>
-          {!collapsed ? (
-            <div className="grid flex-1 grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setView("modules")}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-xs font-medium transition-colors",
-                  view === "modules"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Modulos
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("assistant")}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-xs font-medium transition-colors",
-                  view === "assistant"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Asistente IA
-              </button>
-            </div>
-          ) : (
-            <span className="sr-only">Panel colapsado</span>
-          )}
+          <div className="flex flex-1 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (collapsed) onToggle?.()
+                setView("modules")
+              }}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                view === "modules"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              )}
+              aria-label="Modulos"
+            >
+              <Video className="h-4 w-4" />
+              {!collapsed && <span className="hidden sm:inline">Modulos</span>}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (collapsed) onToggle?.()
+                setView("assistant")
+              }}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                view === "assistant"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              )}
+              aria-label="Asistente IA"
+            >
+              <Bot className="h-4 w-4" />
+              {!collapsed && <span className="hidden sm:inline">Asistente IA</span>}
+            </button>
+          </div>
 
           <Button
             variant="ghost"
