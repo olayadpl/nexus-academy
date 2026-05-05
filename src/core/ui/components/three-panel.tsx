@@ -11,7 +11,8 @@ type ThreePanelProps = {
   className?: string
   // initial widths in pixels
   initialLeft?: number
-  initialRight?: number
+  // If provided, used as percent (0-1) to compute initial right width
+  initialRightPercent?: number
   minLeft?: number
   minRight?: number
   collapsedIconWidth?: number
@@ -23,10 +24,10 @@ export function ThreePanelLayout({
   right,
   children,
   className,
-  initialLeft = 280,
-  initialRight = 320,
-  minLeft = 56,
-  minRight = 56,
+  initialLeft = 250,
+  initialRightPercent = 0.3,
+  minLeft = 150,
+  minRight = 150,
   collapsedIconWidth = 64,
   persistKey = "three-panel-layout",
 }: ThreePanelProps) {
@@ -41,17 +42,31 @@ export function ThreePanelLayout({
       return initialLeft
     }
   })
+
   const [rightWidth, setRightWidth] = React.useState<number>(() => {
     try {
       const raw = localStorage.getItem(persistKey + ":right")
-      return raw ? Number(raw) : initialRight
+      return raw ? Number(raw) : -1 // sentinel to compute from percent on mount
     } catch {
-      return initialRight
+      return -1
     }
   })
 
   const [leftCollapsed, setLeftCollapsed] = React.useState<boolean>(() => leftWidth <= minLeft)
   const [rightCollapsed, setRightCollapsed] = React.useState<boolean>(() => rightWidth <= minRight)
+
+  const [isDragging, setIsDragging] = React.useState(false)
+  const [draggingSide, setDraggingSide] = React.useState<"left" | "right" | null>(null)
+
+  // compute initial right width from percent if needed
+  React.useEffect(() => {
+    if (rightWidth === -1 && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      const calc = Math.round(rect.width * initialRightPercent)
+      setRightWidth(calc)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rightWidth, containerRef.current])
 
   // persist sizes
   React.useEffect(() => {
@@ -81,23 +96,45 @@ export function ThreePanelLayout({
     const minMain = 240
     const handleTotal = 24 // total reserved space for handles/gaps
 
+    // mark dragging state
+    setIsDragging(true)
+    setDraggingSide(side)
+
     // prevent text selection while dragging
     document.body.style.userSelect = "none"
     document.body.style.cursor = "col-resize"
 
     function onMove(ev: MouseEvent | TouchEvent) {
+      if (!containerRef.current) return
       const clientX = isTouch(ev) ? ev.touches[0].clientX : (ev as MouseEvent).clientX
-      const rect = containerRef.current?.getBoundingClientRect()
+      const rect = containerRef.current.getBoundingClientRect()
       if (!rect) return
+
+      const maxSidePx = Math.floor(rect.width * 0.4) // 40% max
 
       if (side === "left") {
         const maxLeft = Math.max(minLeft, rect.width - startRight - minMain - handleTotal)
-        const newWidth = clamp(startLeft + (clientX - startX), minLeft, maxLeft)
-        setLeftWidth(newWidth)
+        const clampedMaxLeft = Math.min(maxLeft, maxSidePx)
+        const newWidth = clamp(startLeft + (clientX - startX), minLeft, clampedMaxLeft)
+        if (newWidth < minLeft) {
+          // collapse
+          setLeftWidth(collapsedIconWidth)
+          setLeftCollapsed(true)
+        } else {
+          setLeftWidth(newWidth)
+          setLeftCollapsed(false)
+        }
       } else {
         const maxRight = Math.max(minRight, rect.width - startLeft - minMain - handleTotal)
-        const newWidth = clamp(startRight - (clientX - startX), minRight, maxRight)
-        setRightWidth(newWidth)
+        const clampedMaxRight = Math.min(maxRight, maxSidePx)
+        const newWidth = clamp(startRight - (clientX - startX), minRight, clampedMaxRight)
+        if (newWidth < minRight) {
+          setRightWidth(collapsedIconWidth)
+          setRightCollapsed(true)
+        } else {
+          setRightWidth(newWidth)
+          setRightCollapsed(false)
+        }
       }
     }
 
@@ -108,6 +145,9 @@ export function ThreePanelLayout({
       window.removeEventListener("touchend", onUp)
       document.body.style.userSelect = ""
       document.body.style.cursor = ""
+      // clear dragging state
+      setIsDragging(false)
+      setDraggingSide(null)
     }
 
     window.addEventListener("mousemove", onMove)
@@ -175,10 +215,16 @@ export function ThreePanelLayout({
           onMouseDown={(e) => startDrag("left", e)}
           onTouchStart={(e) => startDrag("left", e)}
         >
-          <div className="w-0.5 cursor-col-resize rounded bg-border" />
+          <div className={cn("w-1.5 rounded transition-colors", draggingSide === "left" && isDragging ? "bg-primary" : "bg-border")} style={{ cursor: "col-resize" }} />
         </div>
 
-        <main className="min-h-0 overflow-auto p-2">{children}</main>
+        <main className="min-h-0 overflow-auto p-2 relative">
+          {children}
+          {/* iframe shield overlay during dragging to prevent iframe stealing events */}
+          {isDragging && (
+            <div className="absolute inset-0 z-50 bg-transparent" style={{ touchAction: "none" }} />
+          )}
+        </main>
 
         {/* right handle */}
         <div
@@ -188,7 +234,7 @@ export function ThreePanelLayout({
           onMouseDown={(e) => startDrag("right", e)}
           onTouchStart={(e) => startDrag("right", e)}
         >
-          <div className="w-0.5 cursor-col-resize rounded bg-border" />
+          <div className={cn("w-1.5 rounded transition-colors", draggingSide === "right" && isDragging ? "bg-primary" : "bg-border")} style={{ cursor: "col-resize" }} />
         </div>
 
         <aside
