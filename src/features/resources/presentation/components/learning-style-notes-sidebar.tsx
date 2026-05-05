@@ -118,14 +118,14 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               className={cn(
                 "relative rounded-xl border p-3 shadow-sm overflow-hidden",
                 note.tone === "blue"
-                  ? "bg-blue-50/60 border-blue-100 dark:bg-blue-900/20 dark:border-blue-700"
-                  : "bg-amber-50/60 border-amber-100 dark:bg-amber-900/20 dark:border-amber-700"
+                  ? "bg-blue-50/60 border-blue-100 dark:bg-card dark:border-transparent"
+                  : "bg-amber-50/60 border-amber-100 dark:bg-card dark:border-transparent"
               )}
             >
-              {/* Indicador de categoría: franja sólida en el extremo izquierdo */}
+              {/* Indicador de categoría: franja sólida en el extremo izquierdo, no llega hasta las esquinas redondeadas */}
               <span
                 className={cn(
-                  "absolute inset-y-0 left-0 w-1 rounded-l-xl z-10",
+                  "absolute left-0 top-3 bottom-3 w-1 rounded-l-xl z-10",
                   note.tone === "blue" ? "bg-blue-600 dark:bg-blue-400" : "bg-amber-500 dark:bg-amber-300"
                 )}
               />
