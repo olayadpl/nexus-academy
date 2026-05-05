@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react"
 import { toast } from "sonner"
 import {
   Bookmark,
@@ -293,6 +293,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   // collapsed minimum percent (based on COLLAPSED_PX and container width) to ensure panels never shrink smaller than the sidebar icon width
   const [collapsedMinPercent, setCollapsedMinPercent] = useState<number>(2)
+  const [sideMinPercent, setSideMinPercent] = useState<number>(10)
 
   // refs to avoid re-entrant auto-collapse
   const isAutoCollapsingLeftRef = useRef(false)
@@ -303,7 +304,9 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     function updateCollapsedPercent() {
       const containerWidth = containerRef.current?.getBoundingClientRect().width || (typeof window !== 'undefined' ? window.innerWidth : 1)
       const p = Math.max(2, Math.round((COLLAPSED_PX / Math.max(1, containerWidth)) * 100))
+      const minSideP = Math.max(p, Math.round((SIDE_MIN_PX / Math.max(1, containerWidth)) * 100))
       setCollapsedMinPercent(p)
+      setSideMinPercent(minSideP)
     }
     updateCollapsedPercent()
     let ro: ResizeObserver | null = null
@@ -317,48 +320,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       if (ro) ro.disconnect()
     }
   }, [containerRef, COLLAPSED_PX])
-
-  // auto-collapse side panels when their inner width goes below SIDE_MIN_PX to prevent layout breakage
-  useEffect(() => {
-    if (typeof ResizeObserver === 'undefined') return
-    const observers: ResizeObserver[] = []
-
-    function observeSide(ref: React.RefObject<HTMLDivElement>, side: 'left' | 'right') {
-      if (!ref.current) return
-      const ro = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const w = entry.target.getBoundingClientRect().width
-          if (side === 'left') {
-            if (w < SIDE_MIN_PX && !leftCollapsed && !isAutoCollapsingLeftRef.current) {
-              isAutoCollapsingLeftRef.current = true
-              try {
-                // pass current leftSizePercent so restore uses the pre-collapse size (avoid saving the already-small width)
-                toggleLeft({ forcePrevPercent: leftSizePercent })
-              } catch (e) {}
-              setTimeout(() => (isAutoCollapsingLeftRef.current = false), 300)
-            }
-          } else {
-            if (w < SIDE_MIN_PX && !rightCollapsed && !isAutoCollapsingRightRef.current) {
-              isAutoCollapsingRightRef.current = true
-              try {
-                toggleRight({ forcePrevPercent: rightSizePercent })
-              } catch (e) {}
-              setTimeout(() => (isAutoCollapsingRightRef.current = false), 300)
-            }
-          }
-        }
-      })
-      ro.observe(ref.current)
-      observers.push(ro)
-    }
-
-    observeSide(leftInnerRef, 'left')
-    observeSide(rightInnerRef, 'right')
-
-    return () => {
-      observers.forEach((o) => o.disconnect())
-    }
-  }, [leftInnerRef.current, rightInnerRef.current, leftCollapsed, rightCollapsed, toggleLeft, toggleRight])
 
   // helper to compute middle size given left/right
   const computeMiddlePercent = (l = leftSizePercent, r = rightSizePercent) => {
@@ -401,7 +362,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       setLeftCollapsed(true)
     } else {
       // expanding: restore previous percent (fallback to 20)
-      const restore = leftPrevPercent ?? 20
+      const restore = Math.max(leftPrevPercent ?? 20, sideMinPercent)
       if (leftPanelRef.current?.resize) leftPanelRef.current.resize(`${restore}%`)
       try {
         const rightP = rightSizePercent
@@ -444,7 +405,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       setRightSizePercent(collapsedP)
       setRightCollapsed(true)
     } else {
-      const restore = rightPrevPercent ?? 20
+      const restore = Math.max(rightPrevPercent ?? 20, sideMinPercent)
       if (rightPanelRef.current?.resize) rightPanelRef.current.resize(`${restore}%`)
       try {
         const leftP = leftSizePercent
@@ -456,6 +417,41 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       setRightCollapsed(false)
     }
   }
+
+  // auto-collapse side panels when their inner width goes below SIDE_MIN_PX to prevent layout breakage
+  useEffect(() => {
+    if (typeof ResizeObserver === "undefined") return
+    const observers: ResizeObserver[] = []
+
+    function observeSide(ref: RefObject<HTMLDivElement | null>, side: "left" | "right") {
+      if (!ref.current) return
+      const ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const w = entry.target.getBoundingClientRect().width
+          if (side === "left") {
+            if (w < SIDE_MIN_PX && !leftCollapsed && !isAutoCollapsingLeftRef.current) {
+              isAutoCollapsingLeftRef.current = true
+              toggleLeft({ forcePrevPercent: leftSizePercent })
+              setTimeout(() => (isAutoCollapsingLeftRef.current = false), 300)
+            }
+          } else if (w < SIDE_MIN_PX && !rightCollapsed && !isAutoCollapsingRightRef.current) {
+            isAutoCollapsingRightRef.current = true
+            toggleRight({ forcePrevPercent: rightSizePercent })
+            setTimeout(() => (isAutoCollapsingRightRef.current = false), 300)
+          }
+        }
+      })
+      ro.observe(ref.current)
+      observers.push(ro)
+    }
+
+    observeSide(leftInnerRef, "left")
+    observeSide(rightInnerRef, "right")
+
+    return () => {
+      observers.forEach((o) => o.disconnect())
+    }
+  }, [leftCollapsed, leftSizePercent, rightCollapsed, rightSizePercent, toggleLeft, toggleRight])
 
   function handlePanelCollapseMeasure(side: "left" | "right") {
     // measure width of panel and update corresponding percent - used before collapsing
