@@ -113,16 +113,22 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
       ) : (
         <div className={cn("space-y-3 p-3", scrollClass)}>
           {notes.map((note) => (
-            <article key={note.id} className="relative rounded-xl border bg-card/80 p-3 shadow-sm">
+            <article
+              key={note.id}
+              className={cn(
+                "relative rounded-xl border p-3 shadow-sm",
+                note.tone === "blue" ? "bg-blue-50/60 border-blue-100" : "bg-amber-50/60 border-amber-100"
+              )}
+            >
+              {/* Línea de color ligeramente adentro, redondeada */}
               <span
-                className={
-                  note.tone === "blue"
-                    ? "absolute left-0 top-0 h-full w-1 rounded-l-xl bg-blue-500"
-                    : "absolute left-0 top-0 h-full w-1 rounded-l-xl bg-amber-400"
-                }
+                className={cn(
+                  "absolute top-3 bottom-3 left-3 w-2 rounded-full",
+                  note.tone === "blue" ? "bg-blue-500" : "bg-amber-400"
+                )}
               />
 
-              <div className="pl-2">
+              <div className="pl-6">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-semibold leading-tight">{note.title}</h3>
                   <button
