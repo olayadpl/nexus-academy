@@ -116,21 +116,21 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
             <article
               key={note.id}
               className={cn(
-                "relative rounded-xl border p-3 shadow-sm",
+                "relative rounded-xl border p-3 shadow-sm overflow-hidden",
                 note.tone === "blue"
                   ? "bg-blue-50/60 border-blue-100 dark:bg-blue-900/20 dark:border-blue-700"
                   : "bg-amber-50/60 border-amber-100 dark:bg-amber-900/20 dark:border-amber-700"
               )}
             >
-              {/* Línea de color ligeramente adentro, más fina y redondeada; adapta contraste en dark */}
+              {/* Indicador de categoría: franja sólida en el extremo izquierdo */}
               <span
                 className={cn(
-                  "absolute top-3 bottom-3 left-3 w-px rounded-full",
-                  note.tone === "blue" ? "bg-blue-500 dark:bg-blue-400" : "bg-amber-400 dark:bg-amber-300"
+                  "absolute inset-y-0 left-0 w-1 rounded-l-xl z-10",
+                  note.tone === "blue" ? "bg-blue-600 dark:bg-blue-400" : "bg-amber-500 dark:bg-amber-300"
                 )}
               />
 
-              <div className="pl-6">
+              <div className="pl-5">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-semibold leading-tight">{note.title}</h3>
                   <button
