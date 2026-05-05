@@ -220,11 +220,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-muted/30 font-sans">
-      <div className="flex flex-1 min-h-0 h-full overflow-hidden p-4 md:p-6">
+      <div className="flex flex-1 min-h-0 w-full overflow-hidden p-4 md:p-6">
         <div className="w-full min-h-0 h-full">
           <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen h-full"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative max-h-full"
               style={{ width: leftCollapsed ? COLLAPSED_PX : leftWidthPx }}
             >
               <LearningStyleNotesSidebar
@@ -260,7 +260,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               }}
             />
 
-            <div className="relative min-w-0 min-h-0 h-full max-h-screen flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
+            <div className="relative min-w-0 min-h-0 h-full max-h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
               <div className="h-full min-h-0 overflow-auto">
                 <LearningStyleCourseMain
                   course={courseModel}
@@ -292,7 +292,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             />
 
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen h-full"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative max-h-full"
               style={{ width: rightCollapsed ? COLLAPSED_PX : rightWidthPx }}
             >
               <LearningStyleRightPanel
