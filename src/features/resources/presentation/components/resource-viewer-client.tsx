@@ -74,7 +74,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const COLLAPSED_PX = 64
   const SIDE_MIN_PX = 200
   const SIDE_DEFAULT_LEFT_PX = 280
-  const SIDE_DEFAULT_RIGHT_PX = 320
+  const SIDE_DEFAULT_RIGHT_PX = SIDE_DEFAULT_LEFT_PX
   const RESIZER_PX = 4
   const MAIN_MIN_PX = 420
 
