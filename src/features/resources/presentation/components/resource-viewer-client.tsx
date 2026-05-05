@@ -1,15 +1,9 @@
 "use client"
 
-<<<<<<< HEAD
-import Image from "next/image"
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react"
-=======
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
->>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
 import { toast } from "sonner"
 import { Toaster } from "@/src/core/ui/components/sonner"
 import type { ResourceEntity } from "../../domain/entities/resource.entity"
-
 import LearningStyleNotesSidebar from "./learning-style-notes-sidebar"
 import LearningStyleCourseMain from "./learning-style-course-main"
 import LearningStyleRightPanel from "./learning-style-right-panel"
@@ -53,12 +47,6 @@ function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
   }
 }
 
-
-
-
-
-
-
 export function ResourceViewerClient({ course, resources, initialResourceId }: ResourceViewerClientProps) {
   const [resourceItems, setResourceItems] = useState(resources)
   const initial = initialResourceId
@@ -82,6 +70,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   const [leftCollapsed, setLeftCollapsed] = useState(false)
   const [rightCollapsed, setRightCollapsed] = useState(false)
+
   const COLLAPSED_PX = 64
   const SIDE_MIN_PX = 200
   const SIDE_DEFAULT_LEFT_PX = 280
@@ -89,88 +78,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const RESIZER_PX = 4
   const MAIN_MIN_PX = 420
 
-<<<<<<< HEAD
-  // collapsed minimum percent (based on COLLAPSED_PX and container width) to ensure panels never shrink smaller than the sidebar icon width
-  const [collapsedMinPercent, setCollapsedMinPercent] = useState<number>(2)
-  const [sideMinPercent, setSideMinPercent] = useState<number>(10)
-
-  // refs to avoid re-entrant auto-collapse
-  const isAutoCollapsingLeftRef = useRef(false)
-  const isAutoCollapsingRightRef = useRef(false)
-
-  // update collapsedMinPercent whenever container width changes
-  useEffect(() => {
-    function updateCollapsedPercent() {
-      const containerWidth = containerRef.current?.getBoundingClientRect().width || (typeof window !== 'undefined' ? window.innerWidth : 1)
-      const p = Math.max(2, Math.round((COLLAPSED_PX / Math.max(1, containerWidth)) * 100))
-      const minSideP = Math.max(p, Math.round((SIDE_MIN_PX / Math.max(1, containerWidth)) * 100))
-      setCollapsedMinPercent(p)
-      setSideMinPercent(minSideP)
-    }
-    updateCollapsedPercent()
-    let ro: ResizeObserver | null = null
-    if (containerRef.current && typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(updateCollapsedPercent)
-      ro.observe(containerRef.current)
-    }
-    window.addEventListener("resize", updateCollapsedPercent)
-    return () => {
-      window.removeEventListener("resize", updateCollapsedPercent)
-      if (ro) ro.disconnect()
-    }
-  }, [containerRef, COLLAPSED_PX])
-
-  // helper to compute middle size given left/right
-  const computeMiddlePercent = (l = leftSizePercent, r = rightSizePercent) => {
-    const mid = Math.max(5, 100 - l - r)
-    return mid
-  }
-
-  // Toggle collapse: measure current width and store percent before collapsing so we can restore
-  function toggleLeft(opts?: { forcePrevPercent?: number }) {
-    const container = containerRef.current?.getBoundingClientRect()
-    const leftRect = leftInnerRef.current?.getBoundingClientRect()
-    if (!container) {
-      setLeftCollapsed((c) => !c)
-      return
-    }
-
-    if (!leftCollapsed) {
-      // collapsing: save percent then set collapsed percent based on COLLAPSED_PX
-      if (opts?.forcePrevPercent != null) {
-        setLeftPrevPercent(Math.max(0, Math.round(opts.forcePrevPercent)))
-      } else if (leftRect) {
-        const p = Math.max(0, Math.round((leftRect.width / container.width) * 100))
-        setLeftPrevPercent(p)
-      }
-      const collapsedP = Math.max(2, Math.round((COLLAPSED_PX / container.width) * 100))
-
-      // try panel API first
-      if (leftPanelRef.current?.resize) {
-        leftPanelRef.current.resize(`${COLLAPSED_PX}px`)
-      }
-
-      // ensure layout: use groupRef to set explicit layout mapping
-      try {
-        const rightP = rightSizePercent
-        const mainP = Math.max(1, 100 - collapsedP - rightP)
-        groupRef.current?.setLayout({ left: collapsedP, main: mainP, right: rightP })
-      } catch {}
-
-      setLeftSizePercent(collapsedP)
-      setLeftCollapsed(true)
-    } else {
-      // expanding: restore previous percent (fallback to 20)
-      const restore = Math.max(leftPrevPercent ?? 20, sideMinPercent)
-      if (leftPanelRef.current?.resize) leftPanelRef.current.resize(`${restore}%`)
-      try {
-        const rightP = rightSizePercent
-        const mainP = Math.max(1, 100 - restore - rightP)
-        groupRef.current?.setLayout({ left: restore, main: mainP, right: rightP })
-      } catch {}
-      setLeftSizePercent(restore)
-      setLeftPrevPercent(null)
-=======
   const [leftWidthPx, setLeftWidthPx] = useState<number>(SIDE_DEFAULT_LEFT_PX)
   const [rightWidthPx, setRightWidthPx] = useState<number>(SIDE_DEFAULT_RIGHT_PX)
   const [leftPrevWidthPx, setLeftPrevWidthPx] = useState<number>(SIDE_DEFAULT_LEFT_PX)
@@ -180,7 +87,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   const toggleLeft = useCallback(() => {
     if (leftCollapsed) {
->>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
       setLeftCollapsed(false)
       setLeftWidthPx(Math.max(SIDE_MIN_PX, leftPrevWidthPx))
       return
@@ -190,42 +96,8 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     setLeftWidthPx(COLLAPSED_PX)
   }, [leftCollapsed, leftPrevWidthPx, leftWidthPx])
 
-<<<<<<< HEAD
-    if (!rightCollapsed) {
-      if (opts?.forcePrevPercent != null) {
-        setRightPrevPercent(Math.max(0, Math.round(opts.forcePrevPercent)))
-      } else if (rightRect) {
-        const p = Math.max(0, Math.round((rightRect.width / container.width) * 100))
-        setRightPrevPercent(p)
-      }
-      const collapsedP = Math.max(2, Math.round((COLLAPSED_PX / container.width) * 100))
-
-      if (rightPanelRef.current?.resize) {
-        rightPanelRef.current.resize(`${COLLAPSED_PX}px`)
-      }
-
-      try {
-        const leftP = leftSizePercent
-        const mainP = Math.max(1, 100 - leftP - collapsedP)
-        groupRef.current?.setLayout({ left: leftP, main: mainP, right: collapsedP })
-      } catch {}
-
-      setRightSizePercent(collapsedP)
-      setRightCollapsed(true)
-    } else {
-      const restore = Math.max(rightPrevPercent ?? 20, sideMinPercent)
-      if (rightPanelRef.current?.resize) rightPanelRef.current.resize(`${restore}%`)
-      try {
-        const leftP = leftSizePercent
-        const mainP = Math.max(1, 100 - leftP - restore)
-        groupRef.current?.setLayout({ left: leftP, main: mainP, right: restore })
-      } catch {}
-      setRightSizePercent(restore)
-      setRightPrevPercent(null)
-=======
   const toggleRight = useCallback(() => {
     if (rightCollapsed) {
->>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
       setRightCollapsed(false)
       setRightWidthPx(Math.max(SIDE_MIN_PX, rightPrevWidthPx))
       return
@@ -235,52 +107,12 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     setRightWidthPx(COLLAPSED_PX)
   }, [rightCollapsed, rightPrevWidthPx, rightWidthPx])
 
-<<<<<<< HEAD
-  // auto-collapse side panels when their inner width goes below SIDE_MIN_PX to prevent layout breakage
-  useEffect(() => {
-    if (typeof ResizeObserver === "undefined") return
-    const observers: ResizeObserver[] = []
-
-    function observeSide(ref: RefObject<HTMLDivElement | null>, side: "left" | "right") {
-      if (!ref.current) return
-      const ro = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const w = entry.target.getBoundingClientRect().width
-          if (side === "left") {
-            if (w < SIDE_MIN_PX && !leftCollapsed && !isAutoCollapsingLeftRef.current) {
-              isAutoCollapsingLeftRef.current = true
-              toggleLeft({ forcePrevPercent: leftSizePercent })
-              setTimeout(() => (isAutoCollapsingLeftRef.current = false), 300)
-            }
-          } else if (w < SIDE_MIN_PX && !rightCollapsed && !isAutoCollapsingRightRef.current) {
-            isAutoCollapsingRightRef.current = true
-            toggleRight({ forcePrevPercent: rightSizePercent })
-            setTimeout(() => (isAutoCollapsingRightRef.current = false), 300)
-          }
-        }
-      })
-      ro.observe(ref.current)
-      observers.push(ro)
-    }
-
-    observeSide(leftInnerRef, "left")
-    observeSide(rightInnerRef, "right")
-
-    return () => {
-      observers.forEach((o) => o.disconnect())
-    }
-  }, [leftCollapsed, leftSizePercent, rightCollapsed, rightSizePercent, toggleLeft, toggleRight])
-
-  function handlePanelCollapseMeasure(side: "left" | "right") {
-    // measure width of panel and update corresponding percent - used before collapsing
-=======
   const stopResizing = useCallback(() => {
     setIsResizingLeft(false)
     setIsResizingRight(false)
   }, [])
 
   const handleResize = useCallback((event: MouseEvent) => {
->>>>>>> 96e9abf (Refactor resource page to custom mouse-driven resizers with 4px handles and auto-collapse threshold)
     const container = containerRef.current?.getBoundingClientRect()
     if (!container) return
 
