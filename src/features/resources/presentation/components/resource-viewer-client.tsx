@@ -260,7 +260,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               }}
             />
 
-            <div className="relative min-w-0 min-h-0 h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden lg:max-h-screen">
+<<<<<<< HEAD
+            <div className="relative min-w-0 min-h-0 h-full max-h-screen flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
+=======
+            <div className="relative min-w-0 min-h-0 h-full max-h-screen flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
+>>>>>>> 41a2a3b (Ensure column heights don\'t exceed viewport: add max-h-screen to sidebars and main panel\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>)
               <div className="h-full min-h-0 overflow-auto">
                 <LearningStyleCourseMain
                   course={courseModel}
