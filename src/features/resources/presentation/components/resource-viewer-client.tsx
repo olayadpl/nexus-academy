@@ -249,7 +249,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
         <div className="w-full min-h-0">
           <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative"
               style={{ width: leftCollapsed ? COLLAPSED_PX : leftWidthPx }}
             >
               <LearningStyleNotesSidebar
@@ -258,6 +258,27 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 onToggleCollapse={toggleLeft}
                 disableInternalScroll={true}
               />
+
+              {/* Inner hit area on collapsed state so user can drag the edge to open without using the toggle button */}
+              {leftCollapsed && (
+                <div
+                  className="hidden lg:block absolute top-0 bottom-0 right-0"
+                  style={{ width: RESIZER_PX, cursor: 'col-resize', zIndex: 30 }}
+                  onMouseDown={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    leftResizeStartXRef.current = event.clientX
+                    leftMovedRef.current = false
+                    setIsResizingLeft(true)
+                  }}
+                  onTouchStart={(event) => {
+                    event.preventDefault()
+                    leftResizeStartXRef.current = event.touches?.[0]?.clientX ?? null
+                    leftMovedRef.current = false
+                    setIsResizingLeft(true)
+                  }}
+                />
+              )}
             </div>
 
             <div
@@ -317,7 +338,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             />
 
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative"
               style={{ width: rightCollapsed ? COLLAPSED_PX : rightWidthPx }}
             >
               <LearningStyleRightPanel
@@ -328,6 +349,27 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 onToggleCollapse={toggleRight}
                 disableInternalScroll={true}
               />
+
+              {/* Inner hit area on collapsed state to allow dragging from the collapsed panel edge */}
+              {rightCollapsed && (
+                <div
+                  className="hidden lg:block absolute top-0 bottom-0 left-0"
+                  style={{ width: RESIZER_PX, cursor: 'col-resize', zIndex: 30 }}
+                  onMouseDown={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    rightResizeStartXRef.current = event.clientX
+                    rightMovedRef.current = false
+                    setIsResizingRight(true)
+                  }}
+                  onTouchStart={(event) => {
+                    event.preventDefault()
+                    rightResizeStartXRef.current = event.touches?.[0]?.clientX ?? null
+                    rightMovedRef.current = false
+                    setIsResizingRight(true)
+                  }}
+                />
+              )}
             </div>
 
             {(isResizingLeft || isResizingRight) && (
