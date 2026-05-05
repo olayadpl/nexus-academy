@@ -220,7 +220,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
 
   return (
     <div className="flex h-[calc(100svh-3.5rem)] max-h-[calc(100svh-3.5rem)] min-h-0 flex-col overflow-hidden bg-muted/30 font-sans">
-      <div className="flex flex-1 min-h-0 overflow-hidden p-2">
+      <div className="flex flex-1 min-h-0 overflow-hidden p-2.5">
         <div className="w-full h-full min-h-0">
           <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
             <div
