@@ -90,9 +90,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const rightResizeStartXRef = useRef<number | null>(null)
   const leftMovedRef = useRef(false)
   const rightMovedRef = useRef(false)
-  // track pointer ids so we can release pointer capture reliably
-  const leftPointerIdRef = useRef<number | null>(null)
-  const rightPointerIdRef = useRef<number | null>(null)
 
   const toggleLeft = useCallback(() => {
     if (leftCollapsed) {
@@ -130,26 +127,12 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
       }
     }
 
-    // release pointer captures if set
-    try {
-      if (leftPointerIdRef.current !== null) {
-        document.releasePointerCapture?.(leftPointerIdRef.current)
-      }
-    } catch {}
-    try {
-      if (rightPointerIdRef.current !== null) {
-        document.releasePointerCapture?.(rightPointerIdRef.current)
-      }
-    } catch {}
-
     setIsResizingLeft(false)
     setIsResizingRight(false)
     leftResizeStartXRef.current = null
     rightResizeStartXRef.current = null
     leftMovedRef.current = false
     rightMovedRef.current = false
-    leftPointerIdRef.current = null
-    rightPointerIdRef.current = null
   }, [isResizingLeft, isResizingRight, leftCollapsed, rightCollapsed, toggleLeft, toggleRight])
 
   const handleResize = useCallback((event: MouseEvent) => {
@@ -286,12 +269,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                     event.stopPropagation()
                     leftResizeStartXRef.current = event.clientX
                     leftMovedRef.current = false
-                    leftPointerIdRef.current = event.pointerId
-                    try {
-                      ;(event.target as Element).setPointerCapture?.(event.pointerId)
-                    } catch (err) {
-                      // ignore setPointerCapture errors
-                    }
                     setIsResizingLeft(true)
                   }}
                 />
@@ -306,10 +283,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 event.stopPropagation()
                 leftResizeStartXRef.current = event.clientX
                 leftMovedRef.current = false
-                leftPointerIdRef.current = event.pointerId
-                try {
-                  ;(event.target as Element).setPointerCapture?.(event.pointerId)
-                } catch {}
                 setIsResizingLeft(true)
               }}
             />
@@ -342,10 +315,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 event.stopPropagation()
                 rightResizeStartXRef.current = event.clientX
                 rightMovedRef.current = false
-                rightPointerIdRef.current = event.pointerId
-                try {
-                  ;(event.target as Element).setPointerCapture?.(event.pointerId)
-                } catch {}
                 setIsResizingRight(true)
               }}
             />
