@@ -224,7 +224,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
         <div className="w-full min-h-0">
           <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen h-full"
               style={{ width: leftCollapsed ? COLLAPSED_PX : leftWidthPx }}
             >
               <LearningStyleNotesSidebar
@@ -292,7 +292,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             />
 
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen h-full"
               style={{ width: rightCollapsed ? COLLAPSED_PX : rightWidthPx }}
             >
               <LearningStyleRightPanel
