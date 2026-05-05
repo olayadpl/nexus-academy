@@ -130,25 +130,41 @@ export default function LearningStyleRightPanel({
 
       {collapsed ? (
         <div className={cn("flex-1 p-2", scrollClass)}>
-          <div className="flex w-full flex-col items-center gap-2">
-            {course.modules.map((lesson, index) => {
-              const active = activeLessonId === lesson.id
-              return (
-                <button
-                  key={lesson.id}
-                  type="button"
-                  onClick={() => onSelectLesson(lesson.id)}
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-lg border transition-colors",
-                    active ? "border-primary/50 bg-primary/10 text-primary" : "border-border bg-background hover:bg-muted"
-                  )}
-                  aria-label={`Modulo ${index + 1}: ${lesson.title}`}
-                  title={`Modulo ${index + 1}: ${lesson.title}`}
-                >
-                  {lesson.type === "video" ? <Video className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
-                </button>
-              )
-            })}
+          <div className="flex h-full w-full flex-col items-center justify-center gap-3">
+            {/* Icon tabs: Modules and Assistant. Clicking expands the panel to that view. */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggle?.()
+                setView("modules")
+              }}
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-lg border transition-colors",
+                view === "modules" ? "border-primary/50 bg-primary/10 text-primary" : "border-border bg-background hover:bg-muted"
+              )}
+              aria-label="Abrir Modulos"
+              title="Modulos"
+            >
+              <FileText className="h-4 w-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggle?.()
+                setView("assistant")
+              }}
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-lg border transition-colors",
+                view === "assistant" ? "border-primary/50 bg-primary/10 text-primary" : "border-border bg-background hover:bg-muted"
+              )}
+              aria-label="Abrir Asistente IA"
+              title="Asistente IA"
+            >
+              <Bot className="h-4 w-4" />
+            </button>
           </div>
         </div>
       ) : view === "modules" ? (
