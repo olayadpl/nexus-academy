@@ -81,7 +81,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full relative z-40"
             aria-label={collapsed ? "Expandir columna izquierda" : "Colapsar columna izquierda"}
             onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
           >

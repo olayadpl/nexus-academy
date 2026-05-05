@@ -38,11 +38,6 @@ function ResizableHandle({
   const { onPointerDownCapture, onPointerDown, ...rest } = props as any
 
   const handlePointerDownCapture = (e: React.PointerEvent) => {
-    if (hideSeparator) {
-      // allow events to pass through to underlying controls (do not stop propagation)
-      return
-    }
-
     // Temporarily patch setPointerCapture on the target element to avoid InvalidStateError
     const target = e.currentTarget as HTMLElement & { setPointerCapture?: (id: number) => void }
     const origSetPointerCapture = target && target.setPointerCapture
