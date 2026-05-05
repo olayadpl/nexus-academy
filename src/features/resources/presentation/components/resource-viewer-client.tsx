@@ -522,7 +522,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               </ResizablePanel>
 
               {/* Left handle */}
-              <ResizableHandle withHandle hideSeparator className="hidden lg:flex" />
+              <ResizableHandle withHandle hideSeparator={leftCollapsed} className="hidden lg:flex" />
 
               {/* Main panel -- size depends on left/right percents */}
               <ResizablePanel id="main" key={`main-${leftSizePercent}-${rightSizePercent}-${leftCollapsed}-${rightCollapsed}`} 
@@ -552,7 +552,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               </ResizablePanel>
 
               {/* Right handle and panel (always rendered) */}
-              <ResizableHandle withHandle hideSeparator className="hidden lg:flex" />
+              <ResizableHandle withHandle hideSeparator={rightCollapsed} className="hidden lg:flex" />
 
               <ResizablePanel id="right" key={`right-${rightSizePercent}-${rightCollapsed}`} panelRef={rightPanelRef} defaultSize={rightSizePercent} minSize={collapsedMinPercent} className="hidden lg:flex lg:flex-col h-full">
                 <div ref={rightInnerRef} className={cn("min-h-0 w-full h-full transition-all", rightCollapsed ? "overflow-hidden" : "")}>
