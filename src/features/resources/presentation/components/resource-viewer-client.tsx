@@ -201,17 +201,17 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   useEffect(() => {
     if (!isResizingLeft && !isResizingRight) return
 
-    const onMouseMove = (event: MouseEvent) => handleResize(event)
-    const onMouseUp = () => stopResizing()
+    const onPointerMove = (event: PointerEvent) => handleResize(event as unknown as MouseEvent)
+    const onPointerUp = () => stopResizing()
 
-    window.addEventListener("mousemove", onMouseMove)
-    window.addEventListener("mouseup", onMouseUp)
+    window.addEventListener("pointermove", onPointerMove)
+    window.addEventListener("pointerup", onPointerUp)
     document.body.style.userSelect = "none"
     document.body.style.cursor = "col-resize"
 
     return () => {
-      window.removeEventListener("mousemove", onMouseMove)
-      window.removeEventListener("mouseup", onMouseUp)
+      window.removeEventListener("pointermove", onPointerMove)
+      window.removeEventListener("pointerup", onPointerUp)
       document.body.style.userSelect = ""
       document.body.style.cursor = ""
     }
@@ -264,16 +264,10 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 <div
                   className="hidden lg:block absolute top-0 bottom-0 right-0"
                   style={{ width: RESIZER_PX, cursor: 'col-resize', zIndex: 30 }}
-                  onMouseDown={(event) => {
+                  onPointerDown={(event: React.PointerEvent) => {
                     event.preventDefault()
                     event.stopPropagation()
                     leftResizeStartXRef.current = event.clientX
-                    leftMovedRef.current = false
-                    setIsResizingLeft(true)
-                  }}
-                  onTouchStart={(event) => {
-                    event.preventDefault()
-                    leftResizeStartXRef.current = event.touches?.[0]?.clientX ?? null
                     leftMovedRef.current = false
                     setIsResizingLeft(true)
                   }}
@@ -284,16 +278,10 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             <div
               className="hidden lg:block h-full shrink-0 cursor-col-resize hover:bg-border/60 active:bg-border/80"
               style={{ width: RESIZER_PX }}
-              onMouseDown={(event) => {
+              onPointerDown={(event: React.PointerEvent) => {
                 event.preventDefault()
                 event.stopPropagation()
                 leftResizeStartXRef.current = event.clientX
-                leftMovedRef.current = false
-                setIsResizingLeft(true)
-              }}
-              onTouchStart={(event: React.TouchEvent) => {
-                event.preventDefault()
-                leftResizeStartXRef.current = event.touches[0]?.clientX ?? null
                 leftMovedRef.current = false
                 setIsResizingLeft(true)
               }}
@@ -322,16 +310,10 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             <div
               className="hidden lg:block h-full shrink-0 cursor-col-resize hover:bg-border/60 active:bg-border/80"
               style={{ width: RESIZER_PX }}
-              onMouseDown={(event) => {
+              onPointerDown={(event: React.PointerEvent) => {
                 event.preventDefault()
                 event.stopPropagation()
                 rightResizeStartXRef.current = event.clientX
-                rightMovedRef.current = false
-                setIsResizingRight(true)
-              }}
-              onTouchStart={(event: React.TouchEvent) => {
-                event.preventDefault()
-                rightResizeStartXRef.current = event.touches[0]?.clientX ?? null
                 rightMovedRef.current = false
                 setIsResizingRight(true)
               }}
