@@ -85,11 +85,9 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const [isResizingLeft, setIsResizingLeft] = useState(false)
   const [isResizingRight, setIsResizingRight] = useState(false)
 
-  // Refs to detect small clicks vs drags when interacting with the resizer.
+  // Refs to track pointer start positions for resizing.
   const leftResizeStartXRef = useRef<number | null>(null)
   const rightResizeStartXRef = useRef<number | null>(null)
-  const leftMovedRef = useRef(false)
-  const rightMovedRef = useRef(false)
 
   const toggleLeft = useCallback(() => {
     if (leftCollapsed) {
@@ -114,80 +112,57 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   }, [rightCollapsed, rightPrevWidthPx, rightWidthPx])
 
   const stopResizing = useCallback(() => {
-    // If the user didn't move the pointer (a click) while a panel was marked as resizing,
-    // and that panel was collapsed, treat this as a toggle (expand) rather than a drag outcome.
-    if (isResizingLeft) {
-      if (!leftMovedRef.current && leftCollapsed) {
-        toggleLeft()
-      }
-    }
-    if (isResizingRight) {
-      if (!rightMovedRef.current && rightCollapsed) {
-        toggleRight()
-      }
-    }
-
+    // End any active resize operation. No click-vs-drag heuristics here to match reference behavior.
     setIsResizingLeft(false)
     setIsResizingRight(false)
     leftResizeStartXRef.current = null
     rightResizeStartXRef.current = null
-    leftMovedRef.current = false
-    rightMovedRef.current = false
-  }, [isResizingLeft, isResizingRight, leftCollapsed, rightCollapsed, toggleLeft, toggleRight])
+  }, [])
 
-  const handleResize = useCallback((event: MouseEvent) => {
+  const handleResize = useCallback((event: PointerEvent) => {
     const container = containerRef.current?.getBoundingClientRect()
     if (!container) return
 
+    // Compute the current side widths (collapsed or actual)
     const rightCurrent = rightCollapsed ? COLLAPSED_PX : rightWidthPx
     const leftCurrent = leftCollapsed ? COLLAPSED_PX : leftWidthPx
 
     if (isResizingLeft) {
-      // detect movement to differentiate drag vs click
-      if (leftResizeStartXRef.current !== null) {
-        if (Math.abs(event.clientX - leftResizeStartXRef.current) > 4) leftMovedRef.current = true
+      const nextWidth = event.clientX - container.left
+
+      // If the user drags below a small threshold, collapse
+      if (nextWidth < 60) {
+        if (!leftCollapsed) setLeftPrevWidthPx(leftWidthPx)
+        setLeftCollapsed(true)
+        setLeftWidthPx(COLLAPSED_PX)
+        return
       }
 
+      // Otherwise, expand and set width respecting the max allowed
       const maxLeft = Math.max(
         SIDE_MIN_PX,
         container.width - rightCurrent - MAIN_MIN_PX - RESIZER_PX * 2
       )
-      const nextWidth = event.clientX - container.left
-
-      if (nextWidth < SIDE_MIN_PX) {
-        if (!leftCollapsed) setLeftPrevWidthPx(leftWidthPx)
-        setLeftCollapsed(true)
-        setLeftWidthPx(COLLAPSED_PX)
-        setIsResizingLeft(false)
-        return
-      }
-
       setLeftCollapsed(false)
-      setLeftWidthPx(Math.min(nextWidth, maxLeft))
+      setLeftWidthPx(Math.min(Math.max(nextWidth, SIDE_MIN_PX), maxLeft))
     }
 
     if (isResizingRight) {
-      // detect movement to differentiate drag vs click
-      if (rightResizeStartXRef.current !== null) {
-        if (Math.abs(event.clientX - rightResizeStartXRef.current) > 4) rightMovedRef.current = true
+      const nextWidth = container.right - event.clientX
+
+      if (nextWidth < 60) {
+        if (!rightCollapsed) setRightPrevWidthPx(rightWidthPx)
+        setRightCollapsed(true)
+        setRightWidthPx(COLLAPSED_PX)
+        return
       }
 
       const maxRight = Math.max(
         SIDE_MIN_PX,
         container.width - leftCurrent - MAIN_MIN_PX - RESIZER_PX * 2
       )
-      const nextWidth = container.right - event.clientX
-
-      if (nextWidth < SIDE_MIN_PX) {
-        if (!rightCollapsed) setRightPrevWidthPx(rightWidthPx)
-        setRightCollapsed(true)
-        setRightWidthPx(COLLAPSED_PX)
-        setIsResizingRight(false)
-        return
-      }
-
       setRightCollapsed(false)
-      setRightWidthPx(Math.min(nextWidth, maxRight))
+      setRightWidthPx(Math.min(Math.max(nextWidth, SIDE_MIN_PX), maxRight))
     }
   }, [
     isResizingLeft,
