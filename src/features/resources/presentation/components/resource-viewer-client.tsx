@@ -88,7 +88,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const toggleLeft = useCallback(() => {
     if (leftCollapsed) {
       setLeftCollapsed(false)
-      setLeftWidthPx(Math.max(SIDE_MIN_PX, leftPrevWidthPx))
+      setLeftWidthPx(SIDE_DEFAULT_LEFT_PX)
       return
     }
     setLeftPrevWidthPx(leftWidthPx)
@@ -99,7 +99,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const toggleRight = useCallback(() => {
     if (rightCollapsed) {
       setRightCollapsed(false)
-      setRightWidthPx(Math.max(SIDE_MIN_PX, rightPrevWidthPx))
+      setRightWidthPx(SIDE_DEFAULT_RIGHT_PX)
       return
     }
     setRightPrevWidthPx(rightWidthPx)
