@@ -224,14 +224,14 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
         <div className="w-full min-h-0">
           <div className="w-full min-h-0 h-full relative flex" ref={containerRef}>
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen"
               style={{ width: leftCollapsed ? COLLAPSED_PX : leftWidthPx }}
             >
               <LearningStyleNotesSidebar
                 resourceId={activeResourceId}
                 collapsed={leftCollapsed}
                 onToggleCollapse={toggleLeft}
-                disableInternalScroll={true}
+                disableInternalScroll={false}
               />
 
               {/* Inner hit area on collapsed state so user can drag the edge to open without using the toggle button */}
@@ -260,7 +260,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
               }}
             />
 
-            <div className="relative min-w-0 min-h-0 h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
+            <div className="relative min-w-0 min-h-0 h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden lg:max-h-screen">
               <div className="h-full min-h-0 overflow-auto">
                 <LearningStyleCourseMain
                   course={courseModel}
@@ -292,7 +292,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
             />
 
             <div
-              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative"
+              className="hidden lg:flex lg:flex-col h-full min-h-0 shrink-0 transition-[width] duration-150 relative lg:max-h-screen"
               style={{ width: rightCollapsed ? COLLAPSED_PX : rightWidthPx }}
             >
               <LearningStyleRightPanel
@@ -301,7 +301,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 onSelectLesson={setActiveResourceId}
                 collapsed={rightCollapsed}
                 onToggleCollapse={toggleRight}
-                disableInternalScroll={true}
+                disableInternalScroll={false}
               />
 
               {/* Inner hit area on collapsed state to allow dragging from the collapsed panel edge */}
