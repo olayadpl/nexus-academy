@@ -92,7 +92,7 @@ export default function LearningStyleRightPanel({
                 setView("modules")
               }}
               className={cn(
-                "group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                "group inline-flex items-center gap-2 rounded-full px-2.5 py-2 text-xs font-medium transition-all",
                 view === "modules"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -110,7 +110,7 @@ export default function LearningStyleRightPanel({
                 setView("assistant")
               }}
               className={cn(
-                "group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                "group inline-flex items-center gap-2 rounded-full px-2.5 py-2 text-xs font-medium transition-all",
                 view === "assistant"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
