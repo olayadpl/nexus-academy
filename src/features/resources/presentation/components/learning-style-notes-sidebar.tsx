@@ -131,21 +131,8 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               }}
               className="relative rounded-xl border p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
             >
-              {/* preview structure with colored stripe so the new note shows the stripe */}
-              <div className="relative rounded-xl border bg-card p-3 space-y-2 min-w-0">
-                <span
-                  className={cn(
-                    "absolute left-0 top-0 bottom-0 rounded-l-xl z-10 transition-colors",
-                    newTone === "blue"
-                      ? "bg-blue-600 dark:bg-blue-400"
-                      : newTone === "yellow"
-                      ? "bg-amber-500 dark:bg-amber-300"
-                      : newTone === "green"
-                      ? "bg-green-600 dark:bg-green-400"
-                      : "bg-pink-600 dark:bg-pink-400"
-                  )}
-                  style={{ width: '4px' }}
-                />
+              {/* preview structure without color stripe (stripe appears only after creation) */}
+              <div className="rounded-xl border bg-card p-3 space-y-2 min-w-0">
 
                 <div className="pl-6">
                   <input
