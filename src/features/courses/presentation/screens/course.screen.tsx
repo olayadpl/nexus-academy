@@ -4,7 +4,7 @@ import { listResourcesByCourseAction } from "@/src/features/resources/presentati
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import type { ResourceEntity } from "@/src/features/resources/domain/entities/resource.entity"
 import Link from "next/link"
-import { BookOpen, Clock, BarChart3, Users, Star, PlayCircle, FileText, File, Award, Globe, CheckCircle2, Sparkles } from "lucide-react"
+import { BookOpen, Clock, BarChart3, Users, Star, FileText, File, Award, Globe, CheckCircle2, Sparkles } from "lucide-react"
 import { getTranslations } from "@/src/lib/i18n/translations"
 
 const stripNumberPrefix = (s?: string) => (s ?? "").replace(/^\s*\d{1,2}:\s*/, "")
@@ -62,13 +62,8 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background">
-        {/* Decorative elements */}
-        <div className="pointer-events-none absolute -left-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/2 top-0 h-32 w-32 -translate-x-1/2 rounded-full bg-primary/10 blur-2xl" />
-        
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-3 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
@@ -169,38 +164,31 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
             {/* Sidebar Card */}
             <div className="lg:col-span-1">
               <div className="sticky top-24">
-                <div className="overflow-hidden rounded-3xl border border-border/50 bg-card shadow-xl shadow-black/5">
-                  {/* Hero Image */}
-                  <div className="relative aspect-video overflow-hidden">
-                    {(() => {
-                      const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
-                      const heroImg = m ? `/images/course${m[1]}.png` : course.thumbnailUrl ?? `/images/course1.png`
-                      return (
-                        <>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={heroImg} alt={course.title} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                          
-                          {/* Play Button Overlay */}
-                          <button className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-all hover:bg-white hover:scale-110">
-                            <PlayCircle className="h-8 w-8" />
-                          </button>
-                        </>
-                      )
-                    })()}
-                  </div>
+                <div className="relative aspect-video overflow-hidden rounded-3xl border border-border/50 shadow-xl shadow-black/5">
+                  {/* Hero Image as Background */}
+                  {(() => {
+                    const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
+                    const heroImg = m ? `/images/course${m[1]}.png` : course.thumbnailUrl ?? `/images/course1.png`
+                    return (
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                        style={{ backgroundImage: `url(${heroImg})` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      </div>
+                    )
+                  })()}
 
-                  {/* Card Body */}
-                  <div className="p-5 space-y-4">
-                    {/* CTA Buttons */}
-                    <div className="space-y-2">
+                  {/* Buttons Overlay */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-end p-5">
+                    <div className="w-full space-y-2">
                       <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
                         <button className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition-all hover:bg-primary/90">
                           Comenzar curso
                         </button>
                       </Link>
 
-                      <button className="w-full rounded-xl border-2 border-border px-5 py-3 text-base font-medium transition-all hover:bg-muted/50">
+                      <button className="w-full rounded-xl border-2 border-white/50 bg-black/30 px-5 py-3 text-base font-medium text-white backdrop-blur-sm transition-all hover:bg-black/50">
                         Vista previa
                       </button>
                     </div>
