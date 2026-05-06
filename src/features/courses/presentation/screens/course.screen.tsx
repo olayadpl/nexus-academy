@@ -164,7 +164,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
             {/* Sidebar Card */}
             <div className="lg:col-span-1">
               <div className="sticky top-24">
-                <div className="relative aspect-video overflow-hidden rounded-3xl border border-border/50 shadow-xl shadow-black/5">
+                <div className="relative h-80 sm:h-96 overflow-hidden rounded-3xl border border-border/50 shadow-xl shadow-black/5">
                   {/* Hero Image as Background */}
                   {(() => {
                     const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
