@@ -26,7 +26,6 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
         title: course.title,
         description: course.description,
         authorName: course.authorName,
-        bibliographicBase: course.bibliographicBase,
       }}
       resources={resources}
       initialResourceId={query?.resource ?? resources[0]?.id}

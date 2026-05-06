@@ -15,7 +15,6 @@ export function CourseResourceScreen({ course }: CourseResourceScreenProps) {
 
       <section className="mb-6 rounded-lg border border-border bg-card p-4">
         <p className="text-sm text-muted-foreground">Autor: {course.authorName ?? "No definido"}</p>
-        <p className="text-sm text-muted-foreground">Base bibliografica: {course.bibliographicBase}</p>
         <p className="text-sm text-muted-foreground">
           Nivel: {course.level} · Duracion: {course.durationHours}h · Rating: {course.rating}
         </p>

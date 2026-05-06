@@ -10,8 +10,6 @@ export interface UpdateCourseInput {
   id: string
   title?: string
   description?: string
-  bibliographicBase?: string
-  isCraiModel?: boolean
   level?: CourseEntity["level"]
   durationHours?: number
   rating?: number

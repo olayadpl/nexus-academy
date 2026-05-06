@@ -26,7 +26,6 @@ export class ManageCourseUseCase {
     assertNonEmpty(input.id, "id")
     assertNonEmpty(input.title, "title")
     assertNonEmpty(input.description, "description")
-    assertNonEmpty(input.bibliographicBase, "bibliographicBase")
     assertRange(input.rating, 0, 5, "rating")
 
     return this.repository.create(input)

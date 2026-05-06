@@ -14,8 +14,6 @@ export interface CourseEntity {
   id: string
   title: string
   description: string
-  bibliographicBase: string
-  isCraiModel: boolean
   level: CourseLevel
   durationHours: number
   rating: number

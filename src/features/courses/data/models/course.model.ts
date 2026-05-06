@@ -2,8 +2,6 @@ export interface CourseModel {
   id: string
   title: string
   description: string
-  bibliographicBase: string
-  isCraiModel: boolean
   level: "beginner" | "intermediate" | "advanced"
   durationHours: number
   rating: number

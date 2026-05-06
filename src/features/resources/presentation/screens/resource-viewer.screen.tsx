@@ -7,7 +7,6 @@ type ResourceViewerScreenProps = {
     title: string
     description: string
     authorName?: string
-    bibliographicBase: string
   }
   resources: ResourceEntity[]
   initialResourceId?: string

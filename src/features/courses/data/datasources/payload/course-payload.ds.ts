@@ -9,8 +9,6 @@ type CourseDoc = {
   externalId?: string | null
   title: string
   description: string
-  bibliographicBase: string
-  isCraiModel: boolean
   level: "beginner" | "intermediate" | "advanced"
   durationHours: number
   rating: number
@@ -48,16 +46,12 @@ function toModel(doc: CourseDoc): CourseModel {
     id: externalId,
     title: doc.title,
     description: doc.description,
-    bibliographicBase: doc.bibliographicBase,
-    isCraiModel: Boolean(doc.isCraiModel),
     level: doc.level,
     durationHours: Number(doc.durationHours) || 0,
     rating: Number(doc.rating) || 0,
     reviewCount: Number(doc.reviewCount) || 0,
     featured: Boolean(doc.featured),
     progress: Number(doc.progress) || 0,
-    thumbnailUrl: doc.thumbnailUrl,
-    // prefer related thumbnail url when available
     thumbnailUrl: thumbnailUrlFinal,
     authorName: doc.authorName ?? undefined,
     authorAvatarUrl: doc.authorAvatarUrl ?? undefined,
@@ -70,8 +64,6 @@ function toPayloadData(model: CourseModel) {
     externalId: model.id,
     title: model.title,
     description: model.description,
-    bibliographicBase: model.bibliographicBase,
-    isCraiModel: model.isCraiModel,
     level: model.level,
     durationHours: model.durationHours,
     rating: model.rating,
@@ -114,7 +106,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
     const found = await payload.find({
       collection: "courses",
       limit: 1,
-      depth: 0,
+      depth: 1,
       where: {
         externalId: {
           equals: id,
@@ -129,13 +121,20 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
       throw new Error(`Course ${id} not found`)
     }
 
+    const existing = toModel(target as CourseDoc)
+    const merged: CourseModel = {
+      ...existing,
+      ...model,
+      id: model.id ?? id,
+      modules: model.modules ?? existing.modules,
+    }
+
+    const payloadData = toPayloadData(merged)
+
     const updated = await payload.update({
       collection: "courses",
       id: target.id,
-      data: {
-        ...model,
-        externalId: model.id ?? id,
-      },
+      data: payloadData,
       depth: 1,
       overrideAccess: true,
     })

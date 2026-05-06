@@ -14,7 +14,6 @@ type ResourceViewerClientProps = {
     title: string
     description: string
     authorName?: string
-    bibliographicBase: string
   }
   resources: ResourceEntity[]
   initialResourceId?: string
@@ -32,7 +31,6 @@ type ResourceLesson = {
 type ResourceCourseModel = {
   id: string
   title: string
-  bibliographicBase: string
   modules: ResourceLesson[]
 }
 
@@ -59,10 +57,9 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     return {
       id: course.id,
       title: course.title,
-      bibliographicBase: course.bibliographicBase,
       modules: resourceItems.map(mapResourceToLesson),
     }
-  }, [course.bibliographicBase, course.id, course.title, resourceItems])
+  }, [course.id, course.title, resourceItems])
 
   const activeLesson = courseModel.modules.find((lesson) => lesson.id === activeResourceId) ?? null
 

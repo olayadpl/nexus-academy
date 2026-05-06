@@ -2,6 +2,12 @@ import type { CollectionConfig } from "payload"
 
 export const CoursesCollection: CollectionConfig = {
   slug: "courses",
+  access: {
+    read: () => true,
+    create: () => true,
+    update: () => true,
+    delete: () => true,
+  },
   fields: [
     {
       name: "externalId",
@@ -18,17 +24,6 @@ export const CoursesCollection: CollectionConfig = {
       name: "description",
       type: "textarea",
       required: true,
-    },
-    {
-      name: "bibliographicBase",
-      type: "textarea",
-      required: true,
-    },
-    {
-      name: "isCraiModel",
-      type: "checkbox",
-      required: true,
-      defaultValue: false,
     },
     {
       name: "level",

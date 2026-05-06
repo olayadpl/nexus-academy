@@ -18,7 +18,6 @@ type ResourceLesson = {
 type ResourceCourseModel = {
   id: string
   title: string
-  bibliographicBase: string
   modules: ResourceLesson[]
 }
 
