@@ -151,9 +151,9 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 setIsExpanding(false)
                 setShowColorPicker(false)
               }}
-              className="relative rounded-xl border p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
+              className="relative rounded-xl p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
             >
-              <div className="w-full max-w-lg mx-auto transition-all duration-300 ease-in-out transform rounded-2xl shadow-xl border overflow-hidden bg-card">
+              <div className="w-full max-w-lg mx-auto transition-all duration-300 ease-in-out transform rounded-2xl shadow-xl overflow-hidden bg-card">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-border">
                   <div className="flex items-center space-x-2">
@@ -180,6 +180,8 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                     onChange={(e) => setNewTitle(e.target.value)}
                     className="w-full text-center text-xl font-semibold bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-foreground"
                   />
+
+                  <div className="w-full h-px bg-border my-2" />
 
                   <textarea
                     placeholder="Escribe algo increíble..."
