@@ -4,7 +4,7 @@ import { listResourcesByCourseAction } from "@/src/features/resources/presentati
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import type { ResourceEntity } from "@/src/features/resources/domain/entities/resource.entity"
 import Link from "next/link"
-import { BookOpen, Clock, BarChart3, Users, Star, FileText, File, Award, Globe, CheckCircle2, Sparkles } from "lucide-react"
+import { BookOpen, Clock, BarChart3, Users, Star, PlayCircle, FileText, File, Award, Globe, CheckCircle2, Sparkles } from "lucide-react"
 import { getTranslations } from "@/src/lib/i18n/translations"
 
 const stripNumberPrefix = (s?: string) => (s ?? "").replace(/^\s*\d{1,2}:\s*/, "")
