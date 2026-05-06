@@ -175,15 +175,15 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                         <img 
                           src={heroImg} 
                           alt={course.title} 
-                          className="absolute inset-0 h-full w-full object-contain p-4" 
+                          className="absolute inset-0 mx-auto mt-4 h-3/4 w-auto object-contain rounded-2xl" 
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
                       </>
                     )
                   })()}
 
                   {/* Buttons Overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-end p-4">
+                  <div className="absolute inset-x-0 bottom-0 p-4">
                     <div className="w-full space-y-2">
                       <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
                         <button className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition-all hover:bg-primary/90">
