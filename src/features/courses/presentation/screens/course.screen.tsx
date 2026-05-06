@@ -198,21 +198,16 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-6 space-y-6">
-                    {/* Price */}
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold">GRATIS</span>
-                    </div>
-
+                  <div className="p-5 space-y-4">
                     {/* CTA Buttons */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
-                        <button className="w-full rounded-2xl bg-primary px-6 py-4 text-lg font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25">
+                        <button className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition-all hover:bg-primary/90">
                           Comenzar curso
                         </button>
                       </Link>
 
-                      <button className="w-full rounded-2xl border-2 border-border px-6 py-4 text-lg font-medium transition-all hover:bg-muted/50">
+                      <button className="w-full rounded-xl border-2 border-border px-5 py-3 text-base font-medium transition-all hover:bg-muted/50">
                         Vista previa
                       </button>
                     </div>
