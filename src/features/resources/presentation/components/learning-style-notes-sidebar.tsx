@@ -151,7 +151,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 setIsExpanding(false)
                 setShowColorPicker(false)
               }}
-              className="relative rounded-lg p-4 bg-card/80"
+              className="relative rounded-lg p-4 bg-card/80 focus-within:ring-0 focus-within:border-transparent focus-within:outline-none"
             >
               <div className="flex items-start gap-4">
                 <div className="flex-1">
@@ -160,7 +160,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                     placeholder="Título de la nota..."
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    className="w-full text-left text-lg font-semibold bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-foreground"
+                    className="w-full text-left text-lg font-semibold bg-transparent border-none focus:ring-0 focus:placeholder-transparent focus:outline-none placeholder:text-muted-foreground text-foreground"
                   />
 
                   <div className="w-full h-px bg-border my-2" />
@@ -170,7 +170,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                     value={newDesc}
                     onChange={(e) => setNewDesc(e.target.value)}
                     onFocus={() => setIsExpanding(true)}
-                    className={`w-full bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-muted-foreground resize-none transition-all duration-300 ${isExpanding ? 'h-40' : 'h-28'}`}
+                    className={`w-full bg-transparent border-none focus:ring-0 focus:placeholder-transparent focus:outline-none placeholder:text-muted-foreground text-muted-foreground resize-none transition-all duration-300 ${isExpanding ? 'h-40' : 'h-28'}`}
                   />
                 </div>
 
