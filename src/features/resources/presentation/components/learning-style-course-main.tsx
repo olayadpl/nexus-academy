@@ -228,61 +228,7 @@ export default function LearningStyleCourseMain({
               )}
             </div>
 
-            <div className="mb-5 flex items-center justify-between rounded-b-xl border border-border border-t-0 bg-card px-3 py-2.5">
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onSaveNote}
-                  className="h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <BookmarkCheck className="h-3.5 w-3.5" />
-                  Save Note
-                </Button>
-                <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground">
-                  <Download className="h-3.5 w-3.5" />
-                  Download
-                </Button>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setLiked(!liked)
-                    if (!liked) setDisliked(false)
-                  }}
-                  className={cn("h-8 w-8 rounded-full", liked ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted")}
-                >
-                  <ThumbsUp className={cn("h-4 w-4", liked && "fill-primary")} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setDisliked(!disliked)
-                    if (!disliked) setLiked(false)
-                  }}
-                  className={cn(
-                    "h-8 w-8 rounded-full",
-                    disliked ? "bg-destructive/10 text-destructive" : "text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  <ThumbsDown className={cn("h-4 w-4", disliked && "fill-destructive")} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setBookmarked(!bookmarked)}
-                  className={cn(
-                    "h-8 w-8 rounded-full",
-                    bookmarked ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  <Bookmark className={cn("h-4 w-4", bookmarked && "fill-primary")} />
-                </Button>
-              </div>
-            </div>
+
           </>
         )}
 
