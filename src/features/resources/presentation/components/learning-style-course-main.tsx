@@ -331,7 +331,7 @@ export default function LearningStyleCourseMain({
             <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
               {activeLesson?.type === "video"
                 ? "Transcripcion automatica del video. Aqui apareceran los segmentos con tiempo y texto."
-                : "El recurso actual es un documento. Puedes hacer preguntas en el panel de Asistente IA."}
+                : "El recurso actual es un documento. Puedes hacer preguntas en el panel del Chatbot."}
             </div>
           </TabsContent>
         </Tabs>

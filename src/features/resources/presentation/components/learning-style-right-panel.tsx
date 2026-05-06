@@ -115,10 +115,10 @@ export default function LearningStyleRightPanel({
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
               )}
-              aria-label="Asistente IA"
+              aria-label="Chatbot"
             >
               <Bot className="h-4 w-4" />
-              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "assistant" ? "max-w-[6.5rem] pl-2" : "max-w-0 group-hover:max-w-[6.5rem] group-hover:pl-2")}>Asistente IA</span>
+              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "assistant" ? "max-w-[6.5rem] pl-2" : "max-w-0 group-hover:max-w-[6.5rem] group-hover:pl-2")}>Chatbot</span>
             </button>
           </div>
 
@@ -167,8 +167,8 @@ export default function LearningStyleRightPanel({
                 "flex h-10 w-10 items-center justify-center rounded-lg border transition-colors",
                 view === "assistant" ? "border-primary/50 bg-primary/10 text-primary" : "border-border bg-background hover:bg-muted"
               )}
-              aria-label="Abrir Asistente IA"
-              title="Asistente IA"
+              aria-label="Abrir Chatbot"
+              title="Chatbot"
             >
               <Bot className="h-4 w-4" />
             </button>
@@ -208,7 +208,7 @@ export default function LearningStyleRightPanel({
           <div className="border-b px-4 py-3">
             <div className="flex items-center gap-2">
               <Bot className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-semibold">Asistente IA</h2>
+              <h2 className="text-sm font-semibold">Chatbot</h2>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Pregunta sobre el documento</p>
           </div>
