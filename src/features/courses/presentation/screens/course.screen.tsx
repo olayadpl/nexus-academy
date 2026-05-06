@@ -164,7 +164,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
             {/* Sidebar Card */}
             <div className="lg:col-span-1">
               <div className="sticky top-24">
-                <div className="relative h-80 sm:h-96 overflow-hidden rounded-3xl border border-border/50 shadow-xl shadow-black/5">
+                <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/50 shadow-xl shadow-black/5">
                   {/* Hero Image - contained to show full image */}
                   {(() => {
                     const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
@@ -175,7 +175,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                         <img 
                           src={heroImg} 
                           alt={course.title} 
-                          className="absolute inset-0 h-full w-full object-contain" 
+                          className="absolute inset-0 h-full w-full object-contain p-4" 
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                       </>
@@ -183,7 +183,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                   })()}
 
                   {/* Buttons Overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-end p-5">
+                  <div className="absolute inset-0 flex flex-col items-center justify-end p-4">
                     <div className="w-full space-y-2">
                       <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
                         <button className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition-all hover:bg-primary/90">
