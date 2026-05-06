@@ -267,7 +267,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{note.description}</p>
+                  <p className="mt-1 text-xs text-muted-foreground" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{note.description}</p>
                   <p className="mt-2 text-[11px] text-muted-foreground">{note.createdAt}</p>
                 </div>
               </article>
