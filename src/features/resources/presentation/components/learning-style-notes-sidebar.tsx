@@ -282,6 +282,8 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               </div>
             </form>
 
+            )}
+
             {notes.map((note) => (
               <article
                 key={note.id}
