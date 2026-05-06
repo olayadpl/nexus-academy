@@ -159,13 +159,32 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 />
 
                 <div className="w-full max-w-xs flex items-center justify-between">
-                  <label className="text-xs text-muted-foreground">Color:</label>
-                  <select value={newTone} onChange={(e) => setNewTone(e.target.value as NoteCard['tone'])} className="rounded-md border px-2 py-1 text-sm">
-                    <option value="blue">Azul</option>
-                    <option value="yellow">Amarillo</option>
-                    <option value="green">Verde</option>
-                    <option value="pink">Rosa</option>
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <button type="button" aria-label="Azul" title="Azul"
+                      onClick={() => setNewTone("blue")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "blue" ? "ring-2 ring-offset-1 ring-blue-400" : "")}
+                      style={{ background: "#bfdbfe" }}
+                    />
+                    <button type="button" aria-label="Amarillo" title="Amarillo"
+                      onClick={() => setNewTone("yellow")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "yellow" ? "ring-2 ring-offset-1 ring-amber-300" : "")}
+                      style={{ background: "#fef3c7" }}
+                    />
+                    <button type="button" aria-label="Verde" title="Verde"
+                      onClick={() => setNewTone("green")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "green" ? "ring-2 ring-offset-1 ring-green-300" : "")}
+                      style={{ background: "#bbf7d0" }}
+                    />
+                    <button type="button" aria-label="Rosa" title="Rosa"
+                      onClick={() => setNewTone("pink")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "pink" ? "ring-2 ring-offset-1 ring-pink-300" : "")}
+                      style={{ background: "#fbcfe8" }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" type="button" onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }} className="flex-shrink-0">Cancelar</Button>
+                    <Button size="sm" type="submit" className="flex-shrink-0">Crear</Button>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
