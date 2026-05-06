@@ -92,7 +92,7 @@ export default function LearningStyleRightPanel({
                 setView("modules")
               }}
               className={cn(
-                "group inline-flex items-center gap-2 rounded-full px-2.5 py-2 text-xs font-medium transition-all",
+                "group inline-flex items-center gap-1 rounded-full px-2.5 py-2 text-xs font-medium transition-all",
                 view === "modules"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -100,7 +100,7 @@ export default function LearningStyleRightPanel({
               aria-label="Modulos"
             >
               <Video className="h-4 w-4" />
-              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "modules" ? "max-w-[6rem] pl-2" : "max-w-0 group-hover:max-w-[6rem] group-hover:pl-2")}>Modulos</span>
+              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "modules" ? "max-w-[5rem] pl-1" : "max-w-0 group-hover:max-w-[5rem] group-hover:pl-1")}>Modulos</span>
             </button>
 
             <button
@@ -110,7 +110,7 @@ export default function LearningStyleRightPanel({
                 setView("assistant")
               }}
               className={cn(
-                "group inline-flex items-center gap-2 rounded-full px-2.5 py-2 text-xs font-medium transition-all",
+                "group inline-flex items-center gap-1 rounded-full px-2.5 py-2 text-xs font-medium transition-all",
                 view === "assistant"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -118,7 +118,7 @@ export default function LearningStyleRightPanel({
               aria-label="Chatbot"
             >
               <Bot className="h-4 w-4" />
-              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "assistant" ? "max-w-[6.5rem] pl-2" : "max-w-0 group-hover:max-w-[6.5rem] group-hover:pl-2")}>Chatbot</span>
+              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "assistant" ? "max-w-[5rem] pl-1" : "max-w-0 group-hover:max-w-[5rem] group-hover:pl-1")}>Chatbot</span>
             </button>
           </div>
 
