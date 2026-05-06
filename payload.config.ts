@@ -40,6 +40,10 @@ export default buildConfig({
   serverURL: getServerURL(),
   // Avoid stale cookie collisions in Codespaces previews.
   cookiePrefix: process.env.CODESPACE_NAME ? "payloadcs" : "payload",
+  auth: {
+    // Ensure `/api/<auth-collection>/me` accepts auth cookies first.
+    jwtOrder: ["cookie", "JWT", "Bearer"],
+  },
   csrf: getCSRFAllowList(),
   collections: featureCollections,
   db: sqliteAdapter({
