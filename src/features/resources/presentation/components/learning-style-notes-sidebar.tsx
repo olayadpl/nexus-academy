@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Plus, NotebookPen, MoreHorizontal, PanelLeft, X } from "lucide-react"
+import { Plus, NotebookPen, MoreHorizontal, PanelLeft, X, Image as ImageIcon, Bell, Tag, Save, Trash2 } from "lucide-react"
 import { Button } from "@/src/core/ui/components/button"
 import { cn } from "@/src/core/ui/lib/utils"
 
@@ -41,6 +41,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
   const [newTitle, setNewTitle] = useState("")
   const [newDesc, setNewDesc] = useState("")
   const [newTone, setNewTone] = useState<NoteCard["tone"]>("blue")
+  const [isExpanding, setIsExpanding] = useState(false)
 
   const total = useMemo(() => notes.length, [notes.length])
   const scrollClass = disableInternalScroll ? "overflow-hidden" : "overflow-y-auto"
@@ -128,67 +129,153 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 setNewTitle("")
                 setNewDesc("")
                 setNewTone("blue")
+                setIsExpanding(false)
               }}
               className="relative rounded-xl border p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
             >
-              {/* centered create card; no color stripe until created */}
-              <div className="rounded-xl border bg-card p-6 space-y-4 min-w-0 flex flex-col items-center text-center relative">
-                <button
-                  type="button"
-                  aria-label="Cerrar"
-                  onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }}
-                  className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-
-
-
-                <input
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="Título de la nota"
-                  className="w-full max-w-xs rounded-md border px-2 py-1 text-sm outline-none"
-                />
-
-                <textarea
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Contenido de la nota"
-                  className="w-full max-w-xs rounded-md border px-2 py-1 text-sm outline-none resize-none h-28"
-                />
-
-                <div className="w-full max-w-xs flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <button type="button" aria-label="Azul" title="Azul"
-                      onClick={() => setNewTone("blue")}
-                      className={cn("h-6 w-6 rounded-full border", newTone === "blue" ? "ring-2 ring-offset-1 ring-blue-400" : "")}
-                      style={{ background: "#bfdbfe" }}
-                    />
-                    <button type="button" aria-label="Amarillo" title="Amarillo"
-                      onClick={() => setNewTone("yellow")}
-                      className={cn("h-6 w-6 rounded-full border", newTone === "yellow" ? "ring-2 ring-offset-1 ring-amber-300" : "")}
-                      style={{ background: "#fef3c7" }}
-                    />
-                    <button type="button" aria-label="Verde" title="Verde"
-                      onClick={() => setNewTone("green")}
-                      className={cn("h-6 w-6 rounded-full border", newTone === "green" ? "ring-2 ring-offset-1 ring-green-300" : "")}
-                      style={{ background: "#bbf7d0" }}
-                    />
-                    <button type="button" aria-label="Rosa" title="Rosa"
-                      onClick={() => setNewTone("pink")}
-                      className={cn("h-6 w-6 rounded-full border", newTone === "pink" ? "ring-2 ring-offset-1 ring-pink-300" : "")}
-                      style={{ background: "#fbcfe8" }}
-                    />
+              {/* centered create card styled like sample */}
+              <div className={`w-full max-w-lg transition-all duration-300 ease-in-out transform rounded-2xl shadow-xl border overflow-hidden bg-card`}>
+                {/* Header */}
+                <div className="px-6 py-4 flex items-center justify-between border-b border-border">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 bg-indigo-600 rounded-lg">
+                      <Plus className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-lg font-bold text-foreground">Nueva Nota</h2>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" type="button" onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }} className="flex-shrink-0">Cancelar</Button>
-                    <Button size="sm" type="submit" className="flex-shrink-0">Crear</Button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue"); setIsExpanding(false) }}
+                    className="p-2 hover:bg-muted/50 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-muted-foreground" />
+                  </button>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Button size="sm" type="submit">Crear</Button>
+                {/* Body */}
+                <div className="p-6 space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Título de la nota..."
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full text-xl font-semibold bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-foreground"
+                  />
+
+                  <textarea
+                    placeholder="Escribe algo increíble..."
+                    value={newDesc}
+                    onChange={(e) => setNewDesc(e.target.value)}
+                    onFocus={() => setIsExpanding(true)}
+                    className={`w-full bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-muted-foreground resize-none transition-all duration-300 ${isExpanding ? 'h-40' : 'h-20'}`}
+                  />
+                </div>
+
+                {/* Tools & Footer */}
+                <div className="px-6 py-4 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border">
+                  <div className="flex items-center space-x-1 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                    <button title="Añadir imagen" className="p-2.5 hover:bg-background hover:shadow-sm rounded-xl transition-all text-muted-foreground">
+                      <ImageIcon className="w-5 h-5" />
+                    </button>
+                    <button title="Recordatorio" className="p-2.5 hover:bg-background hover:shadow-sm rounded-xl transition-all text-muted-foreground">
+                      <Bell className="w-5 h-5" />
+                    </button>
+                    <button
+                      title="Etiquetas"
+                      onClick={() => {}}
+                      className="p-2.5 hover:bg-background hover:shadow-sm rounded-xl transition-all text-muted-foreground"
+                    >
+                      <Tag className="w-5 h-5" />
+                    </button>
+
+                    <div className="h-6 w-[1px] bg-border mx-2 hidden sm:block"></div>
+
+                    {/* Color picker circles */}
+                    <div className="flex items-center space-x-1.5 px-2">
+                      <button
+                        key="white"
+                        onClick={() => setNewTone("blue")}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'blue' ? 'ring-2 ring-indigo-200 border-indigo-500' : 'border-border'}`}
+                        style={{ background: '#ffffff' }}
+                        title="Blanco"
+                      />
+                      <button
+                        key="yellow"
+                        onClick={() => setNewTone("yellow")}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'yellow' ? 'ring-2 ring-amber-200 border-amber-400' : 'border-border'}`}
+                        style={{ background: '#fef3c7' }}
+                        title="Amarillo"
+                      />
+                      <button
+                        key="red"
+                        onClick={() => setNewTone("pink")}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'pink' ? 'ring-2 ring-pink-200 border-pink-400' : 'border-border'}`}
+                        style={{ background: '#fee2e2' }}
+                        title="Rojo"
+                      />
+                      <button
+                        key="blue"
+                        onClick={() => setNewTone("blue")}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'blue' ? 'ring-2 ring-indigo-200 border-indigo-500' : 'border-border'}`}
+                        style={{ background: '#bfdbfe' }}
+                        title="Azul"
+                      />
+                      <button
+                        key="green"
+                        onClick={() => setNewTone("green")}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'green' ? 'ring-2 ring-green-200 border-green-400' : 'border-border'}`}
+                        style={{ background: '#bbf7d0' }}
+                        title="Verde"
+                      />
+                      <button
+                        key="purple"
+                        onClick={() => setNewTone("pink")}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'pink' ? 'ring-2 ring-pink-200 border-pink-400' : 'border-border'}`}
+                        style={{ background: '#ede9fe' }}
+                        title="Morado"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <select
+                      value={"low"}
+                      onChange={() => {}}
+                      className="bg-background border border-border rounded-xl px-3 py-2 text-sm text-muted-foreground focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
+                    >
+                      <option value="low">Baja</option>
+                      <option value="medium">Media</option>
+                      <option value="high">Alta</option>
+                    </select>
+
+                    <button
+                      onClick={() => {
+                        const tone = newTone || "blue"
+                        const title = newTitle.trim() || "Nueva nota"
+                        const desc = newDesc.trim() || `Nota creada para ${resourceId || "este recurso"}.`
+                        setNotes((current) => [
+                          {
+                            id: `new-${Date.now()}`,
+                            title,
+                            description: desc,
+                            createdAt: "Ahora",
+                            tone,
+                          },
+                          ...current,
+                        ])
+                        setShowCreate(false)
+                        setNewTitle("")
+                        setNewDesc("")
+                        setNewTone("blue")
+                        setIsExpanding(false)
+                      }}
+                      disabled={!newTitle && !newDesc}
+                      className={`flex items-center space-x-2 px-6 py-2.5 rounded-xl font-bold transition-all active:scale-95 ${(!newTitle && !newDesc) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>Guardar</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </form>
