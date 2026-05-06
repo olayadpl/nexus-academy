@@ -203,11 +203,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
     setResourceItems((current) =>
       current.map((item) => (item.id === activeResourceId ? { ...item, completed: true } : item))
     )
-    if (activeLesson) {
-      toast.success("Module completed", {
-        description: `${activeLesson.title} marcado como completado.`,
-      })
-    }
+
   }
 
   if (!activeResource) {
@@ -269,15 +265,6 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
                 />
               </div>
 
-              <div className="absolute top-4 right-4 z-20">
-                <button
-                  onClick={handleMarkAsCompleted}
-                  disabled={!activeLesson || activeLesson.completed}
-                  className="h-8 rounded-md border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {activeLesson?.completed ? "Completado" : "Marcar completado"}
-                </button>
-              </div>
             </div>
 
             <div
