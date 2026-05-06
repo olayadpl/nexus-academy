@@ -43,6 +43,22 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
   const [newTone, setNewTone] = useState<NoteCard["tone"]>("blue")
   const [isExpanding, setIsExpanding] = useState(false)
   const [showColorPicker, setShowColorPicker] = useState(false)
+  // Expanded note view toggles
+  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null)
+  // Autoresize textarea when content exceeds default height
+  const descRef = useRef<HTMLTextAreaElement | null>(null)
+  const DEFAULT_DESC_HEIGHT = 112 // px (~h-28)
+  function handleDescChange(e: any) {
+    const val = e.target.value
+    setNewDesc(val)
+    if (!descRef.current) return
+    descRef.current.style.height = 'auto'
+    if (descRef.current.scrollHeight > DEFAULT_DESC_HEIGHT) {
+      descRef.current.style.height = `${descRef.current.scrollHeight}px`
+    } else {
+      descRef.current.style.height = `${DEFAULT_DESC_HEIGHT}px`
+    }
+  }
 
   // color picker outside click handler
   const colorPickerRef = useRef<HTMLDivElement | null>(null)
@@ -166,11 +182,12 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                   <div className="w-full h-px bg-border my-2" />
 
                   <textarea
+                    ref={descRef}
                     placeholder="Escribe algo increíble..."
                     value={newDesc}
-                    onChange={(e) => setNewDesc(e.target.value)}
-                    onFocus={() => setIsExpanding(true)}
-                    className={`w-full bg-transparent border-none focus:ring-0 focus:placeholder-transparent focus:outline-none placeholder:text-muted-foreground text-muted-foreground resize-none transition-all duration-300 ${isExpanding ? 'h-40' : 'h-28'}`}
+                    onChange={handleDescChange}
+                    className={`w-full bg-transparent border-none focus:ring-0 focus:placeholder-transparent focus:outline-none placeholder:text-muted-foreground text-muted-foreground resize-none transition-all duration-300`}
+                    style={{height: `${DEFAULT_DESC_HEIGHT}px`}}
                   />
                 </div>
 
@@ -267,8 +284,32 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{note.description}</p>
-                  <p className="mt-2 text-[11px] text-muted-foreground">{note.createdAt}</p>
+
+                  {expandedNoteId === note.id ? (
+                    <>
+                      <p className="mt-1 text-xs text-muted-foreground whitespace-pre-wrap">{note.description}</p>
+                      <button type="button" onClick={() => setExpandedNoteId(null)} className="mt-2 text-xs text-indigo-600 hover:underline">Ver menos</button>
+                      <p className="mt-2 text-[11px] text-muted-foreground">{note.createdAt}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p
+                        className="mt-1 text-xs text-muted-foreground"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3 as any,
+                          WebkitBoxOrient: 'vertical' as any,
+                          overflow: 'hidden'
+                        }}
+                      >
+                        {note.description}
+                      </p>
+                      {note.description && note.description.length > 180 && (
+                        <button type="button" onClick={() => setExpandedNoteId(note.id)} className="mt-2 text-xs text-indigo-600 hover:underline">Ver más</button>
+                      )}
+                      <p className="mt-2 text-[11px] text-muted-foreground">{note.createdAt}</p>
+                    </>
+                  )}
                 </div>
               </article>
             ))}
