@@ -233,12 +233,12 @@ export default function LearningStyleCourseMain({
         )}
 
         <Tabs defaultValue="description" className="mb-8">
-          <TabsList className="mb-4 h-9 bg-muted/50 border border-border">
-            <TabsTrigger value="description" className="text-xs gap-1">
+          <TabsList className="mt-4 mb-4 h-9 bg-muted/50 border border-border rounded-full px-1">
+            <TabsTrigger value="description" className="text-xs gap-1 rounded-full px-3 py-1">
               <BookmarkCheck className="h-3.5 w-3.5" />
               Description
             </TabsTrigger>
-            <TabsTrigger value="transcript" className="text-xs gap-1">
+            <TabsTrigger value="transcript" className="text-xs gap-1 rounded-full px-3 py-1">
               <NotebookPen className="h-3.5 w-3.5" />
               Transcript
             </TabsTrigger>
