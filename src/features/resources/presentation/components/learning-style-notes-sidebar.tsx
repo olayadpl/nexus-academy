@@ -10,7 +10,7 @@ type NoteCard = {
   title: string
   description: string
   createdAt: string
-  tone: "blue" | "yellow"
+  tone: "blue" | "yellow" | "green" | "pink"
 }
 
 const SEED_NOTES: NoteCard[] = [
@@ -35,6 +35,12 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
   const [internalCollapsed, setInternalCollapsed] = useState(false)
   const collapsed = typeof collapsedProp === "boolean" ? collapsedProp : internalCollapsed
   const onToggle = onToggleCollapse ?? (() => setInternalCollapsed((c) => !c))
+
+  // Create note form state
+  const [showCreate, setShowCreate] = useState(false)
+  const [newTitle, setNewTitle] = useState("")
+  const [newDesc, setNewDesc] = useState("")
+  const [newTone, setNewTone] = useState<NoteCard["tone"]>("blue")
 
   const total = useMemo(() => notes.length, [notes.length])
   const scrollClass = disableInternalScroll ? "overflow-hidden" : "overflow-y-auto"
@@ -62,18 +68,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               size="icon"
               className="h-8 w-8 rounded-full"
               aria-label="Agregar nota"
-              onClick={() =>
-                setNotes((current) => [
-                  {
-                    id: `new-${Date.now()}`,
-                    title: "Nueva nota",
-                    description: `Nota creada para ${resourceId || "este recurso"}.`,
-                    createdAt: "Ahora",
-                    tone: current.length % 2 === 0 ? "blue" : "yellow",
-                  },
-                  ...current,
-                ])
-              }
+              onClick={() => setShowCreate(true)}
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -112,21 +107,101 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
         </div>
       ) : (
         <div className={cn("space-y-3 p-3", scrollClass)}>
+          {showCreate && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                const tone = newTone || "blue"
+                const title = newTitle.trim() || "Nueva nota"
+                const desc = newDesc.trim() || `Nota creada para ${resourceId || "este recurso"}.`
+                setNotes((current) => [
+                  {
+                    id: `new-${Date.now()}`,
+                    title,
+                    description: desc,
+                    createdAt: "Ahora",
+                    tone,
+                  },
+                  ...current,
+                ])
+                setShowCreate(false)
+                setNewTitle("")
+                setNewDesc("")
+                setNewTone("blue")
+              }}
+              className="rounded-xl border bg-card p-3 shadow-sm space-y-2"
+            >
+              <input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Título de la nota"
+                className="w-full rounded-md border px-2 py-1 text-sm outline-none"
+              />
+              <textarea
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+                placeholder="Contenido de la nota"
+                className="w-full rounded-md border px-2 py-1 text-sm outline-none resize-none h-20"
+              />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Color:</span>
+                  <div className="flex items-center gap-2">
+                    <button type="button" aria-label="Azul" title="Azul"
+                      onClick={() => setNewTone("blue")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "blue" ? "ring-2 ring-offset-1 ring-blue-400" : "")}
+                      style={{ background: "#bfdbfe" }}
+                    />
+                    <button type="button" aria-label="Amarillo" title="Amarillo"
+                      onClick={() => setNewTone("yellow")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "yellow" ? "ring-2 ring-offset-1 ring-amber-300" : "")}
+                      style={{ background: "#fef3c7" }}
+                    />
+                    <button type="button" aria-label="Verde" title="Verde"
+                      onClick={() => setNewTone("green")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "green" ? "ring-2 ring-offset-1 ring-green-300" : "")}
+                      style={{ background: "#bbf7d0" }}
+                    />
+                    <button type="button" aria-label="Rosa" title="Rosa"
+                      onClick={() => setNewTone("pink")}
+                      className={cn("h-6 w-6 rounded-full border", newTone === "pink" ? "ring-2 ring-offset-1 ring-pink-300" : "")}
+                      style={{ background: "#fbcfe8" }}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" type="button" onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }}>Cancelar</Button>
+                  <Button size="sm" type="submit">Crear</Button>
+                </div>
+              </div>
+            </form>
+          )}
+
           {notes.map((note) => (
             <article
               key={note.id}
               className={cn(
-                "relative rounded-xl border p-3 shadow-sm overflow-hidden",
+                "relative rounded-xl border p-3 shadow-sm overflow-hidden transition-shadow hover:shadow-md",
                 note.tone === "blue"
                   ? "bg-blue-600/10 border-blue-200 dark:bg-blue-400/12 dark:border-transparent"
-                  : "bg-amber-500/10 border-amber-200 dark:bg-amber-300/12 dark:border-transparent"
+                  : note.tone === "yellow"
+                  ? "bg-amber-500/10 border-amber-200 dark:bg-amber-300/12 dark:border-transparent"
+                  : note.tone === "green"
+                  ? "bg-green-600/10 border-green-200 dark:bg-green-400/12 dark:border-transparent"
+                  : "bg-pink-600/10 border-pink-200 dark:bg-pink-400/12 dark:border-transparent"
               )}
             >
               {/* Indicador de categoría: franja sólida en el extremo izquierdo, no llega hasta las esquinas redondeadas */}
               <span
                 className={cn(
-                  "absolute left-0 top-0 bottom-0 rounded-l-xl z-10",
-                  note.tone === "blue" ? "bg-blue-600 dark:bg-blue-400" : "bg-amber-500 dark:bg-amber-300"
+                  "absolute left-0 top-0 bottom-0 rounded-l-xl z-10 transition-colors",
+                  note.tone === "blue"
+                    ? "bg-blue-600 dark:bg-blue-400"
+                    : note.tone === "yellow"
+                    ? "bg-amber-500 dark:bg-amber-300"
+                    : note.tone === "green"
+                    ? "bg-green-600 dark:bg-green-400"
+                    : "bg-pink-600 dark:bg-pink-400"
                 )}
                 style={{ width: '4px' }}
               />
