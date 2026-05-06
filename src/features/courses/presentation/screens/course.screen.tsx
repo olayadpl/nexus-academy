@@ -310,6 +310,25 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                 ))}
               </div>
             </section>
+
+            {/* Certificate */}
+            <section>
+              <h2 className="mb-6 text-2xl font-bold">Certificado</h2>
+              <div className="rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8">
+                <div className="flex flex-col items-center text-center">
+                  <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                    <Award className="h-10 w-10 text-primary" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold">Certificado de Finalización</h3>
+                  <p className="mb-6 max-w-md text-muted-foreground">
+                    Al completar este curso, recibirás un certificado digital que puedes agregar a tu perfil profesional y compartir en LinkedIn.
+                  </p>
+                  <button className="rounded-xl bg-primary px-6 py-3 font-semibold text-white transition-all hover:bg-primary/90">
+                    Ver Certificado
+                  </button>
+                </div>
+              </div>
+            </section>
           </div>
 
           {/* Sidebar - What's Included */}
