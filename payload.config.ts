@@ -22,9 +22,25 @@ function getServerURL() {
   return "http://localhost:3000"
 }
 
+function getCSRFAllowList() {
+  const urls = new Set<string>([
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    getServerURL(),
+  ])
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim()
+  if (appUrl) urls.add(appUrl)
+
+  return Array.from(urls)
+}
+
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || "dev-secret-change-me",
   serverURL: getServerURL(),
+  // Avoid stale cookie collisions in Codespaces previews.
+  cookiePrefix: process.env.CODESPACE_NAME ? "payloadcs" : "payload",
+  csrf: getCSRFAllowList(),
   collections: featureCollections,
   db: sqliteAdapter({
     client: {
