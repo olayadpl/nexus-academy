@@ -4,13 +4,14 @@ import { listResourcesByCourseAction } from "@/src/features/resources/presentati
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import type { ResourceEntity } from "@/src/features/resources/domain/entities/resource.entity"
 import Link from "next/link"
-import { BookOpen, Clock, BarChart3, Users, Star, PlayCircle, FileText, File } from "lucide-react"
+import { BookOpen, Clock, BarChart3, Users, Star, PlayCircle, FileText, File, Award, Globe, CheckCircle2, Sparkles } from "lucide-react"
 import { getTranslations } from "@/src/lib/i18n/translations"
 
 const stripNumberPrefix = (s?: string) => (s ?? "").replace(/^\s*\d{1,2}:\s*/, "")
 import CourseDescription from "../components/course-description.client"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/src/core/ui/components/accordion"
 import { Separator } from "@/src/core/ui/components/separator"
+import { Badge } from "@/src/core/ui/components/badge"
 
 
 interface CourseScreenProps {
@@ -36,6 +37,19 @@ const formatDuration = (minutes?: number) => {
   return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`
 }
 
+const LEARNING_ITEMS = [
+  "Domina las habilidades fundamentales del curso",
+  "Aplicación práctica inmediata",
+  "Certificado de finalización",
+  "Acceso eterno al contenido",
+]
+
+const REQUIREMENTS = [
+  "No se requiere experiencia previa",
+  "Computadora con acceso a internet",
+  "Ganas de aprender y practicar",
+]
+
 export default async function CourseScreen({ params }: CourseScreenProps) {
   const { id } = params
   const t = getTranslations("es")
@@ -45,7 +59,6 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
   try {
     resources = await listResourcesByCourseAction(id)
   } catch (e) {
-    // Fallback to empty resources on error to avoid crashing the page
     resources = []
   }
 
@@ -55,81 +68,165 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <div className="border-b bg-muted/30 relative overflow-hidden z-0">
-        {/* Decorative blue gradient (top-left) */}
-        <div className="pointer-events-none absolute -left-28 -top-28 h-72 w-72 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-transparent opacity-25 blur-3xl -z-10" />
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                <BookOpen className="h-4 w-4" />
-                {t.courses}
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background">
+        {/* Decorative elements */}
+        <div className="pointer-events-none absolute -left-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-0 h-32 w-32 -translate-x-1/2 rounded-full bg-primary/10 blur-2xl" />
+        
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-3 lg:gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Breadcrumb & Badge */}
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/courses" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <BookOpen className="h-4 w-4" />
+                  {t.courses}
+                </Link>
+                <span className="text-muted-foreground">/</span>
+                <Badge variant="secondary" className="gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  {course.level === "beginner" ? "Principiante" : course.level === "intermediate" ? "Intermedio" : "Avanzado"}
+                </Badge>
               </div>
 
-              <h1 className="mb-4 text-5xl font-bold">{course.title}</h1>
-              <div className="mb-6">
+              {/* Title */}
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                {course.title}
+              </h1>
+
+              {/* Description */}
+              <div className="max-w-3xl">
                 <CourseDescription description={course.description} />
               </div>
 
-              <div className="flex flex-wrap gap-6 items-center">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{course.durationHours ? `${course.durationHours}h` : "—"}</span>
+              {/* Stats Row */}
+              <div className="flex flex-wrap gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <Clock className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{course.durationHours}h</p>
+                    <p className="text-xs text-muted-foreground">Duración</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                  <span className="capitalize">{course.level}</span>
+                
+                <div className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium capitalize">{course.level}</p>
+                    <p className="text-xs text-muted-foreground">Nivel</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>{"— estudiantes"}</span>
+                
+                <div className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{course.reviewCount?.toLocaleString() ?? "—"}</p>
+                    <p className="text-xs text-muted-foreground">Estudiantes</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span>{course.rating ?? "—"} ({course.reviewCount ?? 0})</span>
+                
+                <div className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-500/10">
+                    <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{course.rating ?? "—"}</p>
+                    <p className="text-xs text-muted-foreground">Valoración</p>
+                  </div>
                 </div>
               </div>
 
               {/* Instructor */}
               {course.authorName && (
-                <div className="mt-6 flex items-center gap-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                <div className="flex items-center gap-4 rounded-2xl border border-border/50 bg-card/50 p-4 backdrop-blur-sm">
                   {(() => {
                     const avatarUrl = course.authorAvatarUrl ?? `https://i.pravatar.cc/128?u=${encodeURIComponent(course.authorName ?? course.id)}`
-                    return <img src={avatarUrl} alt={course.authorName} className="h-14 w-14 rounded-full object-cover" />
+                    return <img src={avatarUrl} alt={course.authorName} className="h-16 w-16 rounded-2xl object-cover shadow-md" />
                   })()}
-
-                  <div>
-                    <div className="font-semibold">{course.authorName}</div>
-                    <div className="text-sm text-muted-foreground">Instructor</div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-lg font-semibold">{course.authorName}</p>
+                      <Badge variant="outline" className="gap-1 text-xs">
+                        <Award className="h-3 w-3" />
+                        Instructor
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Experto en la materia con años de experiencia enseñando</p>
+                    <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Globe className="h-3 w-3" />
+                        <span>Español · Inglés</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Sidebar */}
+            {/* Sidebar Card */}
             <div className="lg:col-span-1">
-              <div className="rounded-2xl border bg-card p-6 shadow-sm">
-                {(() => {
-                  const resolveImageFromId = (id: string) => {
-                    const m = id.match(/course[-_ ]?(\d+)/i) ?? id.match(/(\d+)$/)
-                    if (m) return `/images/course${m[1]}.png`
-                    return course.thumbnailUrl ?? `/images/course1.png`
-                  }
-                  const heroImg = resolveImageFromId(course.id)
-                  return (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={heroImg} alt={course.title} className="mb-4 aspect-video w-full rounded-lg object-cover" />
-                  )
-                })()}
+              <div className="sticky top-24">
+                <div className="overflow-hidden rounded-3xl border border-border/50 bg-card shadow-xl shadow-black/5">
+                  {/* Hero Image */}
+                  <div className="relative aspect-video overflow-hidden">
+                    {(() => {
+                      const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
+                      const heroImg = m ? `/images/course${m[1]}.png` : course.thumbnailUrl ?? `/images/course1.png`
+                      return (
+                        <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={heroImg} alt={course.title} className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                          
+                          {/* Play Button Overlay */}
+                          <button className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-all hover:bg-white hover:scale-110">
+                            <PlayCircle className="h-8 w-8" />
+                          </button>
+                        </>
+                      )
+                    })()}
+                  </div>
 
-                <div className="space-y-3">
-                  <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
-                    <button className="w-full rounded-md bg-primary px-4 py-3 text-white">Comenzar curso</button>
-                  </Link>
+                  {/* Card Body */}
+                  <div className="p-6 space-y-6">
+                    {/* Price */}
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold">GRATIS</span>
+                    </div>
 
-                  <button className="w-full rounded-md border px-4 py-3">Vista previa</button>
+                    {/* CTA Buttons */}
+                    <div className="space-y-3">
+                      <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
+                        <button className="w-full rounded-2xl bg-primary px-6 py-4 text-lg font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25">
+                          Comenzar curso
+                        </button>
+                      </Link>
+
+                      <button className="w-full rounded-2xl border-2 border-border px-6 py-4 text-lg font-medium transition-all hover:bg-muted/50">
+                        Vista previa
+                      </button>
+                    </div>
+
+                    {/* Features */}
+                    <div className="space-y-3 pt-4">
+                      {LEARNING_ITEMS.map((item) => (
+                        <div key={item} className="flex items-center gap-3 text-sm">
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -137,83 +234,93 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Content Section */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-12">
+            {/* What you'll learn */}
             <section>
-              <h2 className="mb-4 text-2xl font-bold">Lo que aprenderás</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <h2 className="mb-6 text-2xl font-bold">Lo que aprenderás</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
                 {course.modules.slice(0, 6).map((m, i) => (
-                  <div key={m.id} className="flex items-start gap-3">
-                    <div className="mt-1 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
-                      <div className="h-2 w-2 rounded-full bg-primary" />
+                  <div key={m.id} className="flex items-start gap-3 rounded-2xl bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+                    <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm">{stripNumberPrefix(m.title)}</span>
+                    <span className="text-sm font-medium">{stripNumberPrefix(m.title)}</span>
                   </div>
                 ))}
               </div>
             </section>
 
+            {/* Course Content */}
             <section>
-              <h2 className="mb-4 text-2xl font-bold">Contenido del curso</h2>
-              <div className="space-y-2">
-                <Accordion type="single" collapsible className="space-y-2">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-bold">Contenido del curso</h2>
+                <Badge variant="secondary">
+                  {course.modules.length} módulos
+                </Badge>
+              </div>
+              
+              <div className="space-y-3">
+                <Accordion type="single" collapsible className="space-y-3">
                   {course.modules.map((m, i) => (
-                    <AccordionItem key={m.id} value={`module-${m.id}`} className="rounded-3xl bg-white dark:bg-slate-800 shadow-none transition-colors">
-                      <AccordionTrigger className="text-base font-medium p-4 min-h-[56px] no-underline hover:no-underline">
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                              {m.type === "video" ? <PlayCircle className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
+                    <AccordionItem key={m.id} value={`module-${m.id}`} className="rounded-2xl border border-border/50 bg-card/50 overflow-hidden transition-colors hover:bg-card">
+                      <AccordionTrigger className="px-6 py-5 no-underline hover:no-underline hover:bg-muted/30">
+                        <div className="flex w-full items-center justify-between pr-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                              {m.type === "video" ? <PlayCircle className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                             </div>
-                            <div>
-                              <p className="font-medium">Módulo {i + 1}: {stripNumberPrefix(m.title)}</p>
+                            <div className="text-left">
+                              <p className="font-semibold">Módulo {i + 1}</p>
+                              <p className="text-sm text-muted-foreground">{stripNumberPrefix(m.title)}</p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3">
                             {(() => {
                               const matched = resources.filter(r => r.id === m.id || stripNumberPrefix(r.title) === stripNumberPrefix(m.title))
                               const modDuration = matched.reduce((a, b) => a + (Number(b.durationMinutes) || 0), 0) || (m.durationMinutes ?? 0)
-                              return modDuration > 0 ? <span className="text-sm text-muted-foreground">{formatDuration(modDuration)}</span> : null
+                              return modDuration > 0 ? (
+                                <Badge variant="outline" className="text-xs">
+                                  {formatDuration(modDuration)}
+                                </Badge>
+                              ) : null
                             })()}
                           </div>
                         </div>
                       </AccordionTrigger>
 
                       <AccordionContent>
-                        {resources && resources.length > 0 ? (
-                          <div className="space-y-2">
-                            <Separator className="my-2" />
-                            <div className="space-y-0">
+                        <div className="px-6 pb-6">
+                          <Separator className="mb-4" />
+                          {resources && resources.length > 0 ? (
+                            <div className="space-y-1">
                               {resources.map((resource, idx) => (
-                                <div key={resource.id}>
-                                  <div className="-mx-6">
-                                    <div className="pl-[60px] pr-8 py-3 min-h-[56px] flex items-center w-full hover:bg-muted/50 hover:rounded-md transition-colors cursor-pointer">
-                                      
-                                      <div className="flex-1">
-                                        <div className="flex items-center justify-between">
-                                          <div className="font-medium text-foreground truncate max-w-[calc(100%-14rem)]">{stripNumberPrefix(resource.title)}</div>
-                                          <div className="flex items-center gap-3 flex-shrink-0 w-56 justify-end pr-2">
-                                            <div className="text-sm text-muted-foreground">{resource.durationMinutes ? formatDuration(resource.durationMinutes) : ""}</div>
-                                            <div className="h-6 w-6 flex items-center justify-center rounded-full bg-primary/10 text-primary">
-                                              {getResourceIcon(resource.type)}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
+                                <Link 
+                                  key={resource.id} 
+                                  href={`/resource/${course.id}?resource=${resource.id}`}
+                                  className="flex items-center justify-between rounded-xl p-3 transition-colors hover:bg-muted/50"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                      {getResourceIcon(resource.type)}
+                                    </div>
+                                    <div>
+                                      <p className="font-medium">{stripNumberPrefix(resource.title)}</p>
+                                      <p className="text-xs text-muted-foreground">{resource.durationMinutes ? formatDuration(resource.durationMinutes) : ""}</p>
                                     </div>
                                   </div>
-
-                                  {idx < resources.length - 1 && <Separator className="my-2" />}
-                                </div>
+                                  <PlayCircle className="h-5 w-5 text-muted-foreground" />
+                                </Link>
                               ))}
                             </div>
-                          </div>
-                        ) : (
-                          <div>Contenido del módulo...</div>
-                        )}
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Contenido del módulo disponible...</p>
+                          )}
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -221,24 +328,64 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
               </div>
             </section>
 
+            {/* Requirements */}
             <section>
-              <h2 className="mb-4 text-2xl font-bold">Requisitos</h2>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>No se requiere experiencia previa</li>
-                <li>Computadora con acceso a internet</li>
-                <li>Cuenta gratuita si aplica a la herramienta</li>
-              </ul>
+              <h2 className="mb-6 text-2xl font-bold">Requisitos</h2>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {REQUIREMENTS.map((req) => (
+                  <div key={req} className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/50 p-4">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+                      <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                    </div>
+                    <span className="text-sm">{req}</span>
+                  </div>
+                ))}
+              </div>
             </section>
           </div>
 
+          {/* Sidebar - What's Included */}
           <div className="lg:col-span-1">
-            <div className="space-y-6 rounded-2xl border bg-card p-6">
-              <div>
-                <h3 className="mb-3 font-semibold">{t.includes}</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>✓ {t.includedResources(Math.max(1, resources.length))}</li>
-                  <li>✓ {t.accessLifetime}</li>
-                  <li>✓ {t.certificate}</li>
+            <div className="sticky top-24 space-y-6">
+              <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-lg">
+                <h3 className="mb-4 text-xl font-bold">{t.includes}</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <FileText className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{t.includedResources(Math.max(1, resources.length))}</p>
+                      <p className="text-xs text-muted-foreground">Recursos</p>
+                    </div>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{course.durationHours}h de contenido</p>
+                      <p className="text-xs text-muted-foreground">Duración total</p>
+                    </div>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <Award className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{t.certificate}</p>
+                      <p className="text-xs text-muted-foreground">Al finalizar</p>
+                    </div>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                      <Globe className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{t.accessLifetime}</p>
+                      <p className="text-xs text-muted-foreground">Acceso eterno</p>
+                    </div>
+                  </li>
                 </ul>
               </div>
             </div>
