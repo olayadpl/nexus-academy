@@ -92,7 +92,7 @@ export default function LearningStyleRightPanel({
                 setView("modules")
               }}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                "group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                 view === "modules"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -100,7 +100,7 @@ export default function LearningStyleRightPanel({
               aria-label="Modulos"
             >
               <Video className="h-4 w-4" />
-              {!collapsed && <span className="hidden sm:inline">Modulos</span>}
+              <span className="overflow-hidden max-w-0 transition-all duration-150 group-hover:max-w-[6rem] group-hover:pl-2 whitespace-nowrap">Modulos</span>
             </button>
 
             <button
@@ -110,7 +110,7 @@ export default function LearningStyleRightPanel({
                 setView("assistant")
               }}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                "group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                 view === "assistant"
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -118,7 +118,7 @@ export default function LearningStyleRightPanel({
               aria-label="Asistente IA"
             >
               <Bot className="h-4 w-4" />
-              {!collapsed && <span className="hidden sm:inline">Asistente IA</span>}
+              <span className="overflow-hidden max-w-0 transition-all duration-150 group-hover:max-w-[6.5rem] group-hover:pl-2 whitespace-nowrap">Asistente IA</span>
             </button>
           </div>
 
