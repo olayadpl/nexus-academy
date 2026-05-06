@@ -100,7 +100,7 @@ export default function LearningStyleRightPanel({
               aria-label="Modulos"
             >
               <Video className="h-4 w-4" />
-              <span className="overflow-hidden max-w-0 transition-all duration-150 group-hover:max-w-[6rem] group-hover:pl-2 whitespace-nowrap">Modulos</span>
+              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "modules" ? "max-w-[6rem] pl-2" : "max-w-0 group-hover:max-w-[6rem] group-hover:pl-2")}>Modulos</span>
             </button>
 
             <button
@@ -118,7 +118,7 @@ export default function LearningStyleRightPanel({
               aria-label="Asistente IA"
             >
               <Bot className="h-4 w-4" />
-              <span className="overflow-hidden max-w-0 transition-all duration-150 group-hover:max-w-[6.5rem] group-hover:pl-2 whitespace-nowrap">Asistente IA</span>
+              <span className={cn("overflow-hidden transition-all duration-150 whitespace-nowrap", view === "assistant" ? "max-w-[6.5rem] pl-2" : "max-w-0 group-hover:max-w-[6.5rem] group-hover:pl-2")}>Asistente IA</span>
             </button>
           </div>
 
