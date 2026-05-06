@@ -170,15 +170,15 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                     const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
                     const heroImg = m ? `/images/course${m[1]}.png` : course.thumbnailUrl ?? `/images/course1.png`
                     return (
-                      <>
+                      <div className="relative h-full w-full">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
                           src={heroImg} 
                           alt={course.title} 
-                          className="absolute inset-2 object-contain rounded-2xl" 
+                          className="absolute inset-0 object-contain p-2 rounded-2xl" 
                         />
                         <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
-                      </>
+                      </div>
                     )
                   })()}
 
