@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useRef, useEffect } from "react"
 import { Plus, NotebookPen, MoreHorizontal, PanelLeft, Palette, X, Image as ImageIcon, Bell, Tag, Save, Trash2 } from "lucide-react"
 import { Button } from "@/src/core/ui/components/button"
 import { cn } from "@/src/core/ui/lib/utils"
@@ -43,6 +43,24 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
   const [newTone, setNewTone] = useState<NoteCard["tone"]>("blue")
   const [isExpanding, setIsExpanding] = useState(false)
   const [showColorPicker, setShowColorPicker] = useState(false)
+
+  // color picker outside click handler
+  const colorPickerRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!showColorPicker) return
+    function onDocClick(e: MouseEvent) {
+      const target = e.target as Node
+      if (colorPickerRef.current && !colorPickerRef.current.contains(target)) {
+        setShowColorPicker(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('touchstart', onDocClick)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('touchstart', onDocClick)
+    }
+  }, [showColorPicker])
 
   const total = useMemo(() => notes.length, [notes.length])
   const scrollClass = disableInternalScroll ? "overflow-hidden" : "overflow-y-auto"
@@ -97,7 +115,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 type="button"
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-lg border bg-card/80 transition-colors hover:bg-muted",
-                  note.tone === "blue" ? "text-blue-500" : "text-amber-500"
+                  note.tone === "blue" ? "text-blue-500" : note.tone === "yellow" ? "text-amber-500" : note.tone === "green" ? "text-green-500" : "text-pink-500"
                 )}
                 aria-label={note.title}
                 title={note.title}
@@ -131,11 +149,11 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 setNewDesc("")
                 setNewTone("blue")
                 setIsExpanding(false)
+                setShowColorPicker(false)
               }}
               className="relative rounded-xl border p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
             >
-              {/* centered create card styled like sample */}
-              <div className={`w-full max-w-lg transition-all duration-300 ease-in-out transform rounded-2xl shadow-xl border overflow-hidden bg-card`}>
+              <div className="w-full max-w-lg mx-auto transition-all duration-300 ease-in-out transform rounded-2xl shadow-xl border overflow-hidden bg-card">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-border">
                   <div className="flex items-center space-x-2">
@@ -146,21 +164,21 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                   </div>
                   <button
                     type="button"
-                    onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue"); setIsExpanding(false) }}
+                    onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue"); setIsExpanding(false); setShowColorPicker(false) }}
                     className="p-2 hover:bg-muted/50 rounded-full transition-colors"
-                  >
+                    aria-label="Cerrar">
                     <X className="w-5 h-5 text-muted-foreground" />
                   </button>
                 </div>
 
                 {/* Body */}
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 flex flex-col items-center">
                   <input
                     type="text"
                     placeholder="Título de la nota..."
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
-                    className="w-full text-xl font-semibold bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-foreground"
+                    className="w-full text-center text-xl font-semibold bg-transparent border-none focus:ring-0 placeholder:text-muted-foreground text-foreground"
                   />
 
                   <textarea
@@ -173,8 +191,8 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 </div>
 
                 {/* Tools & Footer */}
-                <div className="px-6 py-4 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border">
-                  <div className="flex items-center space-x-1 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                <div className="px-6 py-4 bg-muted/10 flex items-center justify-between gap-4 border-t border-border">
+                  <div className="flex items-center gap-2">
                     <button title="Añadir imagen" className="p-2.5 hover:bg-background hover:shadow-sm rounded-xl transition-all text-muted-foreground">
                       <ImageIcon className="w-5 h-5" />
                     </button>
@@ -191,54 +209,34 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
 
                     <div className="h-6 w-[1px] bg-border mx-2 hidden sm:block"></div>
 
-                    {/* Color picker circles */}
-                    <div className="flex items-center space-x-1.5 px-2">
+                    {/* Palette selector */}
+                    <div className="relative">
                       <button
-                        key="white"
-                        onClick={() => setNewTone("blue")}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'blue' ? 'ring-2 ring-indigo-200 border-indigo-500' : 'border-border'}`}
-                        style={{ background: '#ffffff' }}
-                        title="Blanco"
-                      />
-                      <button
-                        key="yellow"
-                        onClick={() => setNewTone("yellow")}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'yellow' ? 'ring-2 ring-amber-200 border-amber-400' : 'border-border'}`}
-                        style={{ background: '#fef3c7' }}
-                        title="Amarillo"
-                      />
-                      <button
-                        key="red"
-                        onClick={() => setNewTone("pink")}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'pink' ? 'ring-2 ring-pink-200 border-pink-400' : 'border-border'}`}
-                        style={{ background: '#fee2e2' }}
-                        title="Rojo"
-                      />
-                      <button
-                        key="blue"
-                        onClick={() => setNewTone("blue")}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'blue' ? 'ring-2 ring-indigo-200 border-indigo-500' : 'border-border'}`}
-                        style={{ background: '#bfdbfe' }}
-                        title="Azul"
-                      />
-                      <button
-                        key="green"
-                        onClick={() => setNewTone("green")}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'green' ? 'ring-2 ring-green-200 border-green-400' : 'border-border'}`}
-                        style={{ background: '#bbf7d0' }}
-                        title="Verde"
-                      />
-                      <button
-                        key="purple"
-                        onClick={() => setNewTone("pink")}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${newTone === 'pink' ? 'ring-2 ring-pink-200 border-pink-400' : 'border-border'}`}
-                        style={{ background: '#ede9fe' }}
-                        title="Morado"
-                      />
+                        type="button"
+                        onClick={() => setShowColorPicker((s) => !s)}
+                        className="inline-flex items-center gap-2 px-2 py-1 rounded-full border"
+                        aria-haspopup="true"
+                        aria-expanded={showColorPicker}
+                      >
+                        <span
+                          className="h-4 w-4 rounded-full"
+                          style={{ background: newTone === 'blue' ? '#bfdbfe' : newTone === 'yellow' ? '#fef3c7' : newTone === 'green' ? '#bbf7d0' : '#fbcfe8' }}
+                        />
+                        <Palette className="h-4 w-4 text-muted-foreground" />
+                      </button>
+
+                      {showColorPicker && (
+                        <div ref={colorPickerRef} role="menu" aria-label="Seleccionar color" className="absolute left-0 mt-2 z-50 p-2 bg-background rounded-md shadow-md flex gap-2">
+                          <button type="button" aria-label="Azul" title="Azul" onClick={() => { setNewTone('blue'); setShowColorPicker(false) }} className="h-6 w-6 rounded-full border" style={{ background: '#bfdbfe' }} />
+                          <button type="button" aria-label="Amarillo" title="Amarillo" onClick={() => { setNewTone('yellow'); setShowColorPicker(false) }} className="h-6 w-6 rounded-full border" style={{ background: '#fef3c7' }} />
+                          <button type="button" aria-label="Verde" title="Verde" onClick={() => { setNewTone('green'); setShowColorPicker(false) }} className="h-6 w-6 rounded-full border" style={{ background: '#bbf7d0' }} />
+                          <button type="button" aria-label="Rosa" title="Rosa" onClick={() => { setNewTone('pink'); setShowColorPicker(false) }} className="h-6 w-6 rounded-full border" style={{ background: '#fbcfe8' }} />
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3 w-full sm:w-auto">
+                  <div className="flex items-center gap-3">
                     <select
                       value={"low"}
                       onChange={() => {}}
@@ -269,6 +267,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                         setNewDesc("")
                         setNewTone("blue")
                         setIsExpanding(false)
+                        setShowColorPicker(false)
                       }}
                       disabled={!newTitle && !newDesc}
                       className={`flex items-center space-x-2 px-6 py-2.5 rounded-xl font-bold transition-all active:scale-95 ${(!newTitle && !newDesc) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
@@ -280,55 +279,54 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                 </div>
               </div>
             </form>
-          )}
 
-          {notes.map((note) => (
-            <article
-              key={note.id}
-              className={cn(
-                "relative rounded-xl border p-3 shadow-sm overflow-hidden transition-shadow hover:shadow-md",
-                note.tone === "blue"
-                  ? "bg-blue-600/10 border-blue-200 dark:bg-blue-400/12 dark:border-transparent"
-                  : note.tone === "yellow"
-                  ? "bg-amber-500/10 border-amber-200 dark:bg-amber-300/12 dark:border-transparent"
-                  : note.tone === "green"
-                  ? "bg-green-600/10 border-green-200 dark:bg-green-400/12 dark:border-transparent"
-                  : "bg-pink-600/10 border-pink-200 dark:bg-pink-400/12 dark:border-transparent"
-              )}
-            >
-              {/* Indicador de categoría: franja sólida en el extremo izquierdo, no llega hasta las esquinas redondeadas */}
-              <span
+            {notes.map((note) => (
+              <article
+                key={note.id}
                 className={cn(
-                  "absolute left-0 top-0 bottom-0 rounded-l-xl z-10 transition-colors",
+                  "relative rounded-xl border p-3 shadow-sm overflow-hidden transition-shadow hover:shadow-md",
                   note.tone === "blue"
-                    ? "bg-blue-600 dark:bg-blue-400"
+                    ? "bg-blue-600/10 border-blue-200 dark:bg-blue-400/12 dark:border-transparent"
                     : note.tone === "yellow"
-                    ? "bg-amber-500 dark:bg-amber-300"
+                    ? "bg-amber-500/10 border-amber-200 dark:bg-amber-300/12 dark:border-transparent"
                     : note.tone === "green"
-                    ? "bg-green-600 dark:bg-green-400"
-                    : "bg-pink-600 dark:bg-pink-400"
+                    ? "bg-green-600/10 border-green-200 dark:bg-green-400/12 dark:border-transparent"
+                    : "bg-pink-600/10 border-pink-200 dark:bg-pink-400/12 dark:border-transparent"
                 )}
-                style={{ width: '4px' }}
-              />
+              >
+                {/* Indicador de categoría: franja sólida en el extremo izquierdo, no llega hasta las esquinas redondeadas */}
+                <span
+                  className={cn(
+                    "absolute left-0 top-0 bottom-0 rounded-l-xl z-10 transition-colors",
+                    note.tone === "blue"
+                      ? "bg-blue-600 dark:bg-blue-400"
+                      : note.tone === "yellow"
+                      ? "bg-amber-500 dark:bg-amber-300"
+                      : note.tone === "green"
+                      ? "bg-green-600 dark:bg-green-400"
+                      : "bg-pink-600 dark:bg-pink-400"
+                  )}
+                  style={{ width: '4px' }}
+                />
 
-              <div className="pl-6">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-sm font-semibold leading-tight">{note.title}</h3>
-                  <button
-                    type="button"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                    aria-label="Mas opciones"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                <div className="pl-6">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-semibold leading-tight">{note.title}</h3>
+                    <button
+                      type="button"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      aria-label="Mas opciones"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{note.description}</p>
+                  <p className="mt-2 text-[11px] text-muted-foreground">{note.createdAt}</p>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">{note.description}</p>
-                <p className="mt-2 text-[11px] text-muted-foreground">{note.createdAt}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-    </aside>
-  )
+              </article>
+            ))}
+          </div>
+        )}
+      </aside>
+    )
 }
