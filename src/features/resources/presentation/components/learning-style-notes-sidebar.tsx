@@ -125,12 +125,12 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               {/* Indicador de categoría: franja sólida en el extremo izquierdo, no llega hasta las esquinas redondeadas */}
               <span
                 className={cn(
-                  "absolute left-0 top-3 bottom-3 w-1 rounded-l-xl z-10",
+                  "absolute left-0 top-0 bottom-0 w-2 rounded-l-xl z-10",
                   note.tone === "blue" ? "bg-blue-600 dark:bg-blue-400" : "bg-amber-500 dark:bg-amber-300"
                 )}
               />
 
-              <div className="pl-5">
+              <div className="pl-6">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-semibold leading-tight">{note.title}</h3>
                   <button
