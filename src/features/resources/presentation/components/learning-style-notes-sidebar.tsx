@@ -45,18 +45,26 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
   const [showColorPicker, setShowColorPicker] = useState(false)
   // Expanded note view toggles
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null)
-  // Autoresize textarea when content exceeds default height
+  // Autoresize textarea when content exceeds default height, cap and enable scroll after max
   const descRef = useRef<HTMLTextAreaElement | null>(null)
   const DEFAULT_DESC_HEIGHT = 112 // px (~h-28)
+  const MAX_DESC_HEIGHT = 240 // px - once exceeded, textarea will scroll
   function handleDescChange(e: any) {
     const val = e.target.value
     setNewDesc(val)
     if (!descRef.current) return
+    // reset to auto to measure required height
     descRef.current.style.height = 'auto'
-    if (descRef.current.scrollHeight > DEFAULT_DESC_HEIGHT) {
-      descRef.current.style.height = `${descRef.current.scrollHeight}px`
-    } else {
+    const scrollH = descRef.current.scrollHeight
+    if (scrollH <= DEFAULT_DESC_HEIGHT) {
       descRef.current.style.height = `${DEFAULT_DESC_HEIGHT}px`
+      descRef.current.style.overflowY = 'hidden'
+    } else if (scrollH <= MAX_DESC_HEIGHT) {
+      descRef.current.style.height = `${scrollH}px`
+      descRef.current.style.overflowY = 'hidden'
+    } else {
+      descRef.current.style.height = `${MAX_DESC_HEIGHT}px`
+      descRef.current.style.overflowY = 'auto'
     }
   }
 
@@ -187,7 +195,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                     value={newDesc}
                     onChange={handleDescChange}
                     className={`w-full bg-transparent border-none focus:ring-0 focus:placeholder-transparent focus:outline-none placeholder:text-muted-foreground text-muted-foreground resize-none transition-all duration-300`}
-                    style={{height: `${DEFAULT_DESC_HEIGHT}px`}}
+                    style={{height: `${DEFAULT_DESC_HEIGHT}px`, overflowY: 'hidden'}}
                   />
                 </div>
 
