@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Plus, NotebookPen, MoreHorizontal, PanelLeft, X, Image as ImageIcon, Bell, Tag, Save, Trash2 } from "lucide-react"
+import { Plus, NotebookPen, MoreHorizontal, PanelLeft, Palette, X, Image as ImageIcon, Bell, Tag, Save, Trash2 } from "lucide-react"
 import { Button } from "@/src/core/ui/components/button"
 import { cn } from "@/src/core/ui/lib/utils"
 
@@ -42,6 +42,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
   const [newDesc, setNewDesc] = useState("")
   const [newTone, setNewTone] = useState<NoteCard["tone"]>("blue")
   const [isExpanding, setIsExpanding] = useState(false)
+  const [showColorPicker, setShowColorPicker] = useState(false)
 
   const total = useMemo(() => notes.length, [notes.length])
   const scrollClass = disableInternalScroll ? "overflow-hidden" : "overflow-y-auto"
