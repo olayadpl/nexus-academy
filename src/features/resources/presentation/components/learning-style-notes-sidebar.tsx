@@ -183,16 +183,17 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                   >
                     <X className="w-5 h-5" />
                   </button>
+                </div>
 
-                  <div className="mt-2">
-                    <button
-                      type="submit"
-                      disabled={!newTitle && !newDesc}
-                      className={`px-4 py-2 rounded-md font-semibold ${(!newTitle && !newDesc) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
-                    >
-                      Guardar
-                    </button>
-                  </div>
+                {/* Save button positioned bottom-right of the card */}
+                <div className="absolute right-4 bottom-4">
+                  <button
+                    type="submit"
+                    disabled={!newTitle && !newDesc}
+                    className={`px-4 py-2 rounded-md font-semibold ${(!newTitle && !newDesc) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                  >
+                    Guardar
+                  </button>
                 </div>
               </div>
 
