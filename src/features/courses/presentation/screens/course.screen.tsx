@@ -165,17 +165,20 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
             <div className="lg:col-span-1">
               <div className="sticky top-24">
                 <div className="relative h-80 sm:h-96 overflow-hidden rounded-3xl border border-border/50 shadow-xl shadow-black/5">
-                  {/* Hero Image as Background */}
+                  {/* Hero Image - contained to show full image */}
                   {(() => {
                     const m = course.id.match(/course[-_ ]?(\d+)/i) ?? course.id.match(/(\d+)$/)
                     const heroImg = m ? `/images/course${m[1]}.png` : course.thumbnailUrl ?? `/images/course1.png`
                     return (
-                      <div 
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                        style={{ backgroundImage: `url(${heroImg})` }}
-                      >
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={heroImg} 
+                          alt={course.title} 
+                          className="absolute inset-0 h-full w-full object-contain" 
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                      </div>
+                      </>
                     )
                   })()}
 
