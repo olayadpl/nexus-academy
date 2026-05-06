@@ -175,7 +175,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                         <img 
                           src={heroImg} 
                           alt={course.title} 
-                          className="absolute inset-0 mx-auto mt-4 h-3/4 w-auto object-contain rounded-2xl" 
+                          className="absolute mx-auto mt-4 w-[90%] object-contain rounded-2xl" 
                         />
                         <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
                       </>
