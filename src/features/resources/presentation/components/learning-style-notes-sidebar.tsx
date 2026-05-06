@@ -132,7 +132,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               className="relative rounded-xl border p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
             >
               {/* preview structure with colored stripe so the new note shows the stripe */}
-              <div className="rounded-xl border bg-card p-3 space-y-2 min-w-0">
+              <div className="relative rounded-xl border bg-card p-3 space-y-2 min-w-0">
                 <span
                   className={cn(
                     "absolute left-0 top-0 bottom-0 rounded-l-xl z-10 transition-colors",
@@ -189,7 +189,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                     </div>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="sm" type="button" onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }} className="flex-shrink-0">Cancelar</Button>
-                      <Button size="sm" type="submit" className="flex-shrink-0">Crear</Button>
+                      <Button variant="default" size="sm" type="submit" className="flex-shrink-0">Crear</Button>
                     </div>
                   </div>
                 </div>
