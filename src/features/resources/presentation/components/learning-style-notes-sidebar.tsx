@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Plus, NotebookPen, MoreHorizontal, PanelLeft } from "lucide-react"
+import { Plus, NotebookPen, MoreHorizontal, PanelLeft, X } from "lucide-react"
 import { Button } from "@/src/core/ui/components/button"
 import { cn } from "@/src/core/ui/lib/utils"
 
@@ -131,54 +131,45 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
               }}
               className="relative rounded-xl border p-0 shadow-sm space-y-2 min-w-0 overflow-hidden"
             >
-              {/* preview structure without color stripe (stripe appears only after creation) */}
-              <div className="rounded-xl border bg-card p-3 space-y-2 min-w-0">
+              {/* centered create card; no color stripe until created */}
+              <div className="rounded-xl border bg-card p-6 space-y-4 min-w-0 flex flex-col items-center text-center relative">
+                <button
+                  type="button"
+                  aria-label="Cerrar"
+                  onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }}
+                  className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
 
-                <div className="pl-6">
-                  <input
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="Título de la nota"
-                    className="w-full rounded-md border px-2 py-1 text-sm outline-none min-w-0"
-                  />
-                  <textarea
-                    value={newDesc}
-                    onChange={(e) => setNewDesc(e.target.value)}
-                    placeholder="Contenido de la nota"
-                    className="w-full rounded-md border px-2 py-1 text-sm outline-none resize-none h-20 min-w-0"
-                  />
+                <h3 className="text-sm font-semibold">Crear nota</h3>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Color:</span>
-                      <div className="flex items-center gap-2">
-                        <button type="button" aria-label="Azul" title="Azul"
-                          onClick={() => setNewTone("blue")}
-                          className={cn("h-6 w-6 rounded-full border", newTone === "blue" ? "ring-2 ring-offset-1 ring-blue-400" : "")}
-                          style={{ background: "#bfdbfe" }}
-                        />
-                        <button type="button" aria-label="Amarillo" title="Amarillo"
-                          onClick={() => setNewTone("yellow")}
-                          className={cn("h-6 w-6 rounded-full border", newTone === "yellow" ? "ring-2 ring-offset-1 ring-amber-300" : "")}
-                          style={{ background: "#fef3c7" }}
-                        />
-                        <button type="button" aria-label="Verde" title="Verde"
-                          onClick={() => setNewTone("green")}
-                          className={cn("h-6 w-6 rounded-full border", newTone === "green" ? "ring-2 ring-offset-1 ring-green-300" : "")}
-                          style={{ background: "#bbf7d0" }}
-                        />
-                        <button type="button" aria-label="Rosa" title="Rosa"
-                          onClick={() => setNewTone("pink")}
-                          className={cn("h-6 w-6 rounded-full border", newTone === "pink" ? "ring-2 ring-offset-1 ring-pink-300" : "")}
-                          style={{ background: "#fbcfe8" }}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" type="button" onClick={() => { setShowCreate(false); setNewTitle(""); setNewDesc(""); setNewTone("blue") }} className="flex-shrink-0">Cancelar</Button>
-                      <Button variant="default" size="sm" type="submit" className="flex-shrink-0">Crear</Button>
-                    </div>
-                  </div>
+                <input
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="Título de la nota"
+                  className="w-full max-w-xs text-center rounded-md border px-2 py-1 text-sm outline-none"
+                />
+
+                <textarea
+                  value={newDesc}
+                  onChange={(e) => setNewDesc(e.target.value)}
+                  placeholder="Contenido de la nota"
+                  className="w-full max-w-xs text-center rounded-md border px-2 py-1 text-sm outline-none resize-none h-28"
+                />
+
+                <div className="w-full max-w-xs flex items-center justify-between">
+                  <label className="text-xs text-muted-foreground">Color:</label>
+                  <select value={newTone} onChange={(e) => setNewTone(e.target.value as NoteCard['tone'])} className="rounded-md border px-2 py-1 text-sm">
+                    <option value="blue">Azul</option>
+                    <option value="yellow">Amarillo</option>
+                    <option value="green">Verde</option>
+                    <option value="pink">Rosa</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button size="sm" type="submit">Crear</Button>
                 </div>
               </div>
             </form>
