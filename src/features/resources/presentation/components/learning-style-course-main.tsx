@@ -93,8 +93,6 @@ export default function LearningStyleCourseMain({
   const [liked, setLiked] = useState(false)
   const [disliked, setDisliked] = useState(false)
   const [bookmarked, setBookmarked] = useState(false)
-  const [notes, setNotes] = useState(LEARNING_NOTES_SEED)
-  const [newNote, setNewNote] = useState("")
   const [showPiPMode, setShowPiPMode] = useState(false)
   const [pipDismissed, setPipDismissed] = useState(false)
   const [zoom, setZoom] = useState(100)
@@ -103,22 +101,6 @@ export default function LearningStyleCourseMain({
   const activeResourceUrl = activeLesson?.resourceUrl ?? "/images/course-thumbnail.jpg"
   const activeResourceLabel = activeLesson?.type === "pdf" ? "PDF preview" : "Course video"
   const activeYouTubeEmbedUrl = activeLesson?.type === "video" ? toYouTubeEmbedUrl(activeResourceUrl) : null
-
-  const handleAddNote = () => {
-    if (!newNote.trim()) return
-    const newNoteItem = {
-      id: Date.now(),
-      timestamp: "0:00",
-      text: newNote.trim(),
-      createdAt: "Just now",
-    }
-    setNotes([newNoteItem, ...notes])
-    setNewNote("")
-  }
-
-  const handleDeleteNote = (id: number) => {
-    setNotes(notes.filter((n) => n.id !== id))
-  }
 
   const handleScroll = useCallback(() => {
     if (!videoRef.current || !scrollRef.current) return
@@ -314,15 +296,7 @@ export default function LearningStyleCourseMain({
               <NotebookPen className="h-3.5 w-3.5" />
               Transcript
             </TabsTrigger>
-            <TabsTrigger value="notes" className="text-xs gap-1">
-              <NotebookPen className="h-3.5 w-3.5" />
-              Notes
-              {notes.length > 0 && (
-                <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px]">
-                  {notes.length}
-                </Badge>
-              )}
-            </TabsTrigger>
+
           </TabsList>
 
           <TabsContent value="description" className="space-y-4 mt-0">
@@ -351,60 +325,7 @@ export default function LearningStyleCourseMain({
             </div>
           </TabsContent>
 
-          <TabsContent value="notes" className="mt-0 space-y-4">
-            <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <NotebookPen className="h-3.5 w-3.5" />
-                <span className="font-medium">Add note</span>
-                <span className="ml-auto font-mono bg-muted px-1.5 py-0.5 rounded text-[10px]">0:00</span>
-              </div>
-              <Textarea
-                placeholder="Write your note..."
-                value={newNote}
-                onChange={(e) => setNewNote(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                    handleAddNote()
-                  }
-                }}
-                className="text-sm min-h-20 resize-none"
-              />
-              <div className="flex justify-between items-center">
-                <span className="text-[11px] text-muted-foreground">
-                  <kbd className="font-mono bg-muted px-1 py-0.5 rounded text-[10px]">Ctrl+Enter</kbd>
-                </span>
-                <Button size="sm" onClick={handleAddNote} disabled={!newNote.trim()} className="text-xs gap-1">
-                  <Plus className="h-3.5 w-3.5" />
-                  Add
-                </Button>
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              {notes.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground text-sm">No notes yet. Start taking notes while watching!</div>
-              ) : (
-                notes.map((note) => (
-                  <div key={note.id} className="group bg-card border border-border rounded-xl p-4 hover:border-primary/30 transition-colors">
-                    <div className="flex justify-between items-start gap-3 mb-2">
-                      <button className="flex items-center gap-1 font-mono text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded">
-                        <Play className="h-2.5 w-2.5 fill-primary" />
-                        {note.timestamp}
-                      </button>
-                      <span className="text-[11px] text-muted-foreground">{note.createdAt}</span>
-                      <button
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                    <p className="text-sm text-foreground">{note.text}</p>
-                  </div>
-                ))
-              )}
-            </div>
-          </TabsContent>
 
           <TabsContent value="transcript" className="mt-0">
             <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
