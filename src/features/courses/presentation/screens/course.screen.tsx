@@ -37,13 +37,6 @@ const formatDuration = (minutes?: number) => {
   return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`
 }
 
-const LEARNING_ITEMS = [
-  "Domina las habilidades fundamentales del curso",
-  "Aplicación práctica inmediata",
-  "Certificado de finalización",
-  "Acceso eterno al contenido",
-]
-
 const REQUIREMENTS = [
   "No se requiere experiencia previa",
   "Computadora con acceso a internet",
@@ -210,16 +203,6 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                       <button className="w-full rounded-xl border-2 border-border px-5 py-3 text-base font-medium transition-all hover:bg-muted/50">
                         Vista previa
                       </button>
-                    </div>
-
-                    {/* Features */}
-                    <div className="space-y-3 pt-4">
-                      {LEARNING_ITEMS.map((item) => (
-                        <div key={item} className="flex items-center gap-3 text-sm">
-                          <CheckCircle2 className="h-5 w-5 text-primary" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
                     </div>
                   </div>
                 </div>
