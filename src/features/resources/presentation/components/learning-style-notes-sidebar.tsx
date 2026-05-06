@@ -142,20 +142,20 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
                   <X className="h-4 w-4" />
                 </button>
 
-                <h3 className="text-sm font-semibold">Crear nota</h3>
+
 
                 <input
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="Título de la nota"
-                  className="w-full max-w-xs text-center rounded-md border px-2 py-1 text-sm outline-none"
+                  className="w-full max-w-xs rounded-md border px-2 py-1 text-sm outline-none"
                 />
 
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Contenido de la nota"
-                  className="w-full max-w-xs text-center rounded-md border px-2 py-1 text-sm outline-none resize-none h-28"
+                  className="w-full max-w-xs rounded-md border px-2 py-1 text-sm outline-none resize-none h-28"
                 />
 
                 <div className="w-full max-w-xs flex items-center justify-between">
