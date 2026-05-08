@@ -84,7 +84,7 @@ export const CoursesCollection: CollectionConfig = {
       name: "authorAvatarUrl",
       type: "text",
     },
-    {
+{
       name: "modules",
       type: "array",
       fields: [
@@ -107,7 +107,20 @@ export const CoursesCollection: CollectionConfig = {
         {
           name: "resourceUrl",
           type: "text",
-          required: true,
+        },
+        {
+          name: "youtubeUrl",
+          type: "text",
+        },
+        {
+          name: "videoFile",
+          type: "upload",
+          relationTo: "media",
+        },
+        {
+          name: "documentFile",
+          type: "upload",
+          relationTo: "media",
         },
         {
           name: "durationMinutes",

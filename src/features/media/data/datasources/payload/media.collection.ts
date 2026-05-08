@@ -18,5 +18,13 @@ export const MediaCollection: CollectionConfig = {
       name: 'alt',
       type: 'text',
     },
+    {
+      name: 'mimeType',
+      type: 'select',
+      admin: {
+        hidden: true,
+      },
+      options: ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'application/pdf'],
+    },
   ],
 }

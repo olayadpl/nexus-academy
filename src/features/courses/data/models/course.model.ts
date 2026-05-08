@@ -15,7 +15,10 @@ export interface CourseModel {
     id: string
     title: string
     type: "video" | "pdf"
-    resourceUrl: string
+    resourceUrl?: string
+    youtubeUrl?: string
+    videoUrl?: string
+    documentUrl?: string
     durationMinutes: number
     completed: boolean
   }[]

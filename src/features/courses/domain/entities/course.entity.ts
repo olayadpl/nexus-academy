@@ -5,7 +5,10 @@ export interface CourseModuleEntity {
   id: string
   title: string
   type: CourseResourceType
-  resourceUrl: string
+  resourceUrl?: string
+  youtubeUrl?: string
+  videoUrl?: string
+  documentUrl?: string
   durationMinutes: number
   completed: boolean
 }

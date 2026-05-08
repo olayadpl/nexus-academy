@@ -22,14 +22,16 @@ type CourseDoc = {
     id?: string | null
     title: string
     type: "video" | "pdf"
-    resourceUrl: string
+    resourceUrl?: string | null
+    youtubeUrl?: string | null
+    videoFile?: { url?: string } | null
+    documentFile?: { url?: string } | null
     durationMinutes: number
     completed?: boolean | null
   }> | null
 }
 
 function toModel(doc: CourseDoc): CourseModel {
-  // thumbnail can be stored as a relation (object) or as thumbnailUrl string
   const thumbnailFromRelation = (doc as any).thumbnail && typeof (doc as any).thumbnail === 'object' && (doc as any).thumbnail.url
   const thumbnailUrlFinal = thumbnailFromRelation || doc.thumbnailUrl || ''
   const externalId = doc.externalId?.trim() || String(doc.id)
@@ -37,7 +39,10 @@ function toModel(doc: CourseDoc): CourseModel {
     id: module.id?.trim() || `${externalId}-module-${index + 1}`,
     title: module.title,
     type: module.type,
-    resourceUrl: module.resourceUrl,
+    resourceUrl: module.resourceUrl ?? undefined,
+    youtubeUrl: module.youtubeUrl ?? undefined,
+    videoUrl: module.videoFile?.url ?? undefined,
+    documentUrl: module.documentFile?.url ?? undefined,
     durationMinutes: Number(module.durationMinutes) || 1,
     completed: Boolean(module.completed),
   }))
@@ -78,6 +83,7 @@ function toPayloadData(model: CourseModel) {
       title: module.title,
       type: module.type,
       resourceUrl: module.resourceUrl,
+      youtubeUrl: module.youtubeUrl,
       durationMinutes: module.durationMinutes,
       completed: module.completed,
     })),

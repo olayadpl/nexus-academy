@@ -16,8 +16,7 @@ import {
   Sparkles,
   Trophy,
   Briefcase,
-  ChevronLeft,
-  ChevronRight,
+  Menu,
 } from "lucide-react"
 import {
   Sidebar,
@@ -76,7 +75,7 @@ function Section({
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton asChild isActive={isActive} tooltip={item.label}>
                 <Link href={item.href}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-9 w-9" />
                   <span>{item.label}</span>
                 </Link>
               </SidebarMenuButton>
@@ -102,10 +101,18 @@ export function AppSidebarNav({
   return (
     <div>
       <Sidebar collapsible="icon" variant="sidebar" className="relative overflow-visible">
-        <SidebarHeader className="h-14 pl-4 pr-2 flex-row items-center">
+        <SidebarHeader className="h-14 pl-2 pr-2 flex-row items-center gap-2">
+          {!lockCollapsed ? (
+            <button
+              onClick={toggleSidebar}
+              className="ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-transparent transition-colors hover:bg-accent"
+              aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          ) : null}
           <SidebarMenu>
             <SidebarMenuItem>
-              {/* Use same visual size as sidebar icons to align the logo */}
               <Branding href="/explore" className="h-9 w-9 hidden md:block relative top-[2px]" />
             </SidebarMenuItem>
           </SidebarMenu>
@@ -119,20 +126,6 @@ export function AppSidebarNav({
             </div>
           </ScrollArea>
         </SidebarContent>
-
-        {!lockCollapsed ? (
-          <button
-            onClick={toggleSidebar}
-            className="absolute right-0 top-[40px] z-[80] h-8 w-8 translate-x-1/2 rounded-full border-2 border-border bg-card shadow-lg flex items-center justify-center transition-colors hover:bg-accent hover:border-primary"
-            aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4 text-primary" />
-            ) : (
-              <ChevronLeft className="h-4 w-4 text-primary" />
-            )}
-          </button>
-        ) : null}
       </Sidebar>
     </div>
   )

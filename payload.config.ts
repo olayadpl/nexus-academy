@@ -38,10 +38,8 @@ function getCSRFAllowList() {
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || "dev-secret-change-me",
   serverURL: getServerURL(),
-  // Avoid stale cookie collisions in Codespaces previews.
   cookiePrefix: process.env.CODESPACE_NAME ? "payloadcs" : "payload",
   auth: {
-    // Ensure `/api/<auth-collection>/me` accepts auth cookies first.
     jwtOrder: ["cookie", "JWT", "Bearer"],
   },
   csrf: getCSRFAllowList(),

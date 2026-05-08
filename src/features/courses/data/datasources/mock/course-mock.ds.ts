@@ -5,7 +5,7 @@ const COURSE_FIXTURES: CourseModel[] = [
   {
     id: "course-communication",
     title: "Speak Confidently",
-    description: "Comunicacion interpersonal aplicada al contexto academico. En este curso se explorarán técnicas prácticas para mejorar la comunicación en entornos académicos y profesionales. Se trabajarán habilidades de escucha activa, manejo de la ansiedad al hablar, estructuras para presentaciones claras y ejercicios para ganar confianza. Incluye ejemplos, actividades y recursos para aplicar lo aprendido en situaciones reales.",
+    description: "Comunicacion interpersonal aplicada al contexto academico. En este curso se explorarán técnicas prácticas para mejorar la comunicación en entornos académicos y profesionales.",
     level: "beginner",
     durationHours: 1.2,
     rating: 4.5,
@@ -16,30 +16,9 @@ const COURSE_FIXTURES: CourseModel[] = [
     authorName: "Dr. Mark Elliot",
     authorAvatarUrl: "https://i.pravatar.cc/150?u=course-communication",
     modules: [
-      {
-        id: "lesson-1",
-        title: "01: Learn The Alphabets",
-        type: "video",
-        resourceUrl: "/images/course-thumbnail.jpg",
-        durationMinutes: 20,
-        completed: true,
-      },
-      {
-        id: "lesson-2",
-        title: "02: Touch The Grass",
-        type: "video",
-        resourceUrl: "/images/course-thumbnail.jpg",
-        durationMinutes: 23,
-        completed: false,
-      },
-      {
-        id: "lesson-3",
-        title: "03: Practice, Practice, Practice",
-        type: "pdf",
-        resourceUrl: "/docs/practice-guide.pdf",
-        durationMinutes: 112,
-        completed: false,
-      },
+      { id: "lesson-1", title: "Learn The Alphabets", type: "video", resourceUrl: "https://example.com/video1.mp4", durationMinutes: 20, completed: true },
+      { id: "lesson-2", title: "Touch The Grass", type: "video", resourceUrl: "https://example.com/video2.mp4", durationMinutes: 23, completed: false },
+      { id: "lesson-3", title: "Practice, Practice, Practice", type: "pdf", resourceUrl: "https://example.com/doc1.pdf", durationMinutes: 112, completed: false },
     ],
   },
   {
@@ -56,22 +35,8 @@ const COURSE_FIXTURES: CourseModel[] = [
     authorName: "Sarah Connors",
     authorAvatarUrl: "https://i.pravatar.cc/150?u=course-study-methods",
     modules: [
-      {
-        id: "study-1",
-        title: "01: Planificacion por bloques",
-        type: "video",
-        resourceUrl: "/images/course-thumbnail.jpg",
-        durationMinutes: 42,
-        completed: false,
-      },
-      {
-        id: "study-2",
-        title: "02: Active recall",
-        type: "pdf",
-        resourceUrl: "/docs/practice-guide.pdf",
-        durationMinutes: 36,
-        completed: false,
-      },
+      { id: "study-1", title: "Planificacion por bloques", type: "video", resourceUrl: "/images/course-thumbnail.jpg", durationMinutes: 42, completed: false },
+      { id: "study-2", title: "Active recall", type: "pdf", resourceUrl: "/docs/practice-guide.pdf", durationMinutes: 36, completed: false },
     ],
   },
   {
@@ -88,22 +53,8 @@ const COURSE_FIXTURES: CourseModel[] = [
     authorName: "Ana Rios",
     authorAvatarUrl: "https://i.pravatar.cc/150?u=course-problem-solving",
     modules: [
-      {
-        id: "solve-1",
-        title: "01: Descomposicion del problema",
-        type: "video",
-        resourceUrl: "/images/course-thumbnail.jpg",
-        durationMinutes: 38,
-        completed: false,
-      },
-      {
-        id: "solve-2",
-        title: "02: Estrategias de solucion",
-        type: "pdf",
-        resourceUrl: "/docs/practice-guide.pdf",
-        durationMinutes: 24,
-        completed: false,
-      },
+      { id: "solve-1", title: "Descomposicion del problema", type: "video", resourceUrl: "/images/course-thumbnail.jpg", durationMinutes: 38, completed: false },
+      { id: "solve-2", title: "Estrategias de solucion", type: "pdf", resourceUrl: "/docs/practice-guide.pdf", durationMinutes: 24, completed: false },
     ],
   },
   {
