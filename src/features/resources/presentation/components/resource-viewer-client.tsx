@@ -26,12 +26,19 @@ type ResourceLesson = {
   resourceUrl: string
   durationMinutes: number
   completed: boolean
+  step: number
+}
+
+type ResourceModule = {
+  id: string
+  title: string
+  lessons: ResourceLesson[]
 }
 
 type ResourceCourseModel = {
   id: string
   title: string
-  modules: ResourceLesson[]
+  modules: ResourceModule[]
 }
 
 function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
@@ -54,14 +61,48 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const activeResource = resourceItems.find((item) => item.id === activeResourceId) ?? null
 
   const courseModel = useMemo<ResourceCourseModel>(() => {
+    const lessonsPerModule = 3
+    const moduleMap = new Map<number, ResourceModule>()
+    
+    resourceItems.forEach((resource, index) => {
+      const moduleIndex = Math.floor(index / lessonsPerModule)
+      const lessonStep = (index % lessonsPerModule) + 1
+      
+      if (!moduleMap.has(moduleIndex)) {
+        moduleMap.set(moduleIndex, {
+          id: `module-${moduleIndex + 1}`,
+          title: `Módulo ${moduleIndex + 1}`,
+          lessons: []
+        })
+      }
+      
+      moduleMap.get(moduleIndex)!.lessons.push({
+        id: resource.id,
+        title: resource.title,
+        type: resource.type === "video" ? "video" : "pdf",
+        resourceUrl: resource.resourceUrl,
+        durationMinutes: resource.durationMinutes ?? 0,
+        completed: Boolean(resource.completed),
+        step: lessonStep
+      })
+    })
+    
+    const modules = Array.from(moduleMap.values()).sort((a, b) => {
+      const aNum = parseInt(a.id.replace('module-', ''))
+      const bNum = parseInt(b.id.replace('module-', ''))
+      return aNum - bNum
+    })
+    
     return {
       id: course.id,
       title: course.title,
-      modules: resourceItems.map(mapResourceToLesson),
+      modules
     }
   }, [course.id, course.title, resourceItems])
 
-  const activeLesson = courseModel.modules.find((lesson) => lesson.id === activeResourceId) ?? null
+  const activeLesson = courseModel.modules
+    .flatMap(m => m.lessons)
+    .find((lesson) => lesson.id === activeResourceId) ?? null
 
   const containerRef = useRef<HTMLDivElement | null>(null)
 

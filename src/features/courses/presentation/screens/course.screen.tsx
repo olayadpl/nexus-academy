@@ -316,36 +316,14 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
               <h2 className="mb-6 text-2xl font-bold">Certificado</h2>
               <div className="rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-6 sm:p-8">
                 <div className="flex flex-col items-center text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                    <Award className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold">Certificado de Finalización</h3>
-                  <p className="mb-4 max-w-md text-sm text-muted-foreground">
+                  <img
+                    src="/images/certificate.png"
+                    alt="Certificate"
+                    className="w-full max-w-md rounded-2xl"
+                  />
+                  <p className="mt-4 max-w-md text-sm text-muted-foreground">
                     Al completar este curso, recibirás un certificado digital que puedes agregar a tu perfil profesional y compartir en LinkedIn.
                   </p>
-                  
-                  {/* Certificate Preview */}
-                  <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                        <Award className="h-6 w-6 text-primary" />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="font-semibold">Nexus Academy</p>
-                        <p className="text-xs text-muted-foreground">Certificado de completación</p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between border-t pt-3">
-                      <div className="text-xs text-muted-foreground">
-                        <p>Emitido a nombre de:</p>
-                        <p className="font-medium text-foreground">{course.authorName ?? "Estudiante"}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">Fecha:</p>
-                        <p className="text-xs font-medium">{new Date().toLocaleDateString('es-ES')}</p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </section>
@@ -376,9 +354,11 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                     </div>
                   </li>
                   <li className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                      <Award className="h-5 w-5 text-primary" />
-                    </div>
+                    <img
+                      src="/images/certificate.png"
+                      alt="Certificate"
+                      className="h-10 w-10 rounded-xl object-cover"
+                    />
                     <div>
                       <p className="font-medium">{t.certificate}</p>
                       <p className="text-xs text-muted-foreground">Al finalizar</p>

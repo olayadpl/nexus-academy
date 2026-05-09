@@ -17,12 +17,19 @@ type ResourceLesson = {
   resourceUrl: string
   durationMinutes: number
   completed: boolean
+  step: number
+}
+
+type ResourceModule = {
+  id: string
+  title: string
+  lessons: ResourceLesson[]
 }
 
 type ResourceCourseModel = {
   id: string
   title: string
-  modules: ResourceLesson[]
+  modules: ResourceModule[]
 }
 
 type LearningNoteItem = {
