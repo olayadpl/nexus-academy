@@ -1,4 +1,4 @@
-import { NotFoundFailure, ValidationFailure } from "@/src/core/error/failures"
+import { NotFoundFailure, ValidationFailure, Failure } from "@/src/core/error/failures"
 import type { CourseEntity } from "../entities/course.entity"
 import type {
   CreateCourseInput,
@@ -51,11 +51,23 @@ export class ManageCourseUseCase {
   }
 
   async getById(id: string): Promise<CourseEntity | null> {
-    return this.repository.getById(id)
+    try {
+      return await this.repository.getById(id)
+    } catch (e) {
+      if (e instanceof Failure) throw e
+      console.error("ManageCourseUseCase.getById error:", e)
+      return null
+    }
   }
 
   async getAll(query?: ListCoursesQuery): Promise<CourseEntity[]> {
-    return this.repository.getAll(query)
+    try {
+      return await this.repository.getAll(query)
+    } catch (e) {
+      if (e instanceof Failure) throw e
+      console.error("ManageCourseUseCase.getAll error:", e)
+      return []
+    }
   }
 
   async deleteById(id: string): Promise<void> {

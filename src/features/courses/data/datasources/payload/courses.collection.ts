@@ -84,7 +84,7 @@ export const CoursesCollection: CollectionConfig = {
       name: "authorAvatarUrl",
       type: "text",
     },
-{
+    {
       name: "modules",
       type: "array",
       fields: [
@@ -99,40 +99,56 @@ export const CoursesCollection: CollectionConfig = {
           required: true,
         },
         {
-          name: "type",
-          type: "select",
-          required: true,
-          options: ["video", "pdf"],
-        },
-        {
-          name: "resourceUrl",
-          type: "text",
-        },
-        {
-          name: "youtubeUrl",
-          type: "text",
-        },
-        {
-          name: "videoFile",
-          type: "upload",
-          relationTo: "media",
-        },
-        {
-          name: "documentFile",
-          type: "upload",
-          relationTo: "media",
-        },
-        {
-          name: "durationMinutes",
-          type: "number",
-          required: true,
-          min: 1,
-        },
-        {
-          name: "completed",
-          type: "checkbox",
-          required: true,
-          defaultValue: false,
+          name: "resources",
+          type: "array",
+          fields: [
+            {
+              name: "id",
+              type: "text",
+              required: true,
+            },
+            {
+              name: "title",
+              type: "text",
+              required: true,
+            },
+            {
+              name: "type",
+              type: "select",
+              required: true,
+              options: ["video", "pdf", "form"],
+            },
+            {
+              name: "youtubeUrl",
+              type: "text",
+            },
+            {
+              name: "videoFile",
+              type: "upload",
+              relationTo: "media",
+            },
+            {
+              name: "documentFile",
+              type: "upload",
+              relationTo: "media",
+            },
+            {
+              name: "formId",
+              type: "text",
+            },
+            {
+              name: "durationMinutes",
+              type: "number",
+              required: true,
+              min: 1,
+            },
+            {
+              name: "completed",
+              type: "checkbox",
+              required: true,
+              defaultValue: false,
+            },
+          ],
         },
       ],
     },

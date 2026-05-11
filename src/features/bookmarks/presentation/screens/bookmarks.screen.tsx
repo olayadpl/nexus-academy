@@ -15,14 +15,14 @@ export async function BookmarksScreen() {
   const bookmarks = await listUserBookmarksAction()
 
   return (
-    <main className="max-w-[1144px] px-4 py-14 md:px-8">
+    <main className="max-w-[71.5rem] px-4 py-14 md:px-8">
       <header className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">Mis Guardados</h1>
         <p className="text-muted-foreground">Organiza tus recursos guardados en colecciones personalizadas</p>
       </header>
 
       {bookmarks.length === 0 ? (
-        <Empty className="min-h-[400px] rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
+        <Empty className="min-h-[25rem] rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <Folder className="size-6 text-muted-foreground" />

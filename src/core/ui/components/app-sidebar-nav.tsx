@@ -33,7 +33,7 @@ import { ScrollArea } from "@/src/core/ui/components/scroll-area"
 import { Branding } from "@/src/core/ui/components/branding"
 
 const mainItems = [
-  { href: "/home", label: "Inicio", icon: Home },
+  { href: "/", label: "Inicio", icon: Home },
   { href: "/bookmarks", label: "Guardados", icon: Bookmark },
   { href: "/history", label: "Historial", icon: History },
 ]

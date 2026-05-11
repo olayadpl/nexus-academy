@@ -3,14 +3,12 @@
 import { AppError } from "@/src/core/error/app-error"
 import { Failure } from "@/src/core/error/failures"
 import { CourseMockDataSource } from "../../data/datasources/mock/course-mock.ds"
-import { CoursePayloadDataSource } from "../../data/datasources/payload/course-payload.ds"
 import { CourseRepositoryImpl } from "../../data/repositories/course.repository-impl"
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import { ManageCourseUseCase } from "../../domain/use-cases/manage-course.use-case"
 
 function createUseCases() {
-  const mode = process.env.DATA_SOURCE_MODE === "mock" ? "mock" : "payload"
-  const dataSource = mode === "mock" ? new CourseMockDataSource() : new CoursePayloadDataSource()
+  const dataSource = new CourseMockDataSource()
   const repository = new CourseRepositoryImpl(dataSource)
 
   return {
@@ -41,7 +39,8 @@ export async function listCoursesAction(): Promise<CourseEntity[]> {
     const { manageCourseUseCase } = createUseCases()
     return await manageCourseUseCase.getAll()
   } catch (error) {
-    mapError(error)
+    console.error("listCoursesAction error:", error)
+    return []
   }
 }
 
@@ -50,7 +49,8 @@ export async function listFeaturedCoursesAction(): Promise<CourseEntity[]> {
     const { manageCourseUseCase } = createUseCases()
     return await manageCourseUseCase.getAll({ featuredOnly: true })
   } catch (error) {
-    mapError(error)
+    console.error("listFeaturedCoursesAction error:", error)
+    return []
   }
 }
 
@@ -59,6 +59,7 @@ export async function getCourseByIdAction(id: string): Promise<CourseEntity | nu
     const { manageCourseUseCase } = createUseCases()
     return await manageCourseUseCase.getById(id)
   } catch (error) {
-    mapError(error)
+    console.error("getCourseByIdAction error:", error)
+    return null
   }
 }

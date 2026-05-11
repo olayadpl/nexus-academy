@@ -16,7 +16,7 @@ export async function HistoryScreen() {
   ])
 
   return (
-    <main className="max-w-[1144px] px-4 py-14 md:px-8">
+    <main className="max-w-[71.5rem] px-4 py-14 md:px-8">
       <header className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">Historial</h1>
         <p className="text-muted-foreground">Visualiza los recursos y cursos visitados recientemente.</p>
@@ -48,7 +48,7 @@ export async function HistoryScreen() {
           </div>
 
           {navigationItems.length === 0 ? (
-            <div className="flex min-h-[300px] w-full items-center justify-center rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
+            <div className="flex min-h-[18.75rem] w-full items-center justify-center rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
               <div className="text-center">
                 <HistoryIcon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                 <h3 className="mb-2 font-semibold">No hay historial</h3>
@@ -95,7 +95,7 @@ export async function HistoryScreen() {
           </div>
 
           {searchItems.length === 0 ? (
-            <div className="flex min-h-[300px] w-full items-center justify-center rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
+            <div className="flex min-h-[18.75rem] w-full items-center justify-center rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
               <div className="text-center">
                 <SearchIcon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                 <h3 className="mb-2 font-semibold">No hay busquedas</h3>

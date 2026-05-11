@@ -9,6 +9,7 @@ const CAREER_PATH_FIXTURES: CareerPathModel[] = [
     description: "Ruta para dominar UI moderna, arquitectura y despliegue frontend.",
     featured: true,
     estimatedHours: 60,
+    coursesCount: 3,
     level: "beginner",
     milestones: [
       {
@@ -32,6 +33,7 @@ const CAREER_PATH_FIXTURES: CareerPathModel[] = [
     description: "Ruta para disenar experiencias de aprendizaje digital.",
     featured: false,
     estimatedHours: 45,
+    coursesCount: 1,
     level: "intermediate",
     milestones: [
       {

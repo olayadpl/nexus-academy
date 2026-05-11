@@ -9,23 +9,26 @@ import { cn } from "@/src/core/ui/lib/utils"
 type ResourceLesson = {
   id: string
   title: string
-  type: "video" | "pdf"
-  resourceUrl: string
+  type: "video" | "pdf" | "form"
+  videoUrl?: string
+  documentUrl?: string
+  youtubeUrl?: string
+  formId?: string
   durationMinutes: number
   completed: boolean
   step: number
 }
 
-type ResourceModule = {
+type ResourceSection = {
   id: string
   title: string
-  lessons: ResourceLesson[]
+  resources: ResourceLesson[]
 }
 
 type ResourceCourseModel = {
   id: string
   title: string
-  modules: ResourceModule[]
+  modules: ResourceSection[]
 }
 
 type ChatMessage = {
@@ -85,7 +88,7 @@ export default function LearningStyleRightPanel({
     <aside
       className={cn(
         "hidden lg:flex lg:h-full lg:flex-col rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden",
-        collapsed ? "lg:w-[72px]" : "lg:w-auto"
+        collapsed ? "lg:w-[4.5rem]" : "lg:w-auto"
       )}
     >
       <div className="border-b px-3 py-2.5">
@@ -183,13 +186,13 @@ export default function LearningStyleRightPanel({
       ) : view === "modules" ? (
         <div className={cn("flex-1 p-4", scrollClass)}>
           <Accordion type="single" collapsible defaultValue={course.modules[0]?.id} className="space-y-3">
-            {course.modules.map((module, moduleIndex) => {
-              const moduleDuration = module.lessons.reduce((a, b) => a + b.durationMinutes, 0)
-              const completedLessons = module.lessons.filter(l => l.completed).length
-              const progress = module.lessons.length > 0 ? Math.round((completedLessons / module.lessons.length) * 100) : 0
-              
+            {course.modules.map((section, sectionIndex) => {
+              const sectionDuration = section.resources.reduce((a, b) => a + b.durationMinutes, 0)
+              const completedResources = section.resources.filter(l => l.completed).length
+              const progress = section.resources.length > 0 ? Math.round((completedResources / section.resources.length) * 100) : 0
+
               return (
-                <AccordionItem key={module.id} value={module.id} className="rounded-2xl border border-border/50 bg-card/50 overflow-hidden">
+                <AccordionItem key={section.id} value={section.id} className="rounded-2xl border border-border/50 bg-card/50 overflow-hidden">
                   <AccordionTrigger className="px-4 py-3 no-underline hover:no-underline hover:bg-muted/30">
                     <div className="flex w-full items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -198,8 +201,8 @@ export default function LearningStyleRightPanel({
                         </svg>
                       </div>
                       <div className="flex-1 text-left">
-                        <p className="font-semibold text-sm">Módulo {moduleIndex + 1}</p>
-                        <p className="text-xs text-muted-foreground">{module.lessons.length} lecciones · {moduleDuration} min</p>
+                        <p className="font-semibold text-sm">Módulo {sectionIndex + 1}</p>
+                        <p className="text-xs text-muted-foreground">{section.resources.length} lecciones · {sectionDuration} min</p>
                       </div>
                       {progress > 0 && (
                         <div className="mr-2 flex items-center gap-2">
@@ -212,9 +215,9 @@ export default function LearningStyleRightPanel({
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="divide-y divide-border/30 px-2 pb-2">
-                      {module.lessons.map((lesson) => {
+                      {section.resources.map((lesson) => {
                         const isActive = activeLessonId === lesson.id
-                        
+
                         return (
                           <button
                             key={lesson.id}

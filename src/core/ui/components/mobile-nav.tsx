@@ -6,7 +6,7 @@ import { Compass, Bookmark, Home, Menu, User } from "lucide-react"
 import { cn } from "@/src/core/ui/lib/utils"
 
 const navItems = [
-  { href: "/home", label: "Inicio", icon: Home },
+  { href: "/", label: "Inicio", icon: Home },
   { href: "/bookmarks", label: "Guardado", icon: Bookmark },
   { href: "/explore", label: "Explorar", icon: Compass },
   { href: "/menu", label: "Menu", icon: Menu },

@@ -25,7 +25,7 @@ export async function CollectionDetailScreen({
   const resources = await listBookmarksByCourseAction(collectionId)
 
   return (
-    <main className="max-w-[1144px] px-4 py-14 md:px-8">
+    <main className="max-w-[71.5rem] px-4 py-14 md:px-8">
       <div className="mb-8">
         <Link href={backHref}>
           <Button variant="ghost" size="sm" className="mb-4">
@@ -41,7 +41,7 @@ export async function CollectionDetailScreen({
       </div>
 
       {resources.length === 0 ? (
-        <Empty className="min-h-[400px] rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
+        <Empty className="min-h-[25rem] rounded-2xl border border-dashed border-muted-foreground/30 bg-muted">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <ArrowLeft className="size-5 text-muted-foreground" />

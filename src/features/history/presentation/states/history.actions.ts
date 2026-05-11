@@ -27,7 +27,8 @@ function mapError(error: unknown): never {
     throw error
   }
 
-  throw new AppError(500, "UNEXPECTED", "Unexpected error")
+  console.error("History action error:", error)
+  throw new AppError(500, "UNEXPECTED", error instanceof Error ? error.message : "Unknown error")
 }
 
 export async function listNavigationHistoryAction(userId = "demo-user"): Promise<NavigationHistoryEntity[]> {

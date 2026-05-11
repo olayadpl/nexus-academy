@@ -19,7 +19,7 @@ export function BriefCard({ brief, index }: BriefCardProps) {
   return (
     <Card className="group relative h-full overflow-hidden rounded-2xl gap-0 py-0">
       <Link href={`/briefs/${brief.id}`} className="block">
-        <div className="relative mx-2 mt-2 h-[246px] w-[calc(100%-16px)] shrink-0 overflow-hidden rounded-[14px] bg-muted">
+        <div className="relative mx-2 mt-2 h-[15.375rem] w-[calc(100%-1rem)] shrink-0 overflow-hidden rounded-[0.875rem] bg-muted">
           <Image
             src={getBriefImage(index)}
             alt={brief.title}

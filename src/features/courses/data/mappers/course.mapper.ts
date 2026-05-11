@@ -1,32 +1,40 @@
-import type { CourseEntity } from "../../domain/entities/course.entity"
+import type { CourseEntity, CourseSectionEntity } from "../../domain/entities/course.entity"
 import type { UpdateCourseInput } from "../../domain/repositories/course.repository"
-import type { CourseModel } from "../models/course.model"
+import type { CourseModel, CourseSectionModel, ResourceModel } from "../models/course.model"
 
 export function modelToEntity(model: CourseModel): CourseEntity {
-  return {
-    id: model.id,
-    title: model.title,
-    description: model.description,
-    level: model.level,
-    durationHours: model.durationHours,
-    rating: model.rating,
-    reviewCount: model.reviewCount,
-    featured: model.featured,
-    progress: model.progress,
-    thumbnailUrl: model.thumbnailUrl,
-    authorName: model.authorName,
-    authorAvatarUrl: model.authorAvatarUrl,
-    modules: model.modules.map((module) => ({
-      id: module.id,
-      title: module.title,
-      type: module.type,
-      resourceUrl: module.resourceUrl,
-      youtubeUrl: module.youtubeUrl,
-      videoUrl: module.videoUrl,
-      documentUrl: module.documentUrl,
-      durationMinutes: module.durationMinutes,
-      completed: module.completed,
-    })),
+  try {
+    return {
+      id: model.id ?? "",
+      title: model.title ?? "",
+      description: model.description ?? "",
+      level: model.level ?? "beginner",
+      durationHours: model.durationHours ?? 0,
+      rating: model.rating ?? 0,
+      reviewCount: model.reviewCount ?? 0,
+      featured: model.featured ?? false,
+      progress: model.progress,
+      thumbnailUrl: model.thumbnailUrl ?? "",
+      authorName: model.authorName,
+      authorAvatarUrl: model.authorAvatarUrl,
+      modules: (model.modules ?? []).map((section) => ({
+        id: section.id ?? "",
+        title: section.title ?? "",
+        resources: (section.resources ?? []).map((r) => ({
+          id: r.id ?? "",
+          title: r.title ?? "",
+          type: r.type,
+          resourceUrl: r.videoFile ?? r.youtubeUrl ?? r.documentFile ?? "",
+          durationMinutes: r.durationMinutes ?? 0,
+          completed: r.completed ?? false,
+          order: 0,
+          courseId: model.id,
+        })),
+      })),
+    }
+  } catch (e) {
+    console.error("modelToEntity error:", e)
+    throw e
   }
 }
 
@@ -44,16 +52,20 @@ export function entityToModel(entity: CourseEntity): CourseModel {
     thumbnailUrl: entity.thumbnailUrl,
     authorName: entity.authorName,
     authorAvatarUrl: entity.authorAvatarUrl,
-    modules: entity.modules.map((module) => ({
-      id: module.id,
-      title: module.title,
-      type: module.type,
-      resourceUrl: module.resourceUrl,
-      youtubeUrl: module.youtubeUrl,
-      videoUrl: module.videoUrl,
-      documentUrl: module.documentUrl,
-      durationMinutes: module.durationMinutes,
-      completed: module.completed,
+    modules: entity.modules.map((section) => ({
+      id: section.id,
+      title: section.title,
+        resources: section.resources.map((r) => ({
+        id: r.id,
+        title: r.title,
+        type: (r.type === "video" || r.type === "pdf" || r.type === "form" ? r.type : "video") as "video" | "pdf" | "form",
+        youtubeUrl: r.type === "video" && r.resourceUrl?.includes("youtube") ? r.resourceUrl : undefined,
+        videoFile: r.type === "video" && !r.resourceUrl?.includes("youtube") ? r.resourceUrl : undefined,
+        documentFile: r.type === "pdf" ? r.resourceUrl : undefined,
+        formId: r.type === "form" ? r.resourceUrl : undefined,
+        durationMinutes: r.durationMinutes,
+        completed: r.completed,
+      })),
     })),
   }
 }
@@ -71,16 +83,20 @@ export function updateInputToPartialModel(input: UpdateCourseInput): Partial<Cou
     thumbnailUrl: input.thumbnailUrl,
     authorName: input.authorName,
     authorAvatarUrl: input.authorAvatarUrl,
-    modules: input.modules?.map((module) => ({
-      id: module.id,
-      title: module.title,
-      type: module.type,
-      resourceUrl: module.resourceUrl,
-      youtubeUrl: module.youtubeUrl,
-      videoUrl: module.videoUrl,
-      documentUrl: module.documentUrl,
-      durationMinutes: module.durationMinutes,
-      completed: module.completed,
+    modules: input.modules?.map((section) => ({
+      id: section.id,
+      title: section.title,
+      resources: section.resources.map((r) => ({
+        id: r.id,
+        title: r.title,
+        type: (r.type === "video" || r.type === "pdf" || r.type === "form" ? r.type : "video") as "video" | "pdf" | "form",
+        youtubeUrl: r.type === "video" && r.resourceUrl?.includes("youtube") ? r.resourceUrl : undefined,
+        videoFile: r.type === "video" && !r.resourceUrl?.includes("youtube") ? r.resourceUrl : undefined,
+        documentFile: r.type === "pdf" ? r.resourceUrl : undefined,
+        formId: r.type === "form" ? r.resourceUrl : undefined,
+        durationMinutes: r.durationMinutes,
+        completed: r.completed,
+      })),
     })),
   }
 }

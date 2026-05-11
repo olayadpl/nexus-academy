@@ -13,23 +13,26 @@ import { cn } from "@/src/core/ui/lib/utils"
 type ResourceLesson = {
   id: string
   title: string
-  type: "video" | "pdf"
-  resourceUrl: string
+  type: "video" | "pdf" | "form"
+  videoUrl?: string
+  documentUrl?: string
+  youtubeUrl?: string
+  formId?: string
   durationMinutes: number
   completed: boolean
   step: number
 }
 
-type ResourceModule = {
+type ResourceSection = {
   id: string
   title: string
-  lessons: ResourceLesson[]
+  resources: ResourceLesson[]
 }
 
 type ResourceCourseModel = {
   id: string
   title: string
-  modules: ResourceModule[]
+  modules: ResourceSection[]
 }
 
 type LearningNoteItem = {
@@ -104,7 +107,7 @@ export default function LearningStyleCourseMain({
   const [zoom, setZoom] = useState(100)
   const videoRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLElement>(null)
-  const activeResourceUrl = activeLesson?.resourceUrl ?? "/images/course-thumbnail.jpg"
+  const activeResourceUrl = activeLesson?.videoUrl ?? activeLesson?.documentUrl ?? activeLesson?.youtubeUrl ?? "/images/course-thumbnail.jpg"
   const activeResourceLabel = activeLesson?.type === "pdf" ? "PDF preview" : "Course video"
   const activeYouTubeEmbedUrl = activeLesson?.type === "video" ? toYouTubeEmbedUrl(activeResourceUrl) : null
 

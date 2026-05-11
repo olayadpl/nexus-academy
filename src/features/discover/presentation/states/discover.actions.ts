@@ -63,36 +63,63 @@ export async function getDiscoverMainAction(): Promise<DiscoverEntity> {
     const { manageDiscoverUseCase } = createUseCases()
     return await manageDiscoverUseCase.getMain()
   } catch (error) {
-    mapError(error)
+    console.error("getDiscoverMainAction error:", error)
+    return {
+      id: "fallback",
+      marketingBanner: { id: "fallback-banner", title: "Bienvenido", description: "", imageUrl: "", ctaText: "Explorar", ctaHref: "/explore" },
+      exploreTitle: "Explorar",
+      exploreSubtitle: "Encuentra tu siguiente tema",
+      subjects: [],
+      featuredCourses: [],
+      featuredCareerPaths: [],
+      bottomBanner: { id: "fallback-bottom", title: "Sigue aprendiendo", ctaText: "Ver mas", ctaHref: "/courses" },
+      faq: [],
+    }
   }
 }
 
 export async function getDiscoverSnapshotAction(): Promise<DiscoverSnapshot> {
-  const [sessionUser, featuredCourses, featuredCareerPaths, continueLearning, recentBookmarks, recentAssessments] = await Promise.all([
-    getCurrentSessionAction(),
-    listFeaturedCoursesAction(),
-    listFeaturedCareerPathsAction(),
-    listContinueLearningAction(),
-    listRecentBookmarksAction(),
-    listUserAssessmentsAction(),
-  ])
+  try {
+    const [sessionUser, featuredCourses, featuredCareerPaths, continueLearning, recentBookmarks, recentAssessments] = await Promise.all([
+      getCurrentSessionAction().catch(() => null),
+      listFeaturedCoursesAction(),
+      listFeaturedCareerPathsAction().catch(() => []),
+      listContinueLearningAction().catch(() => []),
+      listRecentBookmarksAction().catch(() => []),
+      listUserAssessmentsAction().catch(() => []),
+    ])
 
-  const lessonsCompleted = continueLearning.reduce((acc, item) => {
-    const completed = item.course.modules.filter((module) => module.completed).length
-    return acc + completed
-  }, 0)
+    const lessonsCompleted = continueLearning.reduce((acc, item) => {
+      const completed = (item.course?.modules ?? []).reduce(
+        (sectionAcc, section) => sectionAcc + (section.resources ?? []).filter((mod) => mod.completed).length,
+        0
+      )
+      return acc + completed
+    }, 0)
 
-  return {
-    greetingName: sessionUser?.name.split(/\s+/)[0] ?? "Usuario",
-    stats: {
-      coursesInProgress: continueLearning.length,
-      lessonsCompleted,
-      dayStreak: 12,
-    },
-    featuredCourses,
-    featuredCareerPaths,
-    continueLearning,
-    recentBookmarks,
-    recentAssessments: recentAssessments.slice(0, 3),
+    return {
+      greetingName: sessionUser?.name?.split(/\s+/)[0] ?? "Usuario",
+      stats: {
+        coursesInProgress: continueLearning.length,
+        lessonsCompleted,
+        dayStreak: 12,
+      },
+      featuredCourses: featuredCourses ?? [],
+      featuredCareerPaths: featuredCareerPaths ?? [],
+      continueLearning: continueLearning ?? [],
+      recentBookmarks: recentBookmarks ?? [],
+      recentAssessments: (recentAssessments ?? []).slice(0, 3),
+    }
+  } catch (error) {
+    console.error("getDiscoverSnapshotAction error:", error)
+    return {
+      greetingName: "Usuario",
+      stats: { coursesInProgress: 0, lessonsCompleted: 0, dayStreak: 0 },
+      featuredCourses: [],
+      featuredCareerPaths: [],
+      continueLearning: [],
+      recentBookmarks: [],
+      recentAssessments: [],
+    }
   }
 }

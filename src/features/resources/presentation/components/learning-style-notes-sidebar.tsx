@@ -93,7 +93,7 @@ export default function LearningStyleNotesSidebar({ resourceId, collapsed: colla
     <aside
       className={cn(
         "hidden lg:flex lg:h-full lg:flex-col rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden",
-        collapsed ? "lg:w-[72px]" : "lg:w-auto"
+        collapsed ? "lg:w-[4.5rem]" : "lg:w-auto"
       )}
     >
       <div className="flex items-center justify-between border-b px-3 py-2.5">

@@ -3,6 +3,10 @@ import type { UpdateCareerPathInput } from "../../domain/repositories/career-pat
 import type { CareerPathModel } from "../models/career-path.model"
 
 export function modelToEntity(model: CareerPathModel): CareerPathEntity {
+  const totalCourses = model.milestones.reduce(
+    (acc, m) => acc + m.courseIds.length,
+    0
+  )
   return {
     id: model.id,
     slug: model.slug,
@@ -10,6 +14,7 @@ export function modelToEntity(model: CareerPathModel): CareerPathEntity {
     description: model.description,
     featured: model.featured,
     estimatedHours: model.estimatedHours,
+    coursesCount: totalCourses,
     level: model.level,
     milestones: model.milestones.map((milestone) => ({
       id: milestone.id,
@@ -28,6 +33,7 @@ export function entityToModel(entity: CareerPathEntity): CareerPathModel {
     description: entity.description,
     featured: entity.featured,
     estimatedHours: entity.estimatedHours,
+    coursesCount: entity.coursesCount,
     level: entity.level,
     milestones: entity.milestones.map((milestone) => ({
       id: milestone.id,

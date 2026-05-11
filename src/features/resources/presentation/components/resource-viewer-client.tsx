@@ -17,42 +17,63 @@ type ResourceViewerClientProps = {
   }
   resources: ResourceEntity[]
   initialResourceId?: string
+  courseModules?: {
+    id: string
+    title: string
+    resources: {
+      id: string
+      title: string
+      type: "video" | "pdf" | "form"
+      youtubeUrl?: string
+      videoFile?: string
+      documentFile?: string
+      formId?: string
+      durationMinutes: number
+      completed: boolean
+    }[]
+  }[]
 }
 
 type ResourceLesson = {
   id: string
   title: string
-  type: "video" | "pdf"
-  resourceUrl: string
+  type: "video" | "pdf" | "form"
+  videoUrl?: string
+  documentUrl?: string
+  youtubeUrl?: string
+  formId?: string
   durationMinutes: number
   completed: boolean
   step: number
 }
 
-type ResourceModule = {
+type ResourceSection = {
   id: string
   title: string
-  lessons: ResourceLesson[]
+  resources: ResourceLesson[]
 }
 
 type ResourceCourseModel = {
   id: string
   title: string
-  modules: ResourceModule[]
+  modules: ResourceSection[]
 }
 
 function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
+  const isVideo = resource.type === "video"
   return {
     id: resource.id,
     title: resource.title,
-    type: resource.type === "video" ? "video" : "pdf",
-    resourceUrl: resource.resourceUrl,
+    type: isVideo ? "video" : resource.type === "form" ? "form" : "pdf",
+    videoUrl: isVideo ? resource.resourceUrl : undefined,
+    documentUrl: !isVideo ? resource.resourceUrl : undefined,
     durationMinutes: resource.durationMinutes ?? 0,
     completed: Boolean(resource.completed),
+    step: (resource as any).order ?? 1,
   }
 }
 
-export function ResourceViewerClient({ course, resources, initialResourceId }: ResourceViewerClientProps) {
+export function ResourceViewerClient({ course, resources, initialResourceId, courseModules }: ResourceViewerClientProps) {
   const [resourceItems, setResourceItems] = useState(resources)
   const initial = initialResourceId
     ? resourceItems.find((item) => item.id === initialResourceId) ?? resourceItems[0] ?? null
@@ -61,47 +82,71 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   const activeResource = resourceItems.find((item) => item.id === activeResourceId) ?? null
 
   const courseModel = useMemo<ResourceCourseModel>(() => {
+    if (courseModules && courseModules.length > 0) {
+      return {
+        id: course.id,
+        title: course.title,
+        modules: courseModules.map((section, sectionIdx) => ({
+          id: section.id,
+          title: section.title,
+          resources: section.resources.map((r, lessonIdx) => ({
+            id: r.id,
+            title: r.title,
+            type: r.type,
+            videoUrl: r.videoFile,
+            documentUrl: r.documentFile,
+            youtubeUrl: r.youtubeUrl,
+            formId: r.formId,
+            durationMinutes: r.durationMinutes,
+            completed: r.completed,
+            step: (lessonIdx % 3) + 1,
+          })),
+        })),
+      }
+    }
+
     const lessonsPerModule = 3
-    const moduleMap = new Map<number, ResourceModule>()
-    
+    const moduleMap = new Map<number, ResourceSection>()
+
     resourceItems.forEach((resource, index) => {
       const moduleIndex = Math.floor(index / lessonsPerModule)
       const lessonStep = (index % lessonsPerModule) + 1
-      
+
       if (!moduleMap.has(moduleIndex)) {
         moduleMap.set(moduleIndex, {
-          id: `module-${moduleIndex + 1}`,
+          id: `section-${moduleIndex + 1}`,
           title: `Módulo ${moduleIndex + 1}`,
-          lessons: []
+          resources: []
         })
       }
-      
-      moduleMap.get(moduleIndex)!.lessons.push({
+
+      moduleMap.get(moduleIndex)!.resources.push({
         id: resource.id,
         title: resource.title,
-        type: resource.type === "video" ? "video" : "pdf",
-        resourceUrl: resource.resourceUrl,
+        type: resource.type === "video" ? "video" : resource.type === "form" ? "form" : "pdf",
+        videoUrl: resource.type === "video" ? resource.resourceUrl : undefined,
+        documentUrl: resource.type === "pdf" ? resource.resourceUrl : undefined,
         durationMinutes: resource.durationMinutes ?? 0,
         completed: Boolean(resource.completed),
         step: lessonStep
       })
     })
-    
+
     const modules = Array.from(moduleMap.values()).sort((a, b) => {
-      const aNum = parseInt(a.id.replace('module-', ''))
-      const bNum = parseInt(b.id.replace('module-', ''))
+      const aNum = parseInt(a.id.replace('section-', ''))
+      const bNum = parseInt(b.id.replace('section-', ''))
       return aNum - bNum
     })
-    
+
     return {
       id: course.id,
       title: course.title,
       modules
     }
-  }, [course.id, course.title, resourceItems])
+  }, [course.id, course.title, resourceItems, courseModules])
 
   const activeLesson = courseModel.modules
-    .flatMap(m => m.lessons)
+    .flatMap(m => m.resources)
     .find((lesson) => lesson.id === activeResourceId) ?? null
 
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -214,7 +259,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId }: R
   useEffect(() => {
     if (!isResizingLeft && !isResizingRight) return
 
-    const onPointerMove = (event: PointerEvent) => handleResize(event as unknown as MouseEvent)
+    const onPointerMove = (event: PointerEvent) => handleResize(event)
     const onPointerUp = () => stopResizing()
 
     window.addEventListener("pointermove", onPointerMove)

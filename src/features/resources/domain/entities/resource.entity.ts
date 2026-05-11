@@ -1,6 +1,7 @@
 export type ResourceType =
   | "video"
   | "pdf"
+  | "form"
   | "document"
   | "ebook"
   | "article"

@@ -12,7 +12,7 @@ function SearchGridSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="h-[360px] animate-pulse rounded-[20px] bg-muted" />
+        <div key={i} className="h-[22.5rem] animate-pulse rounded-[1.25rem] bg-muted" />
       ))}
     </div>
   )

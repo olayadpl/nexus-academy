@@ -33,7 +33,7 @@ function CollectionCardSkeleton() {
 
 export function BookmarksPageSkeleton() {
   return (
-    <div className="max-w-[1144px] px-4 py-14 md:px-8">
+    <div className="max-w-[71.5rem] px-4 py-14 md:px-8">
       <div className="mb-8">
         <Skeleton className="mb-2 h-9 w-48" />
         <Skeleton className="h-5 w-96" />
@@ -50,7 +50,7 @@ export function BookmarksPageSkeleton() {
 
 export function CollectionDetailSkeleton() {
   return (
-    <div className="max-w-[1144px] px-4 py-14 md:px-8">
+    <div className="max-w-[71.5rem] px-4 py-14 md:px-8">
       <div className="mb-8">
         <Skeleton className="mb-4 h-9 w-32" />
         <div className="space-y-2">

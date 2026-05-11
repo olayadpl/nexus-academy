@@ -13,7 +13,7 @@ function SectionSkeleton() {
   return (
     <div className="grid grid-cols-1 justify-items-center gap-6 lg:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="h-[473px] w-full max-w-[343px] animate-pulse rounded-[20px] bg-muted" />
+        <div key={i} className="h-[29.5625rem] w-full max-w-[21.4375rem] animate-pulse rounded-[20px] bg-muted" />
       ))}
     </div>
   )
@@ -42,7 +42,7 @@ export async function ExploreScreen() {
           <div className="mt-10 space-y-12 md:space-y-16 ">
             <section className="flex flex-col gap-4">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold md:text-[22px]">Cursos</h2>
+                <h2 className="text-xl font-semibold md:text-[1.375rem]">Cursos</h2>
                 <Link href="/courses" className="font-bold text-muted-foreground hover:text-foreground">
                   Ver todos
                 </Link>
@@ -50,7 +50,7 @@ export async function ExploreScreen() {
               {featuredCourses.length === 0 ? (
                 <SectionSkeleton />
               ) : (
-                <div className="grid grid-cols-1 justify-items-center gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {featuredCourses.slice(0, 3).map((course, idx) => (
                     <CourseCard key={course.id} course={course} index={idx} />
                   ))}
@@ -60,7 +60,7 @@ export async function ExploreScreen() {
 
             <section className="flex flex-col gap-4">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold md:text-[22px]">Briefs</h2>
+                <h2 className="text-xl font-semibold md:text-[1.375rem]">Briefs</h2>
                 <Link href="/briefs" className="font-bold text-muted-foreground hover:text-foreground">
                   Ver todos
                 </Link>
@@ -68,7 +68,7 @@ export async function ExploreScreen() {
               {briefs.length === 0 ? (
                 <SectionSkeleton />
               ) : (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {briefs.slice(0, 3).map((brief, idx) => (
                     <BriefCard
                       key={brief.id}

@@ -156,7 +156,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
         <div className="flex w-full items-center">
           <div className="flex flex-1 items-center justify-between pl-4 pr-4 sm:pr-6 lg:pr-8">
             <div className="flex items-center gap-3">
-              <Branding href="/explore" className="relative top-[2px] h-9 w-9 md:hidden" />
+              <Branding href="/explore" className="relative top-[0.125rem] h-9 w-9 md:hidden" />
               {isResourcePage && (
                 <Button
                   variant="ghost"
@@ -203,7 +203,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
               {!isResourcePage && (
                 <form
                   onSubmit={submitHeaderSearch}
-                  className="flex h-9 w-full max-w-[220px] items-center gap-2 rounded-full border bg-muted/50 px-3 text-sm text-muted-foreground md:hidden"
+                  className="flex h-9 w-full max-w-[13.75rem] items-center gap-2 rounded-full border bg-muted/50 px-3 text-sm text-muted-foreground md:hidden"
                 >
                   <Search className="h-4 w-4 shrink-0" />
                   <input

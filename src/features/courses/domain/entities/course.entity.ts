@@ -1,16 +1,11 @@
 export type CourseLevel = "beginner" | "intermediate" | "advanced"
-export type CourseResourceType = "video" | "pdf"
 
-export interface CourseModuleEntity {
+import type { ResourceEntity } from "@/src/features/resources/domain/entities/resource.entity"
+
+export interface CourseSectionEntity {
   id: string
   title: string
-  type: CourseResourceType
-  resourceUrl?: string
-  youtubeUrl?: string
-  videoUrl?: string
-  documentUrl?: string
-  durationMinutes: number
-  completed: boolean
+  resources: ResourceEntity[]
 }
 
 export interface CourseEntity {
@@ -26,5 +21,5 @@ export interface CourseEntity {
   thumbnailUrl: string
   authorName?: string
   authorAvatarUrl?: string
-  modules: CourseModuleEntity[]
+  modules: CourseSectionEntity[]
 }

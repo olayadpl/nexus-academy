@@ -23,11 +23,11 @@ export function CourseResourceScreen({ course }: CourseResourceScreenProps) {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">Modulos</h2>
         <ul className="space-y-2">
-          {course.modules.map((module) => (
-            <li key={module.id} className="rounded-lg border border-border bg-card px-4 py-3">
-              <p className="text-sm font-medium text-foreground">{module.title}</p>
+          {course.modules.map((section) => (
+            <li key={section.id} className="rounded-lg border border-border bg-card px-4 py-3">
+              <p className="text-sm font-medium text-foreground">{section.title}</p>
               <p className="text-xs text-muted-foreground">
-                {module.type.toUpperCase()} · {module.durationMinutes} min · {module.completed ? "Completado" : "Pendiente"}
+                {section.resources.length} lecciones
               </p>
             </li>
           ))}

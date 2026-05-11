@@ -211,18 +211,18 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
             <section>
               <h2 className="mb-6 text-2xl font-bold">Lo que aprenderás</h2>
               <div className="grid gap-4 sm:grid-cols-2">
-                {course.modules.slice(0, 6).map((m, i) => (
-                  <div key={m.id} className="flex items-start gap-3 rounded-2xl bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+                {course.modules.slice(0, 6).map((section, i) => (
+                  <div key={section.id} className="flex items-start gap-3 rounded-2xl bg-muted/30 p-4 transition-colors hover:bg-muted/50">
                     <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
                       <CheckCircle2 className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm font-medium">{stripNumberPrefix(m.title)}</span>
+                    <span className="text-sm font-medium">{stripNumberPrefix(section.title)}</span>
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Course Content */}
+{/* Course Content */}
             <section>
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-2xl font-bold">Contenido del curso</h2>
@@ -230,30 +230,29 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                   {course.modules.length} módulos
                 </Badge>
               </div>
-              
+
               <div className="space-y-3">
                 <Accordion type="single" collapsible className="space-y-3">
-                  {course.modules.map((m, i) => (
-                    <AccordionItem key={m.id} value={`module-${m.id}`} className="rounded-2xl border border-border/50 bg-card/50 overflow-hidden transition-colors hover:bg-card">
+                  {course.modules.map((section, si) => (
+                    <AccordionItem key={section.id} value={`section-${section.id}`} className="rounded-2xl border border-border/50 bg-card/50 overflow-hidden transition-colors hover:bg-card">
                       <AccordionTrigger className="px-6 py-5 no-underline hover:no-underline hover:bg-muted/30">
                         <div className="flex w-full items-center justify-between pr-4">
                           <div className="flex items-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                              {m.type === "video" ? <PlayCircle className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
+                              {section.resources[0]?.type === "video" ? <PlayCircle className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                             </div>
                             <div className="text-left">
-                              <p className="font-semibold">Módulo {i + 1}</p>
-                              <p className="text-sm text-muted-foreground">{stripNumberPrefix(m.title)}</p>
+                              <p className="font-semibold">Módulo {si + 1}</p>
+                              <p className="text-sm text-muted-foreground">{stripNumberPrefix(section.title)}</p>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-3">
                             {(() => {
-                              const matched = resources.filter(r => r.id === m.id || stripNumberPrefix(r.title) === stripNumberPrefix(m.title))
-                              const modDuration = matched.reduce((a, b) => a + (Number(b.durationMinutes) || 0), 0) || (m.durationMinutes ?? 0)
-                              return modDuration > 0 ? (
+                              const sectionDuration = section.resources.reduce((a, b) => a + b.durationMinutes, 0)
+                              return sectionDuration > 0 ? (
                                 <Badge variant="outline" className="text-xs">
-                                  {formatDuration(modDuration)}
+                                  {formatDuration(sectionDuration)}
                                 </Badge>
                               ) : null
                             })()}
@@ -264,30 +263,26 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                       <AccordionContent>
                         <div className="px-6 pb-6">
                           <Separator className="mb-4" />
-                          {resources && resources.length > 0 ? (
-                            <div className="space-y-1">
-                              {resources.map((resource, idx) => (
-                                <Link 
-                                  key={resource.id} 
-                                  href={`/resource/${course.id}?resource=${resource.id}`}
-                                  className="flex items-center justify-between rounded-xl p-3 transition-colors hover:bg-muted/50"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                      {getResourceIcon(resource.type)}
-                                    </div>
-                                    <div>
-                                      <p className="font-medium">{stripNumberPrefix(resource.title)}</p>
-                                      <p className="text-xs text-muted-foreground">{resource.durationMinutes ? formatDuration(resource.durationMinutes) : ""}</p>
-                                    </div>
+                          <div className="space-y-1">
+                            {section.resources.map((lesson, li) => (
+                              <Link
+                                key={lesson.id}
+                                href={`/resource/${course.id}?resource=${lesson.id}`}
+                                className="flex items-center justify-between rounded-xl p-3 transition-colors hover:bg-muted/50"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    {lesson.type === "video" ? <PlayCircle className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
                                   </div>
-                                  <PlayCircle className="h-5 w-5 text-muted-foreground" />
-                                </Link>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-sm text-muted-foreground">Contenido del módulo disponible...</p>
-                          )}
+                                  <div>
+                                    <p className="font-medium">{stripNumberPrefix(lesson.title)}</p>
+                                    <p className="text-xs text-muted-foreground">{lesson.durationMinutes ? formatDuration(lesson.durationMinutes) : ""}</p>
+                                  </div>
+                                </div>
+                                <PlayCircle className="h-5 w-5 text-muted-foreground" />
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>

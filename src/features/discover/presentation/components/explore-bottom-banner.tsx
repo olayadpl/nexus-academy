@@ -9,10 +9,10 @@ interface ExploreBottomBannerProps {
 export function ExploreBottomBanner({ banner }: ExploreBottomBannerProps) {
   return (
     <div className="mx-0 block md:mx-0">
-      <div className="flex flex-col items-start rounded-none bg-primary px-6 py-8 md:rounded-[32px] md:p-12">
+      <div className="flex flex-col items-start rounded-none bg-primary px-6 py-8 md:rounded-[2rem] md:p-12">
         <div className="flex w-full flex-col items-start gap-8">
           <div className="flex flex-col">
-            <div className="text-[32px] font-bold leading-10 tracking-[-0.64px] text-primary-foreground md:text-[40px] md:leading-[48px] md:tracking-[-0.8px]">
+            <div className="text-[2rem] font-bold leading-10 tracking-[-0.04rem] text-primary-foreground md:text-[2.5rem] md:leading-12 md:tracking-[-0.05rem]">
               {banner.title}
             </div>
           </div>

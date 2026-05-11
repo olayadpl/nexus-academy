@@ -1,3 +1,4 @@
+import { Failure } from "@/src/core/error/failures"
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import type {
   CreateCourseInput,
@@ -29,18 +30,26 @@ export class CourseRepositoryImpl implements ICourseRepository {
   }
 
   async getById(id: string): Promise<CourseEntity | null> {
-    const model = await this.remoteDataSource.getById(id)
-
-    if (!model) {
+    try {
+      const model = await this.remoteDataSource.getById(id)
+      if (!model) return null
+      return modelToEntity(model)
+    } catch (e) {
+      if (e instanceof Failure) throw e
+      console.error("CourseRepositoryImpl.getById error:", e)
       return null
     }
-
-    return modelToEntity(model)
   }
 
   async getAll(query?: ListCoursesQuery): Promise<CourseEntity[]> {
-    const models = await this.remoteDataSource.getAll(query)
-    return models.map(modelToEntity)
+    try {
+      const models = await this.remoteDataSource.getAll(query)
+      return models.map(modelToEntity)
+    } catch (e) {
+      if (e instanceof Failure) throw e
+      console.error("CourseRepositoryImpl.getAll error:", e)
+      return []
+    }
   }
 
   async deleteById(id: string): Promise<void> {

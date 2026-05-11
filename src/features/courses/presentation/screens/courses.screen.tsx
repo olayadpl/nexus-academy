@@ -51,7 +51,7 @@ export async function CoursesScreen() {
 
       <section className="mt-14 md:mt-20">
         <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold leading-[30px] md:text-[22px] md:leading-8">Preguntas frecuentes</h2>
-        <div className="rounded-[20px] bg-muted p-6 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:rounded-3xl md:p-8">
+        <div className="rounded-[1.25rem] bg-muted p-6 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:rounded-3xl md:p-8">
           <Accordion type="single" collapsible>
             {faqItems.map((item, index) => (
               <AccordionItem key={item.question} value={`faq-${index}`}>

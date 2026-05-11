@@ -5,6 +5,7 @@ export interface CareerPathModel {
   description: string
   featured: boolean
   estimatedHours: number
+  coursesCount: number
   level: "beginner" | "intermediate" | "advanced"
   milestones: {
     id: string

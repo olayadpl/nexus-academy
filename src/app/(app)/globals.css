@@ -6,6 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --base-font-size: calc(16px + (100vw - 1380px) * (7 / (1920 - 1380)));
+  font-size: clamp(16px, var(--base-font-size), 20px);
   --background: oklch(0.98 0.001 240);
   --foreground: oklch(0.2 0.008 240);
   --card: oklch(1 0 0);

@@ -16,7 +16,7 @@ export function ExploreFaqSection({ faq }: ExploreFaqSectionProps) {
       <h2 className="flex items-center gap-2 text-xl font-semibold leading-[30px] md:text-[22px] md:leading-8">
         Preguntas frecuentes
       </h2>
-      <div className="rounded-[20px] bg-muted p-6 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:rounded-3xl md:p-8">
+      <div className="rounded-[1.25rem] bg-muted p-6 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:rounded-3xl md:p-8">
         <Accordion type="single" collapsible>
           {faq.map((item) => (
             <AccordionItem key={item.id} value={item.id}>

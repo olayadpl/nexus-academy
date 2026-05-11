@@ -9,8 +9,8 @@ interface ExploreMarketingBannerProps {
 
 export function ExploreMarketingBanner({ banner }: ExploreMarketingBannerProps) {
   return (
-    <section className="relative flex flex-col items-start justify-center overflow-hidden rounded-[28px] bg-muted px-5 py-8 md:rounded-[32px] md:py-12 md:pl-12 md:pr-[416px]">
-      <h1 className="max-w-[18ch] text-[26px] font-bold leading-8 tracking-[-0.48px] md:mb-3 md:max-w-none md:text-[32px] md:leading-10 md:tracking-[-0.64px]">
+    <section className="relative flex flex-col items-start justify-center overflow-hidden rounded-[1.75rem] bg-muted px-5 py-8 md:rounded-[2rem] md:py-12 md:pl-12 md:pr-[26rem]">
+      <h1 className="max-w-[18ch] text-[1.625rem] font-bold leading-8 tracking-[-0.03rem] md:mb-3 md:max-w-none md:text-[2rem] md:leading-10 md:tracking-[-0.04rem]">
         {banner.title}
       </h1>
       <p className="mt-2 max-w-[34ch] text-sm leading-6 text-muted-foreground md:mt-0 md:text-base md:leading-[26px]">
@@ -21,7 +21,7 @@ export function ExploreMarketingBanner({ banner }: ExploreMarketingBannerProps) 
           <Link href={banner.ctaHref} className="inline-block text-white">{banner.ctaText}</Link>
         </Button>
       </div>
-      <div className="absolute right-0 top-0 hidden h-full w-[368px] max-w-full shrink-0 md:block">
+      <div className="absolute right-0 top-0 hidden h-full w-[23rem] max-w-full shrink-0 md:block">
         <Image src={banner.imageUrl} alt="marketing-banner" fill className="object-cover" />
       </div>
     </section>

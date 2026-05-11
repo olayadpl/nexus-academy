@@ -66,12 +66,11 @@ export function CourseCard({ course, index }: CourseCardProps) {
     <Link
       href={`/courses/${course.id}`}
       className={cn(
-        "block h-full w-full md:w-[343px]",
-        isSidebarCollapsed && "md:w-[344px]"
+        "block h-full w-full"
       )}
     >
-      <Card className="group relative flex h-full flex-col overflow-hidden rounded-[20px] px-0 py-0 shadow-md hover:shadow-lg transition-all hover:text-primary gap-1">
-        <div className="relative mx-2 mt-2 h-[246px] w-[calc(100%-16px)] shrink-0 overflow-hidden rounded-[14px] bg-muted">
+      <Card className="group relative flex h-full flex-col overflow-hidden rounded-2xl px-0 py-0 shadow-md hover:shadow-lg transition-all hover:text-primary gap-0">
+        <div className="relative mx-2 mt-2 h-[15.375rem] w-[calc(100%-1rem)] shrink-0 overflow-hidden rounded-[0.875rem] bg-muted">
           <Image
             src={courseImage}
             alt={course.title}
@@ -103,24 +102,24 @@ export function CourseCard({ course, index }: CourseCardProps) {
           <div className="flex items-start justify-between">
             <div className="flex min-w-0 flex-1 flex-col pr-12">
               <div className="text-muted-foreground text-xs font-bold tracking-[0.5px] leading-4 uppercase">Course</div>
-              <h3 className="text-foreground mt-1 mb-1 line-clamp-2 text-base font-semibold leading-[26px]">{course.title}</h3>
+              <h3 className="text-foreground mt-1 mb-1 line-clamp-2 text-lg font-semibold leading-7">{course.title}</h3>
             </div>
           </div>
 
-          <div className="mb-2 line-clamp-2 text-[14px] leading-5 flex-1">{course.description}</div>
+          <div className="mb-2 line-clamp-2 text-base leading-6 flex-1">{course.description}</div>
 
           <div className="mt-2 flex items-center gap-2 md:gap-3">
             <div className="flex items-center gap-2 text-muted-foreground">
               <BookOpen className="h-4 w-4 shrink-0" />
-              <span className="truncate text-[14px] leading-5">{levelLabels[course.level]}</span>
+              <span className="truncate text-base leading-6">{levelLabels[course.level]}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4 shrink-0" />
-              <span className="whitespace-nowrap text-sm leading-6">{course.durationHours}h</span>
+              <span className="whitespace-nowrap text-base leading-6">{course.durationHours}h</span>
             </div>
             <div className="ml-auto flex items-center gap-2 text-muted-foreground">
               <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
-              <span className="whitespace-nowrap text-[14px] leading-5">
+              <span className="whitespace-nowrap text-base leading-6">
                 <strong className="font-bold">{course.rating}</strong> ({new Intl.NumberFormat("en-US").format(course.reviewCount)})
               </span>
             </div>

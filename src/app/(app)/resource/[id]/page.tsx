@@ -29,6 +29,7 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
       }}
       resources={resources}
       initialResourceId={query?.resource ?? resources[0]?.id}
+      courseModules={course.modules}
     />
   )
 }
