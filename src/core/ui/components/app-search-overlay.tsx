@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getTranslations } from "@/src/lib/i18n/translations"
 import {
   CommandDialog,
   CommandEmpty,
@@ -18,18 +20,6 @@ type AppSearchOverlayProps = {
   onOpenChange: (open: boolean) => void
 }
 
-const NAV_ITEMS = [
-  { href: "/explore", label: "Explorar", hint: "Descubrir contenido" },
-  { href: "/courses", label: "Cursos", hint: "Catalogo de cursos" },
-  { href: "/career-paths", label: "Rutas", hint: "Rutas de aprendizaje" },
-  { href: "/briefs", label: "Investigacion", hint: "Retos y proyectos" },
-  { href: "/assessments", label: "Evaluaciones", hint: "Autoevaluaciones" },
-  { href: "/bookmarks", label: "Biblioteca", hint: "Recursos guardados" },
-  { href: "/history", label: "Historial", hint: "Actividad reciente" },
-  { href: "/settings", label: "Ajustes", hint: "Preferencias de usuario" },
-  { href: "/collections", label: "Repositorio", hint: "Colecciones y curacion" },
-]
-
 const SEARCHABLE_ITEMS = SEARCH_FIXTURES.map((item) => ({
   id: item.id,
   href: `/search?q=${encodeURIComponent(item.title)}`,
@@ -41,6 +31,20 @@ const SEARCHABLE_ITEMS = SEARCH_FIXTURES.map((item) => ({
 export function AppSearchOverlay({ open, onOpenChange }: AppSearchOverlayProps) {
   const router = useRouter()
   const [query, setQuery] = useState("")
+  const { locale } = useLocale()
+  const t = getTranslations(locale)
+
+  const navItems = [
+    { href: "/explore", label: t.nav.explore, hint: t.searchOverlay.navHints.explore },
+    { href: "/courses", label: t.nav.courses, hint: t.searchOverlay.navHints.courses },
+    { href: "/career-paths", label: t.nav.careerPaths, hint: t.searchOverlay.navHints.careerPaths },
+    { href: "/briefs", label: t.nav.briefs, hint: t.searchOverlay.navHints.briefs },
+    { href: "/assessments", label: t.nav.assessments, hint: t.searchOverlay.navHints.assessments },
+    { href: "/bookmarks", label: t.nav.bookmarks, hint: t.searchOverlay.navHints.bookmarks },
+    { href: "/history", label: t.nav.history, hint: t.searchOverlay.navHints.history },
+    { href: "/settings", label: t.header.settings, hint: t.searchOverlay.navHints.settings },
+    { href: "/collections", label: t.header.repository, hint: t.searchOverlay.navHints.collections },
+  ]
 
   const normalizedQuery = query.trim().toLowerCase()
 
@@ -72,8 +76,8 @@ export function AppSearchOverlay({ open, onOpenChange }: AppSearchOverlayProps) 
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Buscar"
-      description="Busca una ruta o seccion"
+      title={t.searchOverlay.title}
+      description={t.searchOverlay.description}
       className="max-w-2xl"
     >
       <CommandInput
@@ -85,11 +89,11 @@ export function AppSearchOverlay({ open, onOpenChange }: AppSearchOverlayProps) 
             submitSearch(query)
           }
         }}
-        placeholder="Buscar recursos, cursos o apps..."
+        placeholder={t.searchOverlay.placeholder}
       />
       <CommandList>
-        <CommandEmpty>Sin resultados.</CommandEmpty>
-        <CommandGroup heading="Resultados">
+        <CommandEmpty>{t.searchOverlay.empty}</CommandEmpty>
+        <CommandGroup heading={t.searchOverlay.results}>
           {filteredResults.map((item) => (
             <CommandItem key={item.id} value={item.value} onSelect={() => goTo(item.href)}>
               <div className="flex flex-col">
@@ -100,8 +104,8 @@ export function AppSearchOverlay({ open, onOpenChange }: AppSearchOverlayProps) 
           ))}
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Navegacion">
-          {NAV_ITEMS.map((item) => (
+        <CommandGroup heading={t.searchOverlay.navigation}>
+          {navItems.map((item) => (
             <CommandItem
               key={item.href}
               value={`${item.label} ${item.hint} ${item.href}`}
@@ -115,10 +119,10 @@ export function AppSearchOverlay({ open, onOpenChange }: AppSearchOverlayProps) 
           ))}
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Cuenta">
-          <CommandItem value="Entrar login" onSelect={() => goTo("/login")}>Iniciar sesion</CommandItem>
-          <CommandItem value="Registro signup" onSelect={() => goTo("/signup")}>Registrarse</CommandItem>
-          <CommandItem value="Perfil" onSelect={() => goTo("/profile")}>Perfil</CommandItem>
+        <CommandGroup heading={t.searchOverlay.account}>
+          <CommandItem value="login" onSelect={() => goTo("/login")}>{t.searchOverlay.login}</CommandItem>
+          <CommandItem value="signup" onSelect={() => goTo("/signup")}>{t.searchOverlay.signup}</CommandItem>
+          <CommandItem value="profile" onSelect={() => goTo("/profile")}>{t.searchOverlay.profile}</CommandItem>
         </CommandGroup>
       </CommandList>
     </CommandDialog>

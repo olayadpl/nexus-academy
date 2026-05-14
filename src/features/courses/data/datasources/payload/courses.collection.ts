@@ -19,11 +19,13 @@ export const CoursesCollection: CollectionConfig = {
       name: "title",
       type: "text",
       required: true,
+      localized: true,
     },
     {
       name: "description",
       type: "textarea",
       required: true,
+      localized: true,
     },
     {
       name: "level",
@@ -97,6 +99,7 @@ export const CoursesCollection: CollectionConfig = {
           name: "title",
           type: "text",
           required: true,
+          localized: true,
         },
         {
           name: "resources",
@@ -111,6 +114,7 @@ export const CoursesCollection: CollectionConfig = {
               name: "title",
               type: "text",
               required: true,
+              localized: true,
             },
             {
               name: "type",

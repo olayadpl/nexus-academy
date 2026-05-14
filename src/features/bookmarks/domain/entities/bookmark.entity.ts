@@ -5,4 +5,5 @@ export interface BookmarkEntity {
   courseId: string
   title: string
   createdAt: string
+  collectionId?: string | null
 }

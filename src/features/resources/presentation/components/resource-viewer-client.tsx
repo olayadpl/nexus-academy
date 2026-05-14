@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Toaster } from "@/src/core/ui/components/sonner"
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getTranslations } from "@/src/lib/i18n/translations"
 import type { ResourceEntity } from "../../domain/entities/resource.entity"
 import LearningStyleNotesSidebar from "./learning-style-notes-sidebar"
 import LearningStyleCourseMain from "./learning-style-course-main"
@@ -74,6 +76,8 @@ function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
 }
 
 export function ResourceViewerClient({ course, resources, initialResourceId, courseModules }: ResourceViewerClientProps) {
+  const { locale } = useLocale()
+  const t = getTranslations(locale)
   const [resourceItems, setResourceItems] = useState(resources)
   const initial = initialResourceId
     ? resourceItems.find((item) => item.id === initialResourceId) ?? resourceItems[0] ?? null
@@ -115,7 +119,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
       if (!moduleMap.has(moduleIndex)) {
         moduleMap.set(moduleIndex, {
           id: `section-${moduleIndex + 1}`,
-          title: `Módulo ${moduleIndex + 1}`,
+          title: t.resourceViewer.moduleLabel(moduleIndex + 1),
           resources: []
         })
       }
@@ -276,8 +280,8 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
   }, [handleResize, isResizingLeft, isResizingRight, stopResizing])
 
   function handleSaveNote() {
-    toast.success("Note saved", {
-      description: "Your note has been saved successfully.",
+    toast.success(t.resourceViewer.noteSavedTitle, {
+      description: t.resourceViewer.noteSavedDescription,
     })
   }
 
@@ -292,7 +296,9 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
   if (!activeResource) {
     return (
       <main className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">No hay recursos para este curso.</div>
+        <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">
+          {t.resourceViewer.noResources}
+        </div>
       </main>
     )
   }

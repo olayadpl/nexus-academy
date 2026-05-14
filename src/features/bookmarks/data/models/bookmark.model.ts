@@ -7,6 +7,7 @@ export interface BookmarkModel {
   courseId: string
   title: string
   createdAt: string
+  collectionId?: string | null
 }
 
 export function toEntity(model: BookmarkModel): BookmarkEntity {
@@ -17,6 +18,7 @@ export function toEntity(model: BookmarkModel): BookmarkEntity {
     courseId: model.courseId,
     title: model.title,
     createdAt: model.createdAt,
+    collectionId: model.collectionId,
   }
 }
 
@@ -28,5 +30,6 @@ export function fromEntity(entity: BookmarkEntity): BookmarkModel {
     courseId: entity.courseId,
     title: entity.title,
     createdAt: entity.createdAt,
+    collectionId: entity.collectionId,
   }
 }

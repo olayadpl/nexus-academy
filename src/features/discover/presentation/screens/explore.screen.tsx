@@ -7,7 +7,6 @@ import { getDiscoverMainAction } from "../states/discover.actions"
 import { ExploreBottomBanner } from "../components/explore-bottom-banner"
 import { ExploreFaqSection } from "../components/explore-faq-section"
 import { ExploreMarketingBanner } from "../components/explore-marketing-banner"
-import { ExploreSubjectsByYear } from "../components/explore-subjects-by-year"
 
 function SectionSkeleton() {
   return (
@@ -36,8 +35,6 @@ export async function ExploreScreen() {
             <h1 className="text-2xl font-bold">{discover.exploreTitle}</h1>
             <p className="mt-2 text-muted-foreground">{discover.exploreSubtitle}</p>
           </div>
-
-          <ExploreSubjectsByYear subjects={discover.subjects} />
 
           <div className="mt-10 space-y-12 md:space-y-16 ">
             <section className="flex flex-col gap-4">

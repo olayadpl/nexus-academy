@@ -2,6 +2,8 @@ import Link from "next/link"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 import { Button } from "@/src/core/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/core/ui/components/card"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
+import { getBookmarksTranslations } from "@/src/features/bookmarks/i18n/strings"
 import {
   Empty,
   EmptyDescription,
@@ -22,6 +24,8 @@ export async function CollectionDetailScreen({
   backHref,
   backLabel,
 }: CollectionDetailScreenProps) {
+  const locale = await getUserLocale()
+  const t = getBookmarksTranslations(locale)
   const resources = await listBookmarksByCourseAction(collectionId)
 
   return (
@@ -34,9 +38,9 @@ export async function CollectionDetailScreen({
           </Button>
         </Link>
 
-        <h1 className="text-3xl font-bold">Coleccion {collectionId}</h1>
+        <h1 className="text-3xl font-bold">{t.collectionDetail.title(collectionId)}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {resources.length} {resources.length === 1 ? "recurso" : "recursos"}
+          {t.collectionDetail.resourceCount(resources.length)}
         </p>
       </div>
 
@@ -46,11 +50,11 @@ export async function CollectionDetailScreen({
             <EmptyMedia variant="icon">
               <ArrowLeft className="size-5 text-muted-foreground" />
             </EmptyMedia>
-            <EmptyTitle>Esta coleccion esta vacia</EmptyTitle>
-            <EmptyDescription>Guarda recursos desde cursos y briefs para verlos aqui.</EmptyDescription>
+            <EmptyTitle>{t.collectionDetail.emptyTitle}</EmptyTitle>
+            <EmptyDescription>{t.collectionDetail.emptyDescription}</EmptyDescription>
           </EmptyHeader>
           <Link href="/explore">
-            <Button>Explorar recursos</Button>
+            <Button>{t.bookmarks.exploreResources}</Button>
           </Link>
         </Empty>
       ) : (
@@ -61,11 +65,13 @@ export async function CollectionDetailScreen({
                 <CardTitle className="text-base">{resource.title}</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground">Curso: {resource.courseId}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t.bookmarks.courseLabel}: {resource.courseId}
+                </p>
                 <Link href={`/resource/${resource.courseId}?resource=${resource.resourceId}`}>
                   <Button size="sm">
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    Ver
+                    {t.collectionDetail.view}
                   </Button>
                 </Link>
               </CardContent>

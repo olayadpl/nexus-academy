@@ -1,6 +1,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/src/core/ui/components/button"
+import { Spotlight } from "@/src/core/ui/components/spotlight"
+import { cn } from "@/src/core/ui/lib/utils"
 import type { DiscoverBannerEntity } from "../../domain/entities/discover.entity"
 
 interface ExploreMarketingBannerProps {
@@ -9,21 +11,33 @@ interface ExploreMarketingBannerProps {
 
 export function ExploreMarketingBanner({ banner }: ExploreMarketingBannerProps) {
   return (
-    <section className="relative flex flex-col items-start justify-center overflow-hidden rounded-[1.75rem] bg-muted px-5 py-8 md:rounded-[2rem] md:py-12 md:pl-12 md:pr-[26rem]">
-      <h1 className="max-w-[18ch] text-[1.625rem] font-bold leading-8 tracking-[-0.03rem] md:mb-3 md:max-w-none md:text-[2rem] md:leading-10 md:tracking-[-0.04rem]">
-        {banner.title}
-      </h1>
-      <p className="mt-2 max-w-[34ch] text-sm leading-6 text-muted-foreground md:mt-0 md:text-base md:leading-[26px]">
-        {banner.description}
-      </p>
-      <div className="mt-6 flex gap-2.5">
-        <Button asChild>
-          <Link href={banner.ctaHref} className="inline-block text-white">{banner.ctaText}</Link>
-        </Button>
-      </div>
-      <div className="absolute right-0 top-0 hidden h-full w-[23rem] max-w-full shrink-0 md:block">
+    <div className="relative flex w-full overflow-hidden rounded-[1.75rem] bg-black/[0.96] border border-neutral-800 md:min-h-[22rem] md:rounded-[2rem] md:items-center md:justify-center">
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 [background-size:40px_40px] select-none",
+          "[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+        )}
+      />
+      <Spotlight
+        className="-top-40 left-0 md:-top-20 md:left-60"
+        fill="white"
+      />
+      <section className="relative z-10 flex flex-col items-start justify-start px-5 py-10 md:min-h-[22rem] md:w-full md:max-w-7xl md:py-14 md:pl-12 md:pr-[26rem]">
+        <h1 className="max-w-[18ch] text-[1.625rem] font-bold leading-8 tracking-[-0.03rem] text-white md:mb-3 md:max-w-none md:text-[2rem] md:leading-10 md:tracking-[-0.04rem]">
+          {banner.title}
+        </h1>
+        <p className="mt-2 max-w-[34ch] text-sm leading-6 text-neutral-300 md:mt-0 md:text-base md:leading-[26px]">
+          {banner.description}
+        </p>
+        <div className="mt-6 flex gap-2.5">
+          <Button asChild variant="secondary">
+            <Link href={banner.ctaHref} className="inline-block text-black">{banner.ctaText}</Link>
+          </Button>
+        </div>
+      </section>
+      <div className="absolute right-0 top-0 z-20 hidden h-full w-[23rem] max-w-full shrink-0 md:block">
         <Image src={banner.imageUrl} alt="marketing-banner" fill className="object-cover" />
       </div>
-    </section>
+    </div>
   )
 }

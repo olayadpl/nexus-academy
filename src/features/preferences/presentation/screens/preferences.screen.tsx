@@ -6,8 +6,12 @@ import { listUserBookmarksAction } from "@/src/features/bookmarks/presentation/s
 import { listRecentBookmarksAction } from "@/src/features/bookmarks/presentation/states/bookmarks.actions"
 import { getCurrentSessionAction } from "@/src/features/auth/presentation/states/auth.actions"
 import { PreferencesClientControls } from "../components/preferences-client-controls"
+import { getTranslations } from "@/src/lib/i18n/translations"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
 
 export async function PreferencesScreen() {
+  const locale = await getUserLocale()
+  const t = getTranslations(locale)
   const [preferences, user, bookmarks, savedResources] = await Promise.all([
     getUserPreferencesAction(),
     getCurrentSessionAction(),
@@ -19,19 +23,20 @@ export async function PreferencesScreen() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Preferencias del usuario</CardTitle>
-          <CardDescription>Configura tema e idioma para personalizar tu experiencia.</CardDescription>
+          <CardTitle>{t.preferencesScreen.title}</CardTitle>
+          <CardDescription>{t.preferencesScreen.description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           {preferences ? (
             <PreferencesClientControls preferences={preferences} />
           ) : (
             <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-              No hay preferencias disponibles para este usuario.
+              {t.preferencesScreen.noPreferences}
             </div>
           )}
           <p className="text-xs text-muted-foreground">
-            Usuario actual: {user?.name ?? "No autenticado"} · Tema: {preferences?.theme ?? "-"} · Idioma:{" "}
+            {t.preferencesScreen.currentUserLabel}: {user?.name ?? t.preferencesScreen.notAuthenticated} ·
+            {" "}{t.preferencesScreen.themeLabel}: {preferences?.theme ?? "-"} · {t.preferencesScreen.languageLabel}:{" "}
             {preferences?.language ?? "-"}
           </p>
         </CardContent>
@@ -39,18 +44,20 @@ export async function PreferencesScreen() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Marcadores ({bookmarks.length})</CardTitle>
-          <CardDescription>Recursos guardados por el usuario.</CardDescription>
+          <CardTitle>{t.preferencesScreen.bookmarksTitle(bookmarks.length)}</CardTitle>
+          <CardDescription>{t.preferencesScreen.bookmarksDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <Button size="sm" disabled>
             <Bookmark className="mr-2 h-4 w-4" />
-            Agregar marcador de prueba
+            {t.preferencesScreen.addBookmark}
           </Button>
           {bookmarks.map((bookmark) => (
             <div key={bookmark.id} className="rounded-lg bg-muted p-3">
               <p className="text-sm font-medium">{bookmark.title}</p>
-              <p className="text-xs text-muted-foreground">Curso: {bookmark.courseId}</p>
+              <p className="text-xs text-muted-foreground">
+                {t.preferencesScreen.courseLabel}: {bookmark.courseId}
+              </p>
             </div>
           ))}
         </CardContent>
@@ -58,18 +65,20 @@ export async function PreferencesScreen() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recursos guardados ({savedResources.length})</CardTitle>
-          <CardDescription>Resumen rapido de recursos recientes.</CardDescription>
+          <CardTitle>{t.preferencesScreen.savedResourcesTitle(savedResources.length)}</CardTitle>
+          <CardDescription>{t.preferencesScreen.savedResourcesDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <Button size="sm" disabled>
             <Save className="mr-2 h-4 w-4" />
-            Guardar recurso de prueba
+            {t.preferencesScreen.addSavedResource}
           </Button>
           {savedResources.map((resource) => (
             <div key={resource.id} className="rounded-lg bg-muted p-3">
               <p className="text-sm font-medium">{resource.title}</p>
-              <p className="text-xs text-muted-foreground">Curso: {resource.courseId}</p>
+              <p className="text-xs text-muted-foreground">
+                {t.preferencesScreen.courseLabel}: {resource.courseId}
+              </p>
             </div>
           ))}
         </CardContent>

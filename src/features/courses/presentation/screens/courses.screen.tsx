@@ -1,39 +1,26 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/src/core/ui/components/accordion"
 import { Button } from "@/src/core/ui/components/button"
 import CourseFilters from "../components/course-filters.client"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
+import { getCoursesTranslations } from "@/src/features/courses/i18n/strings"
 
 import { CourseCard } from "../components/course-card"
 import { listCoursesAction } from "../states/courses.actions"
 
 export async function CoursesScreen() {
-  const courses = await listCoursesAction()
-  const faqItems = [
-    {
-      question: "Como estan estructurados los cursos?",
-      answer: "Cada curso incluye modulos progresivos con recursos en video y PDF para avanzar a tu ritmo.",
-    },
-    {
-      question: "Necesito experiencia previa?",
-      answer: "Hay cursos para nivel beginner, intermediate y advanced. Puedes comenzar segun tu nivel actual.",
-    },
-    {
-      question: "Puedo continuar despues?",
-      answer: "Si. El progreso se guarda y puedes retomar desde la seccion de historial o continuar aprendiendo.",
-    },
-    {
-      question: "Los cursos incluyen evaluaciones?",
-      answer: "Algunos cursos incluyen evaluaciones para validar conocimientos y medir avance.",
-    },
-  ]
+  const locale = await getUserLocale()
+  const t = getCoursesTranslations(locale)
+  const courses = await listCoursesAction(locale)
+  const faqItems = t.coursesScreen.faqItems
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 md:py-8">
       <header className="mb-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Courses</h1>
+          <h1 className="text-2xl font-bold">{t.coursesScreen.title}</h1>
           <CourseFilters />
         </div>
-        <p className="mt-2 text-muted-foreground">Explora catalogos curados para reforzar tu aprendizaje.</p>
+        <p className="mt-2 text-muted-foreground">{t.coursesScreen.subtitle}</p>
       </header>
 
 
@@ -44,13 +31,15 @@ export async function CoursesScreen() {
       </section>
 
       <section className="mt-14 rounded-3xl bg-primary px-6 py-8 text-primary-foreground md:mt-20 md:px-12 md:py-10">
-        <h2 className="text-3xl font-bold leading-tight md:text-4xl">Potencia tu perfil profesional</h2>
-        <p className="mt-3 max-w-xl text-primary-foreground/90">Accede a rutas de aprendizaje y evaluaciones para preparar tu siguiente paso.</p>
-        <Button className="mt-6" variant="secondary" size="sm">Crear cuenta</Button>
+        <h2 className="text-3xl font-bold leading-tight md:text-4xl">{t.coursesScreen.promoTitle}</h2>
+        <p className="mt-3 max-w-xl text-primary-foreground/90">{t.coursesScreen.promoSubtitle}</p>
+        <Button className="mt-6" variant="secondary" size="sm">{t.coursesScreen.promoCta}</Button>
       </section>
 
       <section className="mt-14 md:mt-20">
-        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold leading-[30px] md:text-[22px] md:leading-8">Preguntas frecuentes</h2>
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold leading-[30px] md:text-[22px] md:leading-8">
+          {t.coursesScreen.faqTitle}
+        </h2>
         <div className="rounded-[1.25rem] bg-muted p-6 shadow-[inset_0_0_0_1px_hsl(var(--border))] md:rounded-3xl md:p-8">
           <Accordion type="single" collapsible>
             {faqItems.map((item, index) => (

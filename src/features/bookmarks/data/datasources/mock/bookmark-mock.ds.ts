@@ -1,32 +1,7 @@
 import type { IBookmarkRemoteDataSource } from "../bookmark.remote-datasource"
 import type { BookmarkModel } from "../../models/bookmark.model"
 
-const BOOKMARK_FIXTURES: BookmarkModel[] = [
-  {
-    id: "bookmark-1",
-    userId: "demo-user",
-    resourceId: "lesson-1",
-    courseId: "course-communication",
-    title: "01: Learn The Alphabets",
-    createdAt: "2026-03-28T11:00:00.000Z",
-  },
-  {
-    id: "bookmark-2",
-    userId: "demo-user",
-    resourceId: "study-1",
-    courseId: "course-study-methods",
-    title: "01: Planificacion por bloques",
-    createdAt: "2026-03-29T07:30:00.000Z",
-  },
-  {
-    id: "bookmark-3",
-    userId: "demo-user",
-    resourceId: "lesson-2",
-    courseId: "course-communication",
-    title: "02: Touch The Grass",
-    createdAt: "2026-03-25T18:20:00.000Z",
-  },
-]
+const BOOKMARK_FIXTURES: BookmarkModel[] = []
 
 const mockDb = new Map<string, BookmarkModel>(BOOKMARK_FIXTURES.map((item) => [item.id, item]))
 

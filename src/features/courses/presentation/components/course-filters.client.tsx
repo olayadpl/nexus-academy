@@ -2,8 +2,12 @@
 
 import React, { useEffect, useRef } from "react"
 import { Filter } from "lucide-react"
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getCoursesTranslations } from "@/src/features/courses/i18n/strings"
 
 export default function CourseFilters() {
+  const { locale } = useLocale()
+  const t = getCoursesTranslations(locale)
   const detailsRef = useRef<HTMLDetailsElement | null>(null)
 
   useEffect(() => {
@@ -36,37 +40,37 @@ export default function CourseFilters() {
           <summary className="list-none">
             <div className="inline-flex h-9 items-center gap-2 rounded-full border px-3 text-sm font-semibold transition-colors border-border bg-background text-foreground cursor-pointer hover:bg-primary/10 hover:text-primary">
               <Filter className="h-4 w-4" />
-              <span>Filtros</span>
+              <span>{t.courseFilters.filters}</span>
             </div>
           </summary>
 
           <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-popover border border-border p-2 text-popover-foreground shadow-md z-50">
-            <div className="px-2 text-xs uppercase text-muted-foreground font-medium">Ordenar</div>
+            <div className="px-2 text-xs uppercase text-muted-foreground font-medium">{t.courseFilters.sortBy}</div>
             <label className="flex items-center gap-2 px-2 py-1 text-sm">
               <input type="checkbox" className="h-4 w-4" name="sort_popular" style={{ accentColor: "var(--color-secondary)" }} />
-              <span>Más populares</span>
+              <span>{t.courseFilters.mostPopular}</span>
             </label>
             <label className="flex items-center gap-2 px-2 py-1 text-sm">
               <input type="checkbox" className="h-4 w-4" name="sort_most_viewed" style={{ accentColor: "var(--color-secondary)" }} />
-              <span>Más vistos</span>
+              <span>{t.courseFilters.mostViewed}</span>
             </label>
             <div className="my-1 h-px bg-border -mx-2" />
-            <div className="px-2 mt-1 text-xs uppercase text-muted-foreground font-medium">Categorías</div>
+            <div className="px-2 mt-1 text-xs uppercase text-muted-foreground font-medium">{t.courseFilters.categories}</div>
             <label className="flex items-center gap-2 px-2 py-1 text-sm">
               <input type="checkbox" className="h-4 w-4" name="cat_design" style={{ accentColor: "var(--color-secondary)" }} />
-              <span>Diseño</span>
+              <span>{t.courseFilters.design}</span>
             </label>
             <label className="flex items-center gap-2 px-2 py-1 text-sm">
               <input type="checkbox" className="h-4 w-4" name="cat_programming" style={{ accentColor: "var(--color-secondary)" }} />
-              <span>Programación</span>
+              <span>{t.courseFilters.programming}</span>
             </label>
             <label className="flex items-center gap-2 px-2 py-1 text-sm">
               <input type="checkbox" className="h-4 w-4" name="cat_databases" style={{ accentColor: "var(--color-secondary)" }} />
-              <span>Bases de datos</span>
+              <span>{t.courseFilters.databases}</span>
             </label>
             <label className="flex items-center gap-2 px-2 py-1 text-sm">
               <input type="checkbox" className="h-4 w-4" name="cat_devops" style={{ accentColor: "var(--color-secondary)" }} />
-              <span>DevOps</span>
+              <span>{t.courseFilters.devops}</span>
             </label>
           </div>
         </details>

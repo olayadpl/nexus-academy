@@ -14,7 +14,9 @@ import {
 } from "../mappers/course.mapper"
 
 export class CourseRepositoryImpl implements ICourseRepository {
-  constructor(private readonly remoteDataSource: ICourseRemoteDataSource) {}
+  constructor(
+    private readonly remoteDataSource: ICourseRemoteDataSource,
+  ) {}
 
   async create(input: CreateCourseInput): Promise<CourseEntity> {
     const model = await this.remoteDataSource.create(entityToModel(input))
@@ -44,7 +46,7 @@ export class CourseRepositoryImpl implements ICourseRepository {
   async getAll(query?: ListCoursesQuery): Promise<CourseEntity[]> {
     try {
       const models = await this.remoteDataSource.getAll(query)
-      return models.map(modelToEntity)
+      return models.map((model) => modelToEntity(model))
     } catch (e) {
       if (e instanceof Failure) throw e
       console.error("CourseRepositoryImpl.getAll error:", e)

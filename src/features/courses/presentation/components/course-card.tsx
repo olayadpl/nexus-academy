@@ -9,6 +9,8 @@ import { SaveResourceButton } from "@/src/core/ui/components/save-resource-butto
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/core/ui/components/avatar"
 import { useSidebar } from "@/src/core/ui/components/sidebar"
 import { cn } from "@/src/core/ui/lib/utils"
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getCoursesTranslations } from "@/src/features/courses/i18n/strings"
 import type { CourseEntity } from "../../domain/entities/course.entity"
 
 const getCourseImage = (index: number) => {
@@ -24,11 +26,14 @@ type CourseCardProps = {
 export function CourseCard({ course, index }: CourseCardProps) {
   const { state } = useSidebar()
   const isSidebarCollapsed = state === "collapsed"
+  const { locale } = useLocale()
+  const t = getCoursesTranslations(locale)
+  const numberLocale = locale === "es" ? "es-ES" : "en-US"
 
   const levelLabels: Record<CourseEntity["level"], string> = {
-    beginner: "Beginner",
-    intermediate: "Intermediate",
-    advanced: "Advanced",
+    beginner: t.courseCard.level.beginner,
+    intermediate: t.courseCard.level.intermediate,
+    advanced: t.courseCard.level.advanced,
   }
 
 
@@ -42,7 +47,7 @@ export function CourseCard({ course, index }: CourseCardProps) {
     : "NA"
 
   // Example avatar URL: use provided avatar or fall back to a realistic person avatar (pravatar.cc)
-  const avatarUrl = course.authorAvatarUrl ?? `https://i.pravatar.cc/128?u=${encodeURIComponent(course.authorName ?? course.id)}`;
+  const avatarUrl = course.authorAvatarUrl ?? `https://i.pravatar.cc/128?u=${encodeURIComponent(course.authorName ?? course.id)}`
 
   const resolveImageFromId = (id: string, fallbackIndex: number) => {
     const m = id.match(/course[-_ ]?(\d+)/i) ?? id.match(/(\d+)$/)
@@ -83,7 +88,7 @@ export function CourseCard({ course, index }: CourseCardProps) {
 
           <div className="absolute left-4 bottom-4 z-20 flex items-center gap-3">
             <Avatar className="h-10 w-10 border-2 border-white">
-              <AvatarImage src={avatarUrl} alt={course.authorName ?? 'Author'} />
+              <AvatarImage src={avatarUrl} alt={course.authorName ?? t.courseCard.authorAlt} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             {course.authorName && (
@@ -101,7 +106,7 @@ export function CourseCard({ course, index }: CourseCardProps) {
         <div className="text-muted-foreground flex flex-col flex-1 px-3 pb-3 pt-2">
           <div className="flex items-start justify-between">
             <div className="flex min-w-0 flex-1 flex-col pr-12">
-              <div className="text-muted-foreground text-xs font-bold tracking-[0.5px] leading-4 uppercase">Course</div>
+              <div className="text-muted-foreground text-xs font-bold tracking-[0.5px] leading-4 uppercase">{t.courseCard.label}</div>
               <h3 className="text-foreground mt-1 mb-1 line-clamp-2 text-lg font-semibold leading-7">{course.title}</h3>
             </div>
           </div>
@@ -120,7 +125,7 @@ export function CourseCard({ course, index }: CourseCardProps) {
             <div className="ml-auto flex items-center gap-2 text-muted-foreground">
               <Star className="h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
               <span className="whitespace-nowrap text-base leading-6">
-                <strong className="font-bold">{course.rating}</strong> ({new Intl.NumberFormat("en-US").format(course.reviewCount)})
+                <strong className="font-bold">{course.rating}</strong> ({new Intl.NumberFormat(numberLocale).format(course.reviewCount)})
               </span>
             </div>
           </div>

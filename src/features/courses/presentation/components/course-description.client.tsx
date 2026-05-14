@@ -1,12 +1,16 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getCoursesTranslations } from "@/src/features/courses/i18n/strings"
 
 type Props = {
   description?: string
 }
 
 export default function CourseDescription({ description = "" }: Props) {
+  const { locale } = useLocale()
+  const t = getCoursesTranslations(locale)
   const ref = useRef<HTMLDivElement | null>(null)
   const [expanded, setExpanded] = useState(false)
   const [showToggle, setShowToggle] = useState(false)
@@ -40,7 +44,7 @@ export default function CourseDescription({ description = "" }: Props) {
           onClick={() => setExpanded((s) => !s)}
           className="mt-2 text-sm font-semibold text-primary"
         >
-          {expanded ? "Ver menos" : "Ver más"}
+          {expanded ? t.courseDescription.showLess : t.courseDescription.showMore}
         </button>
       )}
     </div>

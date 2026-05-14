@@ -43,6 +43,14 @@ export default buildConfig({
     jwtOrder: ["cookie", "JWT", "Bearer"],
   },
   csrf: getCSRFAllowList(),
+  localization: {
+    locales: [
+      { label: "Español", code: "es" },
+      { label: "English", code: "en" },
+    ],
+    defaultLocale: "es",
+    fallback: true,
+  },
   collections: featureCollections,
   db: sqliteAdapter({
     client: {

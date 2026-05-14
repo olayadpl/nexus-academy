@@ -1,6 +1,6 @@
-import type { CourseEntity, CourseSectionEntity } from "../../domain/entities/course.entity"
+import type { CourseEntity } from "../../domain/entities/course.entity"
 import type { UpdateCourseInput } from "../../domain/repositories/course.repository"
-import type { CourseModel, CourseSectionModel, ResourceModel } from "../models/course.model"
+import type { CourseModel } from "../models/course.model"
 
 export function modelToEntity(model: CourseModel): CourseEntity {
   try {

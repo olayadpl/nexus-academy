@@ -3,8 +3,12 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { DarkModeScript } from '@/src/core/ui/components/theme-toggle'
 import { ThemeProvider } from '@/src/core/ui/components/theme-provider'
+import { LocaleProvider } from '@/src/core/ui/components/locale-provider'
 import { AppShell } from '@/src/core/ui/components/app-shell'
+import { Toaster } from '@/src/core/ui/components/sonner'
 import { getCurrentSessionAction } from '@/src/features/auth/presentation/states/auth.actions'
+import { getUserPreferencesAction } from '@/src/features/preferences/presentation/states/preferences.actions'
+import type { Locale } from '@/src/lib/i18n/translations'
 import '@/src/app/(app)/globals.css'
 
 const geist = Geist({ subsets: ["latin"] })
@@ -31,15 +35,27 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const sessionUser = await getCurrentSessionAction()
+  const userId = sessionUser?.id ?? "demo-user"
+  let initialLocale: Locale = "es"
+
+  try {
+    const preferences = await getUserPreferencesAction(userId)
+    if (preferences?.language) {
+      initialLocale = preferences.language
+    }
+  } catch {
+    initialLocale = "es"
+  }
 
   return (
-    // Use `en` for the html lang here to match the admin UI rendering and avoid
-    // hydration mismatches caused by different locale strings between server and client.
-    <html lang="en" suppressHydrationWarning>
+    <html lang={initialLocale} suppressHydrationWarning>
       <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
         <DarkModeScript />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <AppShell sessionUser={sessionUser}>{children}</AppShell>
+          <LocaleProvider initialLocale={initialLocale}>
+            <AppShell sessionUser={sessionUser}>{children}</AppShell>
+          </LocaleProvider>
+          <Toaster position="bottom-right" richColors />
         </ThemeProvider>
         <Analytics />
       </body>

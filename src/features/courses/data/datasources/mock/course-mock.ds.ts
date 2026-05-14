@@ -1,11 +1,23 @@
 import type { ICourseRemoteDataSource } from "../course.remote-datasource"
 import type { CourseModel } from "../../models/course.model"
+import type { Locale } from "@/src/lib/i18n/translations"
 
-const COURSE_FIXTURES: CourseModel[] = [
+type FixtureData = Omit<CourseModel, "title" | "description"> & {
+  titleI18n: Record<Locale, string>
+  descriptionI18n: Record<Locale, string>
+}
+
+const COURSE_FIXTURES: FixtureData[] = [
   {
     id: "course-communication",
-    title: "Speak Confidently",
-    description: "Comunicacion interpersonal aplicada al contexto academico. En este curso se explorarán técnicas prácticas para mejorar la comunicación en entornos académicos y profesionales.",
+    titleI18n: {
+      en: "Speak Confidently",
+      es: "Habla con confianza",
+    },
+    descriptionI18n: {
+      en: "Interpersonal communication applied to academic contexts. In this course, you will explore practical techniques to improve communication in academic and professional settings.",
+      es: "Comunicacion interpersonal aplicada al contexto academico. En este curso se exploraran tecnicas practicas para mejorar la comunicacion en entornos academicos y profesionales.",
+    },
     level: "beginner",
     durationHours: 1.2,
     rating: 4.5,
@@ -38,8 +50,14 @@ const COURSE_FIXTURES: CourseModel[] = [
   },
   {
     id: "course-study-methods",
-    title: "Study Methods",
-    description: "Estrategias de estudio para carreras de ciencias informaticas.",
+    titleI18n: {
+      en: "Study Methods",
+      es: "Metodos de estudio",
+    },
+    descriptionI18n: {
+      en: "Study strategies for computer science programs.",
+      es: "Estrategias de estudio para carreras de ciencias informaticas.",
+    },
     level: "intermediate",
     durationHours: 2.1,
     rating: 4.7,
@@ -72,8 +90,14 @@ const COURSE_FIXTURES: CourseModel[] = [
   },
   {
     id: "course-problem-solving",
-    title: "Problem Solving",
-    description: "Metodo practico para resolver problemas complejos paso a paso.",
+    titleI18n: {
+      en: "Problem Solving",
+      es: "Resolucion de problemas",
+    },
+    descriptionI18n: {
+      en: "A practical method to solve complex problems step by step.",
+      es: "Metodo practico para resolver problemas complejos paso a paso.",
+    },
     level: "advanced",
     durationHours: 1.8,
     rating: 4.6,
@@ -106,8 +130,14 @@ const COURSE_FIXTURES: CourseModel[] = [
   },
   {
     id: "course-programming",
-    title: "Introduction to Programming",
-    description: "Fundamentos de programacion: variables, control de flujo y estructuras de datos.",
+    titleI18n: {
+      en: "Introduction to Programming",
+      es: "Introduccion a la programacion",
+    },
+    descriptionI18n: {
+      en: "Programming fundamentals: variables, control flow, and data structures.",
+      es: "Fundamentos de programacion: variables, control de flujo y estructuras de datos.",
+    },
     level: "beginner",
     durationHours: 3.5,
     rating: 4.4,
@@ -149,8 +179,14 @@ const COURSE_FIXTURES: CourseModel[] = [
   },
   {
     id: "course-design-ui",
-    title: "UI Design Basics",
-    description: "Principios de diseño visual y experiencia de usuario para interfaces.",
+    titleI18n: {
+      en: "UI Design Basics",
+      es: "Fundamentos de diseno UI",
+    },
+    descriptionI18n: {
+      en: "Visual design principles and user experience for interfaces.",
+      es: "Principios de diseno visual y experiencia de usuario para interfaces.",
+    },
     level: "intermediate",
     durationHours: 2.8,
     rating: 4.6,
@@ -183,8 +219,14 @@ const COURSE_FIXTURES: CourseModel[] = [
   },
   {
     id: "course-databases",
-    title: "Databases 101",
-    description: "Modelado relacional, consultas SQL y optimizacion basica.",
+    titleI18n: {
+      en: "Databases 101",
+      es: "Bases de datos 101",
+    },
+    descriptionI18n: {
+      en: "Relational modeling, SQL queries, and basic optimization.",
+      es: "Modelado relacional, consultas SQL y optimizacion basica.",
+    },
     level: "beginner",
     durationHours: 2.4,
     rating: 4.3,
@@ -217,15 +259,39 @@ const COURSE_FIXTURES: CourseModel[] = [
   },
 ]
 
-const mockDb = new Map<string, CourseModel>(COURSE_FIXTURES.map((item) => [item.id, item]))
+function resolveFixture(fixture: FixtureData, locale: Locale): CourseModel {
+  return {
+    id: fixture.id,
+    title: fixture.titleI18n[locale] ?? fixture.titleI18n.es,
+    description: fixture.descriptionI18n[locale] ?? fixture.descriptionI18n.es,
+    level: fixture.level,
+    durationHours: fixture.durationHours,
+    rating: fixture.rating,
+    reviewCount: fixture.reviewCount,
+    featured: fixture.featured,
+    progress: fixture.progress,
+    thumbnailUrl: fixture.thumbnailUrl,
+    authorName: fixture.authorName,
+    authorAvatarUrl: fixture.authorAvatarUrl,
+    modules: fixture.modules,
+  }
+}
+
+const mockDb = new Map<string, FixtureData>(COURSE_FIXTURES.map((item) => [item.id, item]))
 
 export class CourseMockDataSource implements ICourseRemoteDataSource {
+  constructor(private readonly locale: Locale = "es") {}
+
   async create(model: CourseModel): Promise<CourseModel> {
     if (mockDb.has(model.id)) {
       throw new Error(`Course ${model.id} already exists`)
     }
 
-    mockDb.set(model.id, model)
+    mockDb.set(model.id, {
+      ...model,
+      titleI18n: { en: model.title, es: model.title },
+      descriptionI18n: { en: model.description, es: model.description },
+    })
     return model
   }
 
@@ -236,29 +302,37 @@ export class CourseMockDataSource implements ICourseRemoteDataSource {
       throw new Error(`Course ${id} not found`)
     }
 
-    const updated: CourseModel = {
+    const updated: FixtureData = {
       ...current,
       ...model,
+      titleI18n: model.title
+        ? { ...current.titleI18n, [this.locale]: model.title }
+        : current.titleI18n,
+      descriptionI18n: model.description
+        ? { ...current.descriptionI18n, [this.locale]: model.description }
+        : current.descriptionI18n,
       id: current.id,
       modules: model.modules ?? current.modules,
     }
 
     mockDb.set(id, updated)
-    return updated
+    return resolveFixture(updated, this.locale)
   }
 
   async getById(id: string): Promise<CourseModel | null> {
-    return mockDb.get(id) ?? null
+    const fixture = mockDb.get(id)
+    if (!fixture) return null
+    return resolveFixture(fixture, this.locale)
   }
 
   async getAll(query?: { featuredOnly?: boolean }): Promise<CourseModel[]> {
     const values = [...mockDb.values()]
 
     if (query?.featuredOnly) {
-      return values.filter((item) => item.featured)
+      return values.filter((item) => item.featured).map((f) => resolveFixture(f, this.locale))
     }
 
-    return values
+    return values.map((f) => resolveFixture(f, this.locale))
   }
 
   async deleteById(id: string): Promise<void> {

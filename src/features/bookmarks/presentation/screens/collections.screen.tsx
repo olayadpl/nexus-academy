@@ -4,6 +4,8 @@ import { Button } from "@/src/core/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/core/ui/components/card"
 import { groupBookmarksByCollection } from "../../domain/use-cases/group-bookmarks-by-collection.use-case"
 import { listUserBookmarksAction } from "../states/bookmarks.actions"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
+import { getBookmarksTranslations } from "@/src/features/bookmarks/i18n/strings"
 import {
   Empty,
   EmptyContent,
@@ -14,20 +16,22 @@ import {
 } from "@/src/core/ui/components/empty"
 
 export async function CollectionsScreen() {
+  const locale = await getUserLocale()
+  const t = getBookmarksTranslations(locale)
   const bookmarks = await listUserBookmarksAction()
   const collections = groupBookmarksByCollection(bookmarks)
 
   return (
     <main className="max-w-[71.5rem] px-4 py-14 md:px-8">
       <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold">Mis Colecciones</h1>
-        <p className="text-muted-foreground">Organiza tus recursos guardados en colecciones personalizadas</p>
+        <h1 className="mb-2 text-3xl font-bold">{t.collections.title}</h1>
+        <p className="text-muted-foreground">{t.collections.subtitle}</p>
       </header>
 
       <div className="mb-6">
         <Button disabled>
           <FolderPlus className="mr-2 h-4 w-4" />
-          Nueva Coleccion
+          {t.collections.newCollection}
         </Button>
       </div>
 
@@ -37,13 +41,13 @@ export async function CollectionsScreen() {
             <EmptyMedia variant="icon">
               <Folder className="size-6 text-muted-foreground" />
             </EmptyMedia>
-            <EmptyTitle>No tienes colecciones</EmptyTitle>
-            <EmptyDescription>Crea colecciones para organizar tus recursos guardados.</EmptyDescription>
+            <EmptyTitle>{t.collections.emptyTitle}</EmptyTitle>
+            <EmptyDescription>{t.collections.emptyDescription}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
             <Button disabled>
               <FolderPlus className="mr-2 h-4 w-4" />
-              Crear primera coleccion
+              {t.collections.createFirst}
             </Button>
           </EmptyContent>
         </Empty>
@@ -56,7 +60,7 @@ export async function CollectionsScreen() {
                   <CardTitle className="text-lg">{collection.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  {collection.count} {collection.count === 1 ? "recurso" : "recursos"}
+                  {t.collections.resourceCount(collection.count)}
                 </CardContent>
               </Card>
             </Link>

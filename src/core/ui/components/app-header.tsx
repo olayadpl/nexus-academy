@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useState, type FormEvent } from "react"
+import { useEffect, useRef, useState, useTransition, type FormEvent } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "@/src/core/ui/hooks/use-theme"
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getTranslations, type Locale } from "@/src/lib/i18n/translations"
 import {
   ArrowLeft,
   Search,
@@ -47,21 +49,19 @@ const languageFlags = {
   en: "🇺🇸",
 } as const
 
-const languageNames = {
-  es: "Espanol",
-  en: "English",
-} as const
-
 export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [headerSearchQuery, setHeaderSearchQuery] = useState("")
-  const [language, setLanguage] = useState<"es" | "en">("es")
   const isAuthenticated = Boolean(sessionUser)
   const router = useRouter()
   const { theme, setTheme } = useTheme()
+  const { locale, setLocale } = useLocale()
+  const t = getTranslations(locale)
   const pathname = usePathname()
   const isResourcePage = pathname?.startsWith("/resource/") ?? false
   const userId = sessionUser?.id ?? "demo-user"
+  const [isPending, startTransition] = useTransition()
+  const pendingLocaleRef = useRef<Locale | null>(null)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -77,16 +77,20 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
 
   useEffect(() => {
     void getUserPreferencesAction(userId).then((preferences) => {
-      if (preferences) {
-        setLanguage(preferences.language)
+      if (pendingLocaleRef.current) {
+        return
+      }
+
+      if (preferences?.language && preferences.language !== locale) {
+        setLocale(preferences.language)
       }
     })
-  }, [userId])
+  }, [locale, setLocale, userId])
 
-  const searchPlaceholder = language === "es" ? "Buscar recursos..." : "Search resources..."
+  const searchPlaceholder = t.header.searchPlaceholder
 
   const themeLabel =
-    theme === "light" ? "Claro" : theme === "dark" ? "Oscuro" : "Sistema"
+    theme === "light" ? t.theme.light : theme === "dark" ? t.theme.dark : t.theme.system
 
   const themeIcon =
     theme === "system" || !theme ? (
@@ -121,9 +125,18 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
   }
 
   const toggleLanguage = () => {
-    const nextLanguage = language === "es" ? "en" : "es"
-    setLanguage(nextLanguage)
-    void persistPreferences({ language: nextLanguage })
+    const nextLocale = locale === "es" ? "en" : "es"
+    setLocale(nextLocale)
+    pendingLocaleRef.current = nextLocale
+
+    startTransition(async () => {
+      try {
+        await persistPreferences({ language: nextLocale })
+      } finally {
+        pendingLocaleRef.current = null
+        router.refresh()
+      }
+    })
   }
 
   const submitHeaderSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -163,7 +176,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                   size="icon"
                   className="hidden md:inline-flex"
                   onClick={() => router.back()}
-                  aria-label="Volver"
+                  aria-label={t.header.back}
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
@@ -184,13 +197,13 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                   onChange={(event) => setHeaderSearchQuery(event.target.value)}
                   placeholder={searchPlaceholder}
                   className="h-full w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
-                  aria-label="Buscar"
+                  aria-label={t.header.searchLabel}
                 />
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
                   className="inline-flex h-5 items-center rounded-full border bg-background px-2 font-mono text-[10px] font-medium"
-                  aria-label="Abrir busqueda rapida"
+                  aria-label={t.header.openQuickSearch}
                 >
                   <span className="text-xs">⌘</span>K
                 </button>
@@ -212,7 +225,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                     onChange={(event) => setHeaderSearchQuery(event.target.value)}
                     placeholder={searchPlaceholder}
                     className="h-full w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
-                    aria-label="Buscar"
+                    aria-label={t.header.searchLabel}
                   />
                 </form>
               )}
@@ -223,7 +236,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                     variant="ghost"
                     size="icon"
                     onClick={cycleTheme}
-                    aria-label="Cambiar tema"
+                    aria-label={t.header.changeTheme}
                     className="hidden md:inline-flex"
                   >
                     {themeIcon}
@@ -234,11 +247,11 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                     onClick={() => {
                       void handleShareCurrentPage()
                     }}
-                    aria-label="Compartir recurso"
+                    aria-label={t.header.shareResource}
                   >
                     <Share2 className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)} aria-label="Buscar">
+                  <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)} aria-label={t.header.searchLabel}>
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>
@@ -248,13 +261,13 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                     href="/login"
                     className="flex h-9 items-center justify-center rounded-full px-3 text-sm font-semibold hover:bg-muted"
                   >
-                    {language === "es" ? "Iniciar sesion" : "Login"}
+                    {t.header.login}
                   </Link>
                   <Link
                     href="/signup"
                     className="flex h-9 items-center justify-center rounded-full bg-primary px-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
                   >
-                    {language === "es" ? "Registrarse" : "Sign up"}
+                    {t.header.signup}
                   </Link>
                 </>
               ) : (
@@ -262,12 +275,12 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                   {!isResourcePage && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label="Apps">
+                        <Button variant="ghost" size="icon" aria-label={t.header.apps}>
                           <Grip className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuLabel>{language === "es" ? "Aplicaciones" : "Apps"}</DropdownMenuLabel>
+                        <DropdownMenuLabel>{t.header.appsLabel}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                           <Link href="/bookmarks" className="cursor-pointer">
@@ -285,7 +298,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                                 strokeLinejoin="round"
                               />
                             </svg>
-                            {language === "es" ? "Biblioteca" : "Library"}
+                            {t.header.library}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
@@ -293,7 +306,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                               <path d="M4 7h16M4 12h16M4 17h16" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                            {language === "es" ? "Repositorio" : "Repository"}
+                            {t.header.repository}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
@@ -306,7 +319,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                               <polyline points="3.27 6.96 12 12.01 20.73 6.96" strokeWidth="2" />
                               <line x1="12" y1="22.08" x2="12" y2="12" strokeWidth="2" />
                             </svg>
-                            {language === "es" ? "Cursos" : "Courses"}
+                            {t.header.courses}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
@@ -319,7 +332,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                                 strokeLinejoin="round"
                               />
                             </svg>
-                            {language === "es" ? "Investigacion" : "Research"}
+                            {t.header.research}
                           </Link>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -328,7 +341,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full" aria-label="Cuenta">
+                      <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full" aria-label={t.header.account}>
                         {sessionUser?.avatarUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -352,18 +365,18 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                       <DropdownMenuItem asChild>
                         <Link href="/profile" className="cursor-pointer">
                           <User className="h-4 w-4" />
-                          {language === "es" ? "Perfil" : "Profile"}
+                          {t.header.profile}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href="/settings" className="cursor-pointer">
                           <Settings className="h-4 w-4" />
-                          {language === "es" ? "Ajustes" : "Settings"}
+                          {t.header.settings}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-                        {language === "es" ? "Accesibilidad" : "Accessibility"}
+                        {t.header.accessibility}
                       </DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={(event) => {
@@ -377,7 +390,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                           <div className="flex items-center">
                             {themeIcon}
                             <span className="ml-2">
-                              {language === "es" ? "Tema" : "Theme"}: {themeLabel}
+                              {t.header.theme}: {themeLabel}
                             </span>
                           </div>
                         </div>
@@ -388,16 +401,17 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                           toggleLanguage()
                         }}
                         onSelect={(event) => event.preventDefault()}
+                        disabled={isPending}
                         className="cursor-pointer"
                       >
                         <div className="flex w-full items-center justify-between">
                           <div className="flex items-center">
                             <Languages className="h-4 w-4" />
                             <span className="ml-2">
-                              {language === "es" ? "Idioma" : "Language"}: {languageNames[language]}
+                              {t.header.language}: {t.languageNames[locale]}
                             </span>
                           </div>
-                          <span className="text-base">{languageFlags[language]}</span>
+                          <span className="text-base">{languageFlags[locale]}</span>
                         </div>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -411,7 +425,7 @@ export function AppHeader({ sessionUser }: { sessionUser: AppHeaderUser }) {
                         className="cursor-pointer text-destructive focus:text-destructive"
                       >
                         <LogOut className="h-4 w-4" />
-                        {language === "es" ? "Cerrar sesion" : "Log out"}
+                        {t.header.logOut}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

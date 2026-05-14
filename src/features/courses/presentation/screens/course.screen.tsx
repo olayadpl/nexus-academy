@@ -5,7 +5,8 @@ import type { CourseEntity } from "../../domain/entities/course.entity"
 import type { ResourceEntity } from "@/src/features/resources/domain/entities/resource.entity"
 import Link from "next/link"
 import { BookOpen, Clock, BarChart3, Users, Star, PlayCircle, FileText, File, Award, Globe, CheckCircle2, Sparkles } from "lucide-react"
-import { getTranslations } from "@/src/lib/i18n/translations"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
+import { getCoursesTranslations } from "@/src/features/courses/i18n/strings"
 
 const stripNumberPrefix = (s?: string) => (s ?? "").replace(/^\s*\d{1,2}:\s*/, "")
 import CourseDescription from "../components/course-description.client"
@@ -37,16 +38,11 @@ const formatDuration = (minutes?: number) => {
   return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`
 }
 
-const REQUIREMENTS = [
-  "No se requiere experiencia previa",
-  "Computadora con acceso a internet",
-  "Ganas de aprender y practicar",
-]
-
 export default async function CourseScreen({ params }: CourseScreenProps) {
   const { id } = params
-  const t = getTranslations("es")
-  const course: CourseEntity | null = await getCourseByIdAction(id)
+  const locale = await getUserLocale()
+  const t = getCoursesTranslations(locale)
+  const course: CourseEntity | null = await getCourseByIdAction(id, locale)
 
   let resources: ResourceEntity[] = []
   try {
@@ -58,6 +54,10 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
   if (!course) {
     notFound()
   }
+
+  const levelLabel =
+    t.course.levelNames[course.level as keyof typeof t.course.levelNames] ?? course.level
+  const requirements = t.course.requirementsList
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,12 +71,12 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
               <div className="flex flex-wrap items-center gap-3">
                 <Link href="/courses" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   <BookOpen className="h-4 w-4" />
-                  {t.courses}
+                  {t.course.courses}
                 </Link>
                 <span className="text-muted-foreground">/</span>
                 <Badge variant="secondary" className="gap-1">
                   <Sparkles className="h-3 w-3" />
-                  {course.level === "beginner" ? "Principiante" : course.level === "intermediate" ? "Intermedio" : "Avanzado"}
+                  {levelLabel}
                 </Badge>
               </div>
 
@@ -98,7 +98,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium">{course.durationHours}h</p>
-                    <p className="text-xs text-muted-foreground">Duración</p>
+                    <p className="text-xs text-muted-foreground">{t.course.duration}</p>
                   </div>
                 </div>
                 
@@ -107,8 +107,8 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                     <BarChart3 className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium capitalize">{course.level}</p>
-                    <p className="text-xs text-muted-foreground">Nivel</p>
+                    <p className="text-sm font-medium capitalize">{levelLabel}</p>
+                    <p className="text-xs text-muted-foreground">{t.course.level}</p>
                   </div>
                 </div>
                 
@@ -118,7 +118,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium">{course.reviewCount?.toLocaleString() ?? "—"}</p>
-                    <p className="text-xs text-muted-foreground">Estudiantes</p>
+                    <p className="text-xs text-muted-foreground">{t.course.students}</p>
                   </div>
                 </div>
                 
@@ -128,7 +128,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium">{course.rating ?? "—"}</p>
-                    <p className="text-xs text-muted-foreground">Valoración</p>
+                    <p className="text-xs text-muted-foreground">{t.course.rating}</p>
                   </div>
                 </div>
               </div>
@@ -146,14 +146,14 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                       <p className="text-lg font-semibold">{course.authorName}</p>
                       <Badge variant="outline" className="gap-1 text-xs">
                         <Award className="h-3 w-3" />
-                        Instructor
+                        {t.course.instructor}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">Experto en la materia con años de experiencia enseñando</p>
+                    <p className="text-sm text-muted-foreground">{t.course.instructorBio}</p>
                     <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Globe className="h-3 w-3" />
-                        <span>Español · Inglés</span>
+                        <span>{t.course.instructorLanguages}</span>
                       </div>
                     </div>
                   </div>
@@ -186,12 +186,12 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                     <div className="w-full space-y-2">
                       <Link href={resources && resources.length > 0 ? `/resource/${course.id}?resource=${resources[0].id}` : "#"} className="block">
                         <button className="w-full rounded-xl bg-primary px-5 py-3 text-base font-semibold text-white transition-all hover:bg-primary/90">
-                          Comenzar curso
+                          {t.course.startCourse}
                         </button>
                       </Link>
 
                       <button className="w-full rounded-xl border-2 border-white/50 bg-black/30 px-5 py-3 text-base font-medium text-white backdrop-blur-sm transition-all hover:bg-black/50">
-                        Vista previa
+                        {t.course.preview}
                       </button>
                     </div>
                   </div>
@@ -209,7 +209,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
           <div className="lg:col-span-2 space-y-12">
             {/* What you'll learn */}
             <section>
-              <h2 className="mb-6 text-2xl font-bold">Lo que aprenderás</h2>
+              <h2 className="mb-6 text-2xl font-bold">{t.course.whatYouWillLearn}</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {course.modules.slice(0, 6).map((section, i) => (
                   <div key={section.id} className="flex items-start gap-3 rounded-2xl bg-muted/30 p-4 transition-colors hover:bg-muted/50">
@@ -225,9 +225,9 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
 {/* Course Content */}
             <section>
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Contenido del curso</h2>
+                <h2 className="text-2xl font-bold">{t.course.courseContent}</h2>
                 <Badge variant="secondary">
-                  {course.modules.length} módulos
+                  {t.course.modulesCount(course.modules.length)}
                 </Badge>
               </div>
 
@@ -242,7 +242,7 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                               {section.resources[0]?.type === "video" ? <PlayCircle className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                             </div>
                             <div className="text-left">
-                              <p className="font-semibold">Módulo {si + 1}</p>
+                              <p className="font-semibold">{t.course.moduleLabel(si + 1)}</p>
                               <p className="text-sm text-muted-foreground">{stripNumberPrefix(section.title)}</p>
                             </div>
                           </div>
@@ -293,9 +293,9 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
 
             {/* Requirements */}
             <section>
-              <h2 className="mb-6 text-2xl font-bold">Requisitos</h2>
+              <h2 className="mb-6 text-2xl font-bold">{t.course.requirements}</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {REQUIREMENTS.map((req) => (
+                {requirements.map((req) => (
                   <div key={req} className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/50 p-4">
                     <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
                       <div className="h-2 w-2 rounded-full bg-muted-foreground" />
@@ -308,16 +308,16 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
 
             {/* Certificate */}
             <section>
-              <h2 className="mb-6 text-2xl font-bold">Certificado</h2>
+              <h2 className="mb-6 text-2xl font-bold">{t.course.certificateSectionTitle}</h2>
               <div className="rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-6 sm:p-8">
                 <div className="flex flex-col items-center text-center">
                   <img
                     src="/images/certificate.png"
-                    alt="Certificate"
+                    alt={t.course.certificateAlt}
                     className="w-full max-w-md rounded-2xl"
                   />
                   <p className="mt-4 max-w-md text-sm text-muted-foreground">
-                    Al completar este curso, recibirás un certificado digital que puedes agregar a tu perfil profesional y compartir en LinkedIn.
+                    {t.course.certificateDescription}
                   </p>
                 </div>
               </div>
@@ -328,15 +328,15 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-lg">
-                <h3 className="mb-4 text-xl font-bold">{t.includes}</h3>
+                <h3 className="mb-4 text-xl font-bold">{t.course.includes}</h3>
                 <ul className="space-y-4">
                   <li className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                       <FileText className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium">{t.includedResources(Math.max(1, resources.length))}</p>
-                      <p className="text-xs text-muted-foreground">Recursos</p>
+                      <p className="font-medium">{t.course.includedResources(Math.max(1, resources.length))}</p>
+                      <p className="text-xs text-muted-foreground">{t.course.resourcesLabel}</p>
                     </div>
                   </li>
                   <li className="flex items-center gap-3">
@@ -344,19 +344,19 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                       <Clock className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium">{course.durationHours}h de contenido</p>
-                      <p className="text-xs text-muted-foreground">Duración total</p>
+                      <p className="font-medium">{t.course.contentDuration(course.durationHours)}</p>
+                      <p className="text-xs text-muted-foreground">{t.course.totalDurationLabel}</p>
                     </div>
                   </li>
                   <li className="flex items-center gap-3">
                     <img
                       src="/images/certificate.png"
-                      alt="Certificate"
+                      alt={t.course.certificateAlt}
                       className="h-10 w-10 rounded-xl object-cover"
                     />
                     <div>
-                      <p className="font-medium">{t.certificate}</p>
-                      <p className="text-xs text-muted-foreground">Al finalizar</p>
+                      <p className="font-medium">{t.course.certificate}</p>
+                      <p className="text-xs text-muted-foreground">{t.course.completionLabel}</p>
                     </div>
                   </li>
                   <li className="flex items-center gap-3">
@@ -364,8 +364,8 @@ export default async function CourseScreen({ params }: CourseScreenProps) {
                       <Globe className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium">{t.accessLifetime}</p>
-                      <p className="text-xs text-muted-foreground">Acceso eterno</p>
+                      <p className="font-medium">{t.course.accessLifetime}</p>
+                      <p className="text-xs text-muted-foreground">{t.course.lifetimeAccessLabel}</p>
                     </div>
                   </li>
                 </ul>

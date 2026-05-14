@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { ResourceViewerScreen } from "@/src/features/resources/presentation/screens/resource-viewer.screen"
 import { getCourseByIdAction } from "@/src/features/courses/presentation/states/courses.actions"
 import { listResourcesByCourseAction } from "@/src/features/resources/presentation/states/resources.actions"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
 
 interface ResourcePageProps {
   params: Promise<{ id: string }>
@@ -11,7 +12,8 @@ interface ResourcePageProps {
 export default async function ResourcePage({ params, searchParams }: ResourcePageProps) {
   const { id } = await params
   const query = searchParams ? await searchParams : undefined
-  const course = await getCourseByIdAction(id)
+  const locale = await getUserLocale()
+  const course = await getCourseByIdAction(id, locale)
 
   if (!course) {
     notFound()

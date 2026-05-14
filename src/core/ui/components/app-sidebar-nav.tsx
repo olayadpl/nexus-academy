@@ -31,28 +31,8 @@ import {
 } from "@/src/core/ui/components/sidebar"
 import { ScrollArea } from "@/src/core/ui/components/scroll-area"
 import { Branding } from "@/src/core/ui/components/branding"
-
-const mainItems = [
-  { href: "/", label: "Inicio", icon: Home },
-  { href: "/bookmarks", label: "Guardados", icon: Bookmark },
-  { href: "/history", label: "Historial", icon: History },
-]
-
-const learnItems = [
-  { href: "/explore", label: "Explorar", icon: Compass },
-  { href: "/courses", label: "Cursos", icon: BookOpen },
-  { href: "/career-paths", label: "Rutas Profesionales", icon: Route },
-  { href: "/briefs", label: "Proyectos", icon: FileText },
-  { href: "/assessments", label: "Evaluaciones", icon: ClipboardCheck },
-  { href: "/tutorials", label: "Tutoriales", icon: GraduationCap },
-]
-
-const growItems = [
-  { href: "/showcase", label: "Portafolio", icon: Sparkles },
-  { href: "/certifications", label: "Certificaciones", icon: Trophy },
-  { href: "/salary-explorer", label: "Explorador de Salarios", icon: Briefcase },
-  { href: "/jobs", label: "Bolsa de Trabajo", icon: Briefcase },
-]
+import { useLocale } from "@/src/core/ui/hooks/use-locale"
+import { getTranslations } from "@/src/lib/i18n/translations"
 
 function Section({
   title,
@@ -96,7 +76,31 @@ export function AppSidebarNav({
 }) {
   const pathname = usePathname()
   const { state, toggleSidebar } = useSidebar()
+  const { locale } = useLocale()
+  const t = getTranslations(locale)
   const collapsed = state === "collapsed"
+
+  const mainItems = [
+    { href: "/", label: t.nav.home, icon: Home },
+    { href: "/bookmarks", label: t.nav.bookmarks, icon: Bookmark },
+    { href: "/history", label: t.nav.history, icon: History },
+  ]
+
+  const learnItems = [
+    { href: "/explore", label: t.nav.explore, icon: Compass },
+    { href: "/courses", label: t.nav.courses, icon: BookOpen },
+    { href: "/career-paths", label: t.nav.careerPaths, icon: Route },
+    { href: "/briefs", label: t.nav.briefs, icon: FileText },
+    { href: "/assessments", label: t.nav.assessments, icon: ClipboardCheck },
+    { href: "/tutorials", label: t.nav.tutorials, icon: GraduationCap },
+  ]
+
+  const growItems = [
+    { href: "/showcase", label: t.nav.showcase, icon: Sparkles },
+    { href: "/certifications", label: t.nav.certifications, icon: Trophy },
+    { href: "/salary-explorer", label: t.nav.salaryExplorer, icon: Briefcase },
+    { href: "/jobs", label: t.nav.jobs, icon: Briefcase },
+  ]
 
   return (
     <div>
@@ -121,8 +125,8 @@ export function AppSidebarNav({
           <ScrollArea className="h-full">
             <div className="px-2 py-2">
               {isAuthenticated ? <Section items={mainItems} pathname={pathname} /> : null}
-              <Section title="APRENDER" items={learnItems} pathname={pathname} />
-              <Section title="COMUNIDAD" items={growItems} pathname={pathname} />
+              <Section title={t.navSections.learn} items={learnItems} pathname={pathname} />
+              <Section title={t.navSections.community} items={growItems} pathname={pathname} />
             </div>
           </ScrollArea>
         </SidebarContent>

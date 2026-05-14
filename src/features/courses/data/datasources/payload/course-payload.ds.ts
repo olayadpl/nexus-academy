@@ -3,6 +3,7 @@ import { getPayload } from "payload"
 
 import type { ICourseRemoteDataSource } from "../course.remote-datasource"
 import type { CourseModel } from "../../models/course.model"
+import type { Locale } from "@/src/lib/i18n/translations"
 
 type CourseLessonDoc = {
   id?: string | null
@@ -130,6 +131,8 @@ function toPayloadData(model: CourseModel) {
 }
 
 export class CoursePayloadDataSource implements ICourseRemoteDataSource {
+  constructor(private readonly locale: Locale = "es") {}
+
   private async payload() {
     return getPayloadSingleton()
   }
@@ -141,6 +144,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         collection: "courses",
         data: toPayloadData(model),
         depth: 1,
+        locale: this.locale,
         overrideAccess: true,
       })
 
@@ -158,6 +162,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         collection: "courses",
         limit: 1,
         depth: 1,
+        locale: this.locale,
         where: {
           externalId: {
             equals: id,
@@ -187,6 +192,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         id: target.id,
         data: payloadData,
         depth: 1,
+        locale: this.locale,
         overrideAccess: true,
       })
 
@@ -205,6 +211,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         collection: "courses",
         limit: 1,
         depth: 1,
+        locale: this.locale,
         where: {
           externalId: {
             equals: id,
@@ -221,6 +228,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         collection: "courses",
         limit: 1,
         depth: 1,
+        locale: this.locale,
         where: {
           id: {
             equals: id,
@@ -248,6 +256,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         limit: 100,
         depth: 1,
         pagination: false,
+        locale: this.locale,
         where: query?.featuredOnly
           ? {
               featured: {
@@ -272,6 +281,7 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         collection: "courses",
         limit: 1,
         depth: 0,
+        locale: this.locale,
         where: {
           externalId: {
             equals: id,

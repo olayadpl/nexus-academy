@@ -6,9 +6,11 @@ import { CourseMockDataSource } from "../../data/datasources/mock/course-mock.ds
 import { CourseRepositoryImpl } from "../../data/repositories/course.repository-impl"
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import { ManageCourseUseCase } from "../../domain/use-cases/manage-course.use-case"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
+import type { Locale } from "@/src/lib/i18n/translations"
 
-function createUseCases() {
-  const dataSource = new CourseMockDataSource()
+function createUseCases(locale?: Locale) {
+  const dataSource = new CourseMockDataSource(locale)
   const repository = new CourseRepositoryImpl(dataSource)
 
   return {
@@ -34,9 +36,10 @@ function mapError(error: unknown): never {
   throw new AppError(500, "UNEXPECTED", "Unexpected error")
 }
 
-export async function listCoursesAction(): Promise<CourseEntity[]> {
+export async function listCoursesAction(locale?: Locale): Promise<CourseEntity[]> {
   try {
-    const { manageCourseUseCase } = createUseCases()
+    const resolvedLocale = locale ?? (await getUserLocale())
+    const { manageCourseUseCase } = createUseCases(resolvedLocale)
     return await manageCourseUseCase.getAll()
   } catch (error) {
     console.error("listCoursesAction error:", error)
@@ -44,9 +47,10 @@ export async function listCoursesAction(): Promise<CourseEntity[]> {
   }
 }
 
-export async function listFeaturedCoursesAction(): Promise<CourseEntity[]> {
+export async function listFeaturedCoursesAction(locale?: Locale): Promise<CourseEntity[]> {
   try {
-    const { manageCourseUseCase } = createUseCases()
+    const resolvedLocale = locale ?? (await getUserLocale())
+    const { manageCourseUseCase } = createUseCases(resolvedLocale)
     return await manageCourseUseCase.getAll({ featuredOnly: true })
   } catch (error) {
     console.error("listFeaturedCoursesAction error:", error)
@@ -54,9 +58,10 @@ export async function listFeaturedCoursesAction(): Promise<CourseEntity[]> {
   }
 }
 
-export async function getCourseByIdAction(id: string): Promise<CourseEntity | null> {
+export async function getCourseByIdAction(id: string, locale?: Locale): Promise<CourseEntity | null> {
   try {
-    const { manageCourseUseCase } = createUseCases()
+    const resolvedLocale = locale ?? (await getUserLocale())
+    const { manageCourseUseCase } = createUseCases(resolvedLocale)
     return await manageCourseUseCase.getById(id)
   } catch (error) {
     console.error("getCourseByIdAction error:", error)
