@@ -108,7 +108,6 @@ function useResizablePanels() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const leftResizeStartXRef = useRef<number | null>(null)
   const rightResizeStartXRef = useRef<number | null>(null)
-  const setIsResizingRightRef = useRef<React.Dispatch<React.SetStateAction<boolean>> | null>(null)
 
   const [leftCollapsed, setLeftCollapsed] = useState(false)
   const [rightCollapsed, setRightCollapsed] = useState(false)
@@ -215,10 +214,6 @@ function useResizablePanels() {
     e.preventDefault()
     e.stopPropagation()
     rightResizeStartXRef.current = e.clientX
-    setIsResizingRight((prev) => {
-      setIsResizingRightRef.current = prev ? prev : (v: boolean) => v
-      return true
-    })
     setIsResizingRight(true)
   }
 
@@ -335,12 +330,7 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
                 <div
                   className="hidden lg:block absolute top-0 bottom-0 left-0"
                   style={{ width: RESIZER_PX, cursor: "col-resize", zIndex: 30 }}
-                  onMouseDown={startRightResize}
-                  onTouchStart={(e) => {
-                    e.preventDefault()
-                    rightResizeStartXRef.current = e.touches?.[0]?.clientX ?? null
-                    setIsResizingRight(true)
-                  }}
+                  onPointerDown={startRightResize}
                 />
               )}
             </div>

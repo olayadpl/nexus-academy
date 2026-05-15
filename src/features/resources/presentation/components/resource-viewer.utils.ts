@@ -11,6 +11,6 @@ export function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
     documentUrl: !isVideo ? resource.resourceUrl : undefined,
     durationMinutes: resource.durationMinutes ?? 0,
     completed: Boolean(resource.completed),
-    step: (resource as any).order ?? 1,
+    step: resource.order ?? 1,
   }
 }

@@ -9,7 +9,7 @@ interface ExploreMarketingBannerProps {
 
 export function ExploreMarketingBanner({ banner }: ExploreMarketingBannerProps) {
   return (
-    <div className="relative flex w-full overflow-hidden rounded-[1.75rem] bg-card md:min-h-[22rem] md:rounded-[2rem] md:items-center md:justify-center">
+    <div className="relative flex w-full overflow-hidden rounded-[1.75rem] border bg-muted/50 md:min-h-[22rem] md:rounded-[2rem] md:items-center md:justify-center">
       <section className="relative z-10 flex flex-col items-start justify-start px-5 py-10 md:min-h-[22rem] md:w-full md:max-w-7xl md:py-14 md:pl-12 md:pr-[26rem]">
         <h1 className="max-w-[18ch] text-[1.625rem] font-bold leading-8 tracking-[-0.03rem] text-foreground md:mb-3 md:max-w-none md:text-[2rem] md:leading-10 md:tracking-[-0.04rem]">
           {banner.title}
