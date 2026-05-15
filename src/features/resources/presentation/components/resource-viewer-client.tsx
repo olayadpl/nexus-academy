@@ -6,6 +6,8 @@ import { Toaster } from "@/src/core/ui/components/sonner"
 import { useLocale } from "@/src/core/ui/hooks/use-locale"
 import { getTranslations } from "@/src/lib/i18n/translations"
 import type { ResourceEntity } from "../../domain/entities/resource.entity"
+import type { ResourceCourseModel, ResourceLesson } from "./resource-viewer.types"
+import { mapResourceToLesson } from "./resource-viewer.utils"
 import LearningStyleNotesSidebar from "./learning-style-notes-sidebar"
 import LearningStyleCourseMain from "./learning-style-course-main"
 import LearningStyleRightPanel from "./learning-style-right-panel"
@@ -36,229 +38,152 @@ type ResourceViewerClientProps = {
   }[]
 }
 
-type ResourceLesson = {
-  id: string
-  title: string
-  type: "video" | "pdf" | "form"
-  videoUrl?: string
-  documentUrl?: string
-  youtubeUrl?: string
-  formId?: string
-  durationMinutes: number
-  completed: boolean
-  step: number
-}
+const COLLAPSED_PX = 72
+const SIDE_MIN_PX = 200
+const SIDE_DEFAULT_PX = 280
+const RESIZER_PX = 4
+const MAIN_MIN_PX = 420
 
-type ResourceSection = {
-  id: string
-  title: string
-  resources: ResourceLesson[]
-}
+function buildCourseModel(
+  courseId: string,
+  courseTitle: string,
+  resourceItems: ResourceEntity[],
+  courseModules?: ResourceViewerClientProps["courseModules"],
+  t?: { resourceViewer: { moduleLabel: (n: number) => string } }
+): ResourceCourseModel {
+  if (courseModules && courseModules.length > 0) {
+    return {
+      id: courseId,
+      title: courseTitle,
+      modules: courseModules.map((section, sectionIdx) => ({
+        id: section.id,
+        title: section.title,
+        resources: section.resources.map((r, lessonIdx) => ({
+          id: r.id,
+          title: r.title,
+          type: r.type,
+          videoUrl: r.videoFile,
+          documentUrl: r.documentFile,
+          youtubeUrl: r.youtubeUrl,
+          formId: r.formId,
+          durationMinutes: r.durationMinutes,
+          completed: r.completed,
+          step: (lessonIdx % 3) + 1,
+        })),
+      })),
+    }
+  }
 
-type ResourceCourseModel = {
-  id: string
-  title: string
-  modules: ResourceSection[]
-}
+  const lessonsPerModule = 3
+  const moduleMap = new Map<number, { id: string; title: string; resources: ResourceLesson[] }>()
 
-function mapResourceToLesson(resource: ResourceEntity): ResourceLesson {
-  const isVideo = resource.type === "video"
+  resourceItems.forEach((resource, index) => {
+    const moduleIndex = Math.floor(index / lessonsPerModule)
+    const lessonStep = (index % lessonsPerModule) + 1
+
+    if (!moduleMap.has(moduleIndex)) {
+      moduleMap.set(moduleIndex, {
+        id: `section-${moduleIndex + 1}`,
+        title: t?.resourceViewer.moduleLabel(moduleIndex + 1) ?? `Module ${moduleIndex + 1}`,
+        resources: [],
+      })
+    }
+
+    const mapped = mapResourceToLesson(resource)
+    moduleMap.get(moduleIndex)!.resources.push({ ...mapped, step: lessonStep })
+  })
+
   return {
-    id: resource.id,
-    title: resource.title,
-    type: isVideo ? "video" : resource.type === "form" ? "form" : "pdf",
-    videoUrl: isVideo ? resource.resourceUrl : undefined,
-    documentUrl: !isVideo ? resource.resourceUrl : undefined,
-    durationMinutes: resource.durationMinutes ?? 0,
-    completed: Boolean(resource.completed),
-    step: (resource as any).order ?? 1,
+    id: courseId,
+    title: courseTitle,
+    modules: Array.from(moduleMap.values()).sort((a, b) => {
+      const aNum = parseInt(a.id.replace("section-", ""))
+      const bNum = parseInt(b.id.replace("section-", ""))
+      return aNum - bNum
+    }),
   }
 }
 
-export function ResourceViewerClient({ course, resources, initialResourceId, courseModules }: ResourceViewerClientProps) {
-  const { locale } = useLocale()
-  const t = getTranslations(locale)
-  const [resourceItems, setResourceItems] = useState(resources)
-  const initial = initialResourceId
-    ? resourceItems.find((item) => item.id === initialResourceId) ?? resourceItems[0] ?? null
-    : resourceItems[0] ?? null
-  const [activeResourceId, setActiveResourceId] = useState(initial?.id ?? "")
-  const activeResource = resourceItems.find((item) => item.id === activeResourceId) ?? null
-
-  const courseModel = useMemo<ResourceCourseModel>(() => {
-    if (courseModules && courseModules.length > 0) {
-      return {
-        id: course.id,
-        title: course.title,
-        modules: courseModules.map((section, sectionIdx) => ({
-          id: section.id,
-          title: section.title,
-          resources: section.resources.map((r, lessonIdx) => ({
-            id: r.id,
-            title: r.title,
-            type: r.type,
-            videoUrl: r.videoFile,
-            documentUrl: r.documentFile,
-            youtubeUrl: r.youtubeUrl,
-            formId: r.formId,
-            durationMinutes: r.durationMinutes,
-            completed: r.completed,
-            step: (lessonIdx % 3) + 1,
-          })),
-        })),
-      }
-    }
-
-    const lessonsPerModule = 3
-    const moduleMap = new Map<number, ResourceSection>()
-
-    resourceItems.forEach((resource, index) => {
-      const moduleIndex = Math.floor(index / lessonsPerModule)
-      const lessonStep = (index % lessonsPerModule) + 1
-
-      if (!moduleMap.has(moduleIndex)) {
-        moduleMap.set(moduleIndex, {
-          id: `section-${moduleIndex + 1}`,
-          title: t.resourceViewer.moduleLabel(moduleIndex + 1),
-          resources: []
-        })
-      }
-
-      moduleMap.get(moduleIndex)!.resources.push({
-        id: resource.id,
-        title: resource.title,
-        type: resource.type === "video" ? "video" : resource.type === "form" ? "form" : "pdf",
-        videoUrl: resource.type === "video" ? resource.resourceUrl : undefined,
-        documentUrl: resource.type === "pdf" ? resource.resourceUrl : undefined,
-        durationMinutes: resource.durationMinutes ?? 0,
-        completed: Boolean(resource.completed),
-        step: lessonStep
-      })
-    })
-
-    const modules = Array.from(moduleMap.values()).sort((a, b) => {
-      const aNum = parseInt(a.id.replace('section-', ''))
-      const bNum = parseInt(b.id.replace('section-', ''))
-      return aNum - bNum
-    })
-
-    return {
-      id: course.id,
-      title: course.title,
-      modules
-    }
-  }, [course.id, course.title, resourceItems, courseModules])
-
-  const activeLesson = courseModel.modules
-    .flatMap(m => m.resources)
-    .find((lesson) => lesson.id === activeResourceId) ?? null
-
+function useResizablePanels() {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const leftResizeStartXRef = useRef<number | null>(null)
+  const rightResizeStartXRef = useRef<number | null>(null)
+  const setIsResizingRightRef = useRef<React.Dispatch<React.SetStateAction<boolean>> | null>(null)
 
   const [leftCollapsed, setLeftCollapsed] = useState(false)
   const [rightCollapsed, setRightCollapsed] = useState(false)
-
-  const COLLAPSED_PX = 72
-  const SIDE_MIN_PX = 200
-  const SIDE_DEFAULT_LEFT_PX = 280
-  const SIDE_DEFAULT_RIGHT_PX = SIDE_DEFAULT_LEFT_PX
-  const RESIZER_PX = 4
-  const MAIN_MIN_PX = 420
-
-  const [leftWidthPx, setLeftWidthPx] = useState<number>(SIDE_DEFAULT_LEFT_PX)
-  const [rightWidthPx, setRightWidthPx] = useState<number>(SIDE_DEFAULT_RIGHT_PX)
-  const [leftPrevWidthPx, setLeftPrevWidthPx] = useState<number>(SIDE_DEFAULT_LEFT_PX)
-  const [rightPrevWidthPx, setRightPrevWidthPx] = useState<number>(SIDE_DEFAULT_RIGHT_PX)
+  const [leftWidthPx, setLeftWidthPx] = useState(SIDE_DEFAULT_PX)
+  const [rightWidthPx, setRightWidthPx] = useState(SIDE_DEFAULT_PX)
+  const [leftPrevWidthPx, setLeftPrevWidthPx] = useState(SIDE_DEFAULT_PX)
+  const [rightPrevWidthPx, setRightPrevWidthPx] = useState(SIDE_DEFAULT_PX)
   const [isResizingLeft, setIsResizingLeft] = useState(false)
   const [isResizingRight, setIsResizingRight] = useState(false)
-
-  // Refs to track pointer start positions for resizing.
-  const leftResizeStartXRef = useRef<number | null>(null)
-  const rightResizeStartXRef = useRef<number | null>(null)
 
   const toggleLeft = useCallback(() => {
     if (leftCollapsed) {
       setLeftCollapsed(false)
-      setLeftWidthPx(SIDE_DEFAULT_LEFT_PX)
+      setLeftWidthPx(SIDE_DEFAULT_PX)
       return
     }
     setLeftPrevWidthPx(leftWidthPx)
     setLeftCollapsed(true)
     setLeftWidthPx(COLLAPSED_PX)
-  }, [leftCollapsed, leftPrevWidthPx, leftWidthPx])
+  }, [leftCollapsed, leftWidthPx])
 
   const toggleRight = useCallback(() => {
     if (rightCollapsed) {
       setRightCollapsed(false)
-      setRightWidthPx(SIDE_DEFAULT_RIGHT_PX)
+      setRightWidthPx(SIDE_DEFAULT_PX)
       return
     }
     setRightPrevWidthPx(rightWidthPx)
     setRightCollapsed(true)
     setRightWidthPx(COLLAPSED_PX)
-  }, [rightCollapsed, rightPrevWidthPx, rightWidthPx])
+  }, [rightCollapsed, rightWidthPx])
 
   const stopResizing = useCallback(() => {
-    // End any active resize operation. No click-vs-drag heuristics here to match reference behavior.
     setIsResizingLeft(false)
     setIsResizingRight(false)
     leftResizeStartXRef.current = null
     rightResizeStartXRef.current = null
   }, [])
 
-  const handleResize = useCallback((event: PointerEvent) => {
-    const container = containerRef.current?.getBoundingClientRect()
-    if (!container) return
+  const handleResize = useCallback(
+    (event: PointerEvent) => {
+      const container = containerRef.current?.getBoundingClientRect()
+      if (!container) return
 
-    // Compute the current side widths (collapsed or actual)
-    const rightCurrent = rightCollapsed ? COLLAPSED_PX : rightWidthPx
-    const leftCurrent = leftCollapsed ? COLLAPSED_PX : leftWidthPx
+      const rightCurrent = rightCollapsed ? COLLAPSED_PX : rightWidthPx
+      const leftCurrent = leftCollapsed ? COLLAPSED_PX : leftWidthPx
 
-    if (isResizingLeft) {
-      const nextWidth = event.clientX - container.left
-
-      // If the user drags below a small threshold, collapse
-      if (nextWidth < 60) {
-        if (!leftCollapsed) setLeftPrevWidthPx(leftWidthPx)
-        setLeftCollapsed(true)
-        setLeftWidthPx(COLLAPSED_PX)
-        return
+      if (isResizingLeft) {
+        const nextWidth = event.clientX - container.left
+        if (nextWidth < 60) {
+          if (!leftCollapsed) setLeftPrevWidthPx(leftWidthPx)
+          setLeftCollapsed(true)
+          setLeftWidthPx(COLLAPSED_PX)
+          return
+        }
+        const maxLeft = Math.max(SIDE_MIN_PX, container.width - rightCurrent - MAIN_MIN_PX - RESIZER_PX * 2)
+        setLeftCollapsed(false)
+        setLeftWidthPx(Math.min(Math.max(nextWidth, SIDE_MIN_PX), maxLeft))
       }
 
-      // Otherwise, expand and set width respecting the max allowed
-      const maxLeft = Math.max(
-        SIDE_MIN_PX,
-        container.width - rightCurrent - MAIN_MIN_PX - RESIZER_PX * 2
-      )
-      setLeftCollapsed(false)
-      setLeftWidthPx(Math.min(Math.max(nextWidth, SIDE_MIN_PX), maxLeft))
-    }
-
-    if (isResizingRight) {
-      const nextWidth = container.right - event.clientX
-
-      if (nextWidth < 60) {
-        if (!rightCollapsed) setRightPrevWidthPx(rightWidthPx)
-        setRightCollapsed(true)
-        setRightWidthPx(COLLAPSED_PX)
-        return
+      if (isResizingRight) {
+        const nextWidth = container.right - event.clientX
+        if (nextWidth < 60) {
+          if (!rightCollapsed) setRightPrevWidthPx(rightWidthPx)
+          setRightCollapsed(true)
+          setRightWidthPx(COLLAPSED_PX)
+          return
+        }
+        const maxRight = Math.max(SIDE_MIN_PX, container.width - leftCurrent - MAIN_MIN_PX - RESIZER_PX * 2)
+        setRightCollapsed(false)
+        setRightWidthPx(Math.min(Math.max(nextWidth, SIDE_MIN_PX), maxRight))
       }
-
-      const maxRight = Math.max(
-        SIDE_MIN_PX,
-        container.width - leftCurrent - MAIN_MIN_PX - RESIZER_PX * 2
-      )
-      setRightCollapsed(false)
-      setRightWidthPx(Math.min(Math.max(nextWidth, SIDE_MIN_PX), maxRight))
-    }
-  }, [
-    isResizingLeft,
-    isResizingRight,
-    leftCollapsed,
-    leftWidthPx,
-    rightCollapsed,
-    rightWidthPx,
-  ])
+    },
+    [isResizingLeft, isResizingRight, leftCollapsed, leftWidthPx, rightCollapsed, rightWidthPx]
+  )
 
   useEffect(() => {
     if (!isResizingLeft && !isResizingRight) return
@@ -279,26 +204,75 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
     }
   }, [handleResize, isResizingLeft, isResizingRight, stopResizing])
 
-  function handleSaveNote() {
-    toast.success(t.resourceViewer.noteSavedTitle, {
-      description: t.resourceViewer.noteSavedDescription,
+  const startLeftResize = (e: React.PointerEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    leftResizeStartXRef.current = e.clientX
+    setIsResizingLeft(true)
+  }
+
+  const startRightResize = (e: React.PointerEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    rightResizeStartXRef.current = e.clientX
+    setIsResizingRight((prev) => {
+      setIsResizingRightRef.current = prev ? prev : (v: boolean) => v
+      return true
     })
+    setIsResizingRight(true)
   }
 
-  function handleMarkAsCompleted() {
+  return {
+    containerRef,
+    leftCollapsed,
+    rightCollapsed,
+    leftWidthPx,
+    rightWidthPx,
+    isResizingLeft,
+    isResizingRight,
+    toggleLeft,
+    toggleRight,
+    startLeftResize,
+    startRightResize,
+  }
+}
+
+export function ResourceViewerClient({ course, resources, initialResourceId, courseModules }: ResourceViewerClientProps) {
+  const { locale } = useLocale()
+  const t = getTranslations(locale)
+  const [resourceItems, setResourceItems] = useState(resources)
+
+  const initial = initialResourceId
+    ? resourceItems.find((item) => item.id === initialResourceId) ?? resourceItems[0] ?? null
+    : resourceItems[0] ?? null
+  const [activeResourceId, setActiveResourceId] = useState(initial?.id ?? "")
+  const activeResource = resourceItems.find((item) => item.id === activeResourceId) ?? null
+
+  const courseModel = useMemo(
+    () => buildCourseModel(course.id, course.title, resourceItems, courseModules, t),
+    [course.id, course.title, resourceItems, courseModules, t]
+  )
+
+  const activeLesson = useMemo(
+    () => courseModel.modules.flatMap((m) => m.resources).find((l) => l.id === activeResourceId) ?? null,
+    [courseModel.modules, activeResourceId]
+  )
+
+  const { leftCollapsed, rightCollapsed, leftWidthPx, rightWidthPx, isResizingLeft, isResizingRight, toggleLeft, toggleRight, containerRef, startLeftResize, startRightResize } = useResizablePanels()
+
+  const handleSaveNote = useCallback(() => {
+    toast.success(t.resourceViewer.noteSavedTitle, { description: t.resourceViewer.noteSavedDescription })
+  }, [t])
+
+  const handleMarkAsCompleted = useCallback(() => {
     if (!activeResourceId) return
-    setResourceItems((current) =>
-      current.map((item) => (item.id === activeResourceId ? { ...item, completed: true } : item))
-    )
-
-  }
+    setResourceItems((current) => current.map((item) => (item.id === activeResourceId ? { ...item, completed: true } : item)))
+  }, [activeResourceId])
 
   if (!activeResource) {
     return (
       <main className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">
-          {t.resourceViewer.noResources}
-        </div>
+        <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">{t.resourceViewer.noResources}</div>
       </main>
     )
   }
@@ -318,18 +292,11 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
                 onToggleCollapse={toggleLeft}
                 disableInternalScroll={false}
               />
-
-              {/* Inner hit area on collapsed state so user can drag the edge to open without using the toggle button */}
               {leftCollapsed && (
                 <div
                   className="hidden lg:block absolute top-0 bottom-0 right-0"
-                  style={{ width: RESIZER_PX, cursor: 'col-resize', zIndex: 30 }}
-                  onPointerDown={(event: React.PointerEvent) => {
-                    event.preventDefault()
-                    event.stopPropagation()
-                    leftResizeStartXRef.current = event.clientX
-                    setIsResizingLeft(true)
-                  }}
+                  style={{ width: RESIZER_PX, cursor: "col-resize", zIndex: 30 }}
+                  onPointerDown={startLeftResize}
                 />
               )}
             </div>
@@ -337,34 +304,19 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
             <div
               className="hidden lg:block h-full shrink-0 cursor-col-resize hover:bg-border/60 active:bg-border/80"
               style={{ width: RESIZER_PX }}
-              onPointerDown={(event: React.PointerEvent) => {
-                event.preventDefault()
-                event.stopPropagation()
-                leftResizeStartXRef.current = event.clientX
-                setIsResizingLeft(true)
-              }}
+              onPointerDown={startLeftResize}
             />
 
             <div className="relative min-w-0 min-h-0 h-full max-h-full flex-1 rounded-2xl border border-white/30 bg-background/60 backdrop-blur-md shadow-sm overflow-hidden">
               <div className="h-full min-h-0 overflow-auto">
-                <LearningStyleCourseMain
-                  course={courseModel}
-                  activeLesson={activeLesson}
-                  onSaveNote={handleSaveNote}
-                />
+                <LearningStyleCourseMain course={courseModel} activeLesson={activeLesson} onSaveNote={handleSaveNote} />
               </div>
-
             </div>
 
             <div
               className="hidden lg:block h-full shrink-0 cursor-col-resize hover:bg-border/60 active:bg-border/80"
               style={{ width: RESIZER_PX }}
-              onPointerDown={(event: React.PointerEvent) => {
-                event.preventDefault()
-                event.stopPropagation()
-                rightResizeStartXRef.current = event.clientX
-                setIsResizingRight(true)
-              }}
+              onPointerDown={startRightResize}
             />
 
             <div
@@ -379,30 +331,21 @@ export function ResourceViewerClient({ course, resources, initialResourceId, cou
                 onToggleCollapse={toggleRight}
                 disableInternalScroll={false}
               />
-
-              {/* Inner hit area on collapsed state to allow dragging from the collapsed panel edge */}
               {rightCollapsed && (
                 <div
                   className="hidden lg:block absolute top-0 bottom-0 left-0"
-                  style={{ width: RESIZER_PX, cursor: 'col-resize', zIndex: 30 }}
-                  onMouseDown={(event) => {
-                    event.preventDefault()
-                    event.stopPropagation()
-                    rightResizeStartXRef.current = event.clientX
-                    setIsResizingRight(true)
-                  }}
-                  onTouchStart={(event) => {
-                    event.preventDefault()
-                    rightResizeStartXRef.current = event.touches?.[0]?.clientX ?? null
+                  style={{ width: RESIZER_PX, cursor: "col-resize", zIndex: 30 }}
+                  onMouseDown={startRightResize}
+                  onTouchStart={(e) => {
+                    e.preventDefault()
+                    rightResizeStartXRef.current = e.touches?.[0]?.clientX ?? null
                     setIsResizingRight(true)
                   }}
                 />
               )}
             </div>
 
-            {(isResizingLeft || isResizingRight) && (
-              <div className="hidden lg:block absolute inset-0 z-40 bg-transparent cursor-col-resize" />
-            )}
+            {(isResizingLeft || isResizingRight) && <div className="hidden lg:block absolute inset-0 z-40 bg-transparent cursor-col-resize" />}
           </div>
         </div>
       </div>
