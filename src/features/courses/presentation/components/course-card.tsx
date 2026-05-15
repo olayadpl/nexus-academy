@@ -74,7 +74,7 @@ export function CourseCard({ course, index }: CourseCardProps) {
         "block h-full w-full"
       )}
     >
-      <Card className="group relative flex h-full flex-col overflow-hidden rounded-2xl px-0 py-0 shadow-md hover:shadow-lg transition-all hover:text-primary gap-0">
+      <Card className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-muted/50 px-0 py-0 shadow-md hover:shadow-lg transition-all hover:text-primary gap-0">
         <div className="relative mx-2 mt-2 h-[15.375rem] w-[calc(100%-1rem)] shrink-0 overflow-hidden rounded-[0.875rem] bg-muted">
           <Image
             src={courseImage}
