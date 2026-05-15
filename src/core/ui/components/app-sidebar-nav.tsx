@@ -98,8 +98,6 @@ export function AppSidebarNav({
   const growItems = [
     { href: "/showcase", label: t.nav.showcase, icon: Sparkles },
     { href: "/certifications", label: t.nav.certifications, icon: Trophy },
-    { href: "/salary-explorer", label: t.nav.salaryExplorer, icon: Briefcase },
-    { href: "/jobs", label: t.nav.jobs, icon: Briefcase },
   ]
 
   return (
