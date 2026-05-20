@@ -2,7 +2,7 @@
 
 import { AppError } from "@/src/core/error/app-error"
 import { Failure } from "@/src/core/error/failures"
-import { CourseMockDataSource } from "../../data/datasources/mock/course-mock.ds"
+import { CoursePayloadDataSource } from "../../data/datasources/payload/course-payload.ds"
 import { CourseRepositoryImpl } from "../../data/repositories/course.repository-impl"
 import type { CourseEntity } from "../../domain/entities/course.entity"
 import { ManageCourseUseCase } from "../../domain/use-cases/manage-course.use-case"
@@ -10,7 +10,7 @@ import { getUserLocale } from "@/src/lib/i18n/get-locale"
 import type { Locale } from "@/src/lib/i18n/translations"
 
 function createUseCases(locale?: Locale) {
-  const dataSource = new CourseMockDataSource(locale)
+  const dataSource = new CoursePayloadDataSource(locale)
   const repository = new CourseRepositoryImpl(dataSource)
 
   return {

@@ -2,12 +2,33 @@ import type { CourseEntity } from "../../domain/entities/course.entity"
 import type { UpdateCourseInput } from "../../domain/repositories/course.repository"
 import type { CourseModel } from "../models/course.model"
 
+function extractTextFromLexical(doc: unknown): string {
+  if (typeof doc === "string") return doc
+  if (!doc || typeof doc !== "object") return ""
+  const root = (doc as { root?: { children?: unknown[] } }).root
+  if (!root?.children) return ""
+  const lines: string[] = []
+  for (const child of root.children) {
+    if (typeof child !== "object" || child === null) continue
+    const c = child as { children?: { text?: string }[] }
+    if (c.children) {
+      for (const textNode of c.children) {
+        if (textNode.text) lines.push(textNode.text)
+      }
+    }
+  }
+  return lines.join(" ")
+}
+
 export function modelToEntity(model: CourseModel): CourseEntity {
   try {
+    const rawDesc = model.description
+    const plainDescription =
+      typeof rawDesc === "string" ? rawDesc : extractTextFromLexical(rawDesc)
     return {
       id: model.id ?? "",
       title: model.title ?? "",
-      description: model.description ?? "",
+      description: plainDescription,
       level: model.level ?? "beginner",
       durationHours: model.durationHours ?? 0,
       rating: model.rating ?? 0,

@@ -6,14 +6,22 @@ import type { CourseModel } from "../../models/course.model"
 import type { Locale } from "@/src/lib/i18n/translations"
 
 type CourseLessonDoc = {
+  blockType?: "video" | "document" | "quiz" | null
   id?: string | null
   title: string
   type?: string | null
   youtubeUrl?: string | null
-  videoFile?: { url?: string } | null
-  documentFile?: { url?: string } | null
+  videoFile?: { url?: string } | string | null
+  documentFile?: { url?: string } | string | null
   formId?: string | null
+  quizRef?: string | null
+  duration?: {
+    hours?: number | null
+    minutes?: number | null
+  } | null
   durationMinutes?: number | null
+  pages?: number | null
+  isPreview?: boolean | null
   completed?: boolean | null
 }
 
@@ -29,12 +37,21 @@ type CourseDoc = {
   title: string
   description: string
   level: "beginner" | "intermediate" | "advanced"
-  durationHours: number
+  duration?: {
+    hours?: number | null
+    minutes?: number | null
+  } | null
+  durationHours?: number | null
   rating: number
   reviewCount: number
   featured: boolean
   progress?: number | null
-  thumbnailUrl: string
+  thumbnailUrl?: string | null
+  thumbnail?: { url?: string } | string | null
+  author?: {
+    name?: string | null
+    avatar?: { url?: string } | string | null
+  } | null
   authorName?: string | null
   authorAvatarUrl?: string | null
   modules?: CourseModuleDoc[] | null
@@ -50,82 +67,135 @@ function getPayloadSingleton() {
 }
 
 function toModel(doc: CourseDoc): CourseModel {
-  const thumbnailFromRelation = (doc as any).thumbnail && typeof (doc as any).thumbnail === 'object' && (doc as any).thumbnail.url
+  const thumbnailFromRelation =
+    doc.thumbnail && typeof doc.thumbnail === "object" ? doc.thumbnail.url : undefined
   const thumbnailUrlFinal = thumbnailFromRelation || doc.thumbnailUrl || ''
   const externalId = doc.externalId?.trim() || String(doc.id)
-  const rawModules = (doc.modules ?? []) as any[]
+  const docId = String(doc.id)
+  const rawModules: CourseModuleDoc[] = Array.isArray(doc.modules) ? doc.modules : []
 
-const sections: CourseModel["modules"] = rawModules.map((module: any, moduleIdx: number) => {
+  const durationGroupHours = Number(doc.duration?.hours) || 0
+  const durationGroupMinutes = Number(doc.duration?.minutes) || 0
+  const durationHoursFromGroup = durationGroupHours + durationGroupMinutes / 60
+
+  const sections: CourseModel["modules"] = rawModules.map((module, moduleIdx: number) => {
     const rawResources = module.resources
 
-    const isNested = Array.isArray(rawResources) &&
-      rawResources.length > 0 &&
-      rawResources.every((l: any) => l && typeof l === "object" && ("durationMinutes" in l || "type" in l))
-
-    const resourceData = isNested && rawResources ? rawResources : rawModules
+    const resourceData: CourseLessonDoc[] = Array.isArray(rawResources) ? rawResources : []
 
     return {
       id: module.id?.trim() || `section-${externalId}-${moduleIdx + 1}`,
       title: module.title ?? `Módulo ${moduleIdx + 1}`,
-      resources: resourceData.map((r: any, idx: number) => ({
-        id: r.id?.trim() || `${externalId}-resource-${moduleIdx * 10 + idx + 1}`,
-        title: r.title ?? `Lección ${idx + 1}`,
-        type: (r.type as "video" | "pdf" | "form") || "video",
-        youtubeUrl: r.youtubeUrl ?? undefined,
-        videoFile: typeof r.videoFile === 'string' ? r.videoFile : r.videoFile?.url ?? undefined,
-        documentFile: typeof r.documentFile === 'string' ? r.documentFile : r.documentFile?.url ?? undefined,
-        formId: r.formId ?? undefined,
-        durationMinutes: Number(r.durationMinutes) || 1,
-        completed: Boolean(r.completed),
-      })),
+      resources: resourceData.map((r, idx: number) => {
+        const resourceType =
+          r.blockType === "document"
+            ? "pdf"
+            : r.blockType === "quiz"
+              ? "form"
+              : ((r.type as "video" | "pdf" | "form" | undefined) ?? "video")
+        const durationMinutesFromGroup = (Number(r.duration?.hours) || 0) * 60 + (Number(r.duration?.minutes) || 0)
+
+        return {
+          id: r.id?.trim() || `${externalId}-resource-${moduleIdx * 10 + idx + 1}`,
+          title: r.title ?? `Lección ${idx + 1}`,
+          type: resourceType,
+          youtubeUrl: r.youtubeUrl ?? undefined,
+          videoFile: typeof r.videoFile === "string" ? r.videoFile : r.videoFile?.url ?? undefined,
+          documentFile: typeof r.documentFile === "string" ? r.documentFile : r.documentFile?.url ?? undefined,
+          formId: r.formId ?? r.quizRef ?? undefined,
+          durationMinutes: Number(r.durationMinutes) || durationMinutesFromGroup || 1,
+          completed: Boolean(r.completed),
+        }
+      }),
     }
   })
 
+  const authorAvatarFromGroup =
+    doc.author?.avatar && typeof doc.author.avatar === "object" ? doc.author.avatar.url : undefined
+
   return {
-    id: externalId,
+    id: docId,
     title: doc.title ?? "",
     description: doc.description ?? "",
     level: doc.level ?? "beginner",
-    durationHours: Number(doc.durationHours) || 0,
+    durationHours: durationHoursFromGroup || Number(doc.durationHours) || 0,
     rating: Number(doc.rating) || 0,
     reviewCount: Number(doc.reviewCount) || 0,
     featured: Boolean(doc.featured),
     progress: Number(doc.progress) || 0,
     thumbnailUrl: thumbnailUrlFinal,
-    authorName: doc.authorName ?? undefined,
-    authorAvatarUrl: doc.authorAvatarUrl ?? undefined,
+    authorName: doc.author?.name ?? doc.authorName ?? undefined,
+    authorAvatarUrl:
+      authorAvatarFromGroup ||
+      (typeof doc.author?.avatar === "string" ? doc.author.avatar : undefined) ||
+      doc.authorAvatarUrl ||
+      undefined,
     modules: sections,
   }
 }
 
 function toPayloadData(model: CourseModel) {
+  const wholeHours = Math.max(0, Math.floor(model.durationHours || 0))
+  const minutes = Math.max(0, Math.round(((model.durationHours || 0) - wholeHours) * 60))
+  const normalizedHours = wholeHours + Math.floor(minutes / 60)
+  const normalizedMinutes = minutes % 60
+
   return {
     externalId: model.id,
     title: model.title,
     description: model.description,
     level: model.level,
+    duration: {
+      hours: normalizedHours,
+      minutes: normalizedMinutes,
+    },
     durationHours: model.durationHours,
     rating: model.rating,
     reviewCount: model.reviewCount,
     featured: model.featured,
-    progress: model.progress ?? 0,
     thumbnailUrl: model.thumbnailUrl,
+    thumbnail: undefined,
+    author: {
+      name: model.authorName,
+      avatar: undefined,
+    },
     authorName: model.authorName,
     authorAvatarUrl: model.authorAvatarUrl,
     modules: model.modules.map((section) => ({
       id: section.id,
       title: section.title,
-      resources: section.resources.map((r) => ({
-        id: r.id,
-        title: r.title,
-        type: r.type,
-        youtubeUrl: r.youtubeUrl,
-        videoFile: r.videoFile,
-        documentFile: r.documentFile,
-        formId: r.formId,
-        durationMinutes: r.durationMinutes,
-        completed: r.completed,
-      })),
+      resources: section.resources.map((r) => {
+        if (r.type === "pdf") {
+          return {
+            blockType: "document",
+            id: r.id,
+            title: r.title,
+            documentFile: r.documentFile,
+          }
+        }
+
+        if (r.type === "form") {
+          return {
+            blockType: "quiz",
+            id: r.id,
+            title: r.title,
+            quizRef: r.formId,
+          }
+        }
+
+        return {
+          blockType: "video",
+          id: r.id,
+          title: r.title,
+          youtubeUrl: r.youtubeUrl,
+          videoFile: r.videoFile,
+          duration: {
+            hours: Math.floor((r.durationMinutes || 0) / 60),
+            minutes: Math.max(0, (r.durationMinutes || 0) % 60),
+          },
+          isPreview: false,
+        }
+      }),
     })),
   }
 }
@@ -213,9 +283,8 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         depth: 1,
         locale: this.locale,
         where: {
-          externalId: {
-            equals: id,
-          },
+          externalId: { equals: id },
+          _status: { equals: "published" },
         },
         overrideAccess: true,
       })
@@ -230,9 +299,8 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         depth: 1,
         locale: this.locale,
         where: {
-          id: {
-            equals: id,
-          },
+          id: { equals: id },
+          _status: { equals: "published" },
         },
         overrideAccess: true,
       })
@@ -257,13 +325,10 @@ export class CoursePayloadDataSource implements ICourseRemoteDataSource {
         depth: 1,
         pagination: false,
         locale: this.locale,
-        where: query?.featuredOnly
-          ? {
-              featured: {
-                equals: true,
-              },
-            }
-          : undefined,
+        where: {
+          ...(query?.featuredOnly ? { featured: { equals: true } } : {}),
+          _status: { equals: "published" },
+        },
         overrideAccess: true,
       })
 

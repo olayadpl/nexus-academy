@@ -1,51 +1,19 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { BookmarkCheck, Download, Share2, Bookmark, ThumbsDown, ThumbsUp, Play, Trash2, Star, Clock, X, NotebookPen, Plus } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { BookmarkCheck, Download, Share2, Play, Star, Clock, X, NotebookPen } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/src/core/ui/components/breadcrumb"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/core/ui/components/tabs"
-import { Textarea } from "@/src/core/ui/components/textarea"
 import { Badge } from "@/src/core/ui/components/badge"
 import { Button } from "@/src/core/ui/components/button"
-import { cn } from "@/src/core/ui/lib/utils"
+import type { ResourceCourseModel, ResourceLesson } from "./resource-viewer.types"
 
-type ResourceLesson = {
-  id: string
-  title: string
-  type: "video" | "pdf" | "form"
-  videoUrl?: string
-  documentUrl?: string
-  youtubeUrl?: string
-  formId?: string
-  durationMinutes: number
-  completed: boolean
-  step: number
+type MainContentProps = {
+  course: ResourceCourseModel
+  activeLesson: ResourceLesson | null
+  scrollRef?: React.RefObject<HTMLElement | null> | null
 }
-
-type ResourceSection = {
-  id: string
-  title: string
-  resources: ResourceLesson[]
-}
-
-type ResourceCourseModel = {
-  id: string
-  title: string
-  modules: ResourceSection[]
-}
-
-type LearningNoteItem = {
-  id: number
-  timestamp: string
-  text: string
-  createdAt: string
-}
-
-const LEARNING_NOTES_SEED: LearningNoteItem[] = [
-  { id: 1, timestamp: "2:14", text: "Key point: eye contact should be held for 3-5 seconds max before breaking naturally.", createdAt: "Yesterday" },
-  { id: 2, timestamp: "7:42", text: "Open body language formula: uncrossed arms and a slight forward lean.", createdAt: "Yesterday" },
-]
 
 const LEARNING_RELATED_VIDEOS = [
   { id: 1, title: "The Science of First Impressions", instructor: "Dr. Mark Elliot", duration: "45 min", rating: "4.8", students: "98,402", thumbnail: "/images/related-1.jpg", badge: "Popular" },
@@ -90,41 +58,31 @@ function toYouTubeEmbedUrl(url: string): string | null {
   return null
 }
 
-export default function LearningStyleCourseMain({
-  course,
-  activeLesson,
-  onSaveNote,
-}: {
-  course: ResourceCourseModel
-  activeLesson: ResourceLesson | null
-  onSaveNote: () => void
-}) {
-  const [liked, setLiked] = useState(false)
-  const [disliked, setDisliked] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
+export function MainContent({ course, activeLesson, scrollRef }: MainContentProps) {
   const [showPiPMode, setShowPiPMode] = useState(false)
   const [pipDismissed, setPipDismissed] = useState(false)
   const [zoom, setZoom] = useState(100)
   const videoRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<HTMLElement>(null)
+  const internalScrollRef = useRef<HTMLElement>(null)
+  const activeScrollRef = scrollRef ?? internalScrollRef
   const activeResourceUrl = activeLesson?.videoUrl ?? activeLesson?.documentUrl ?? activeLesson?.youtubeUrl ?? "/images/course-thumbnail.jpg"
   const activeResourceLabel = activeLesson?.type === "pdf" ? "PDF preview" : "Course video"
   const activeYouTubeEmbedUrl = activeLesson?.type === "video" ? toYouTubeEmbedUrl(activeResourceUrl) : null
 
   const handleScroll = useCallback(() => {
-    if (!videoRef.current || !scrollRef.current) return
-    const scrollTop = scrollRef.current.scrollTop
+    if (!videoRef.current || !activeScrollRef.current) return
+    const scrollTop = activeScrollRef.current.scrollTop
     const videoBottom = videoRef.current.offsetTop + videoRef.current.offsetHeight
     const isOutOfView = scrollTop > videoBottom
     setShowPiPMode(isOutOfView && !pipDismissed)
-  }, [pipDismissed])
+  }, [pipDismissed, activeScrollRef])
 
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    el.addEventListener("scroll", handleScroll, { passive: true })
-    return () => el.removeEventListener("scroll", handleScroll)
-  }, [handleScroll])
+    const element = activeScrollRef.current
+    if (!element) return
+    element.addEventListener("scroll", handleScroll, { passive: true })
+    return () => element.removeEventListener("scroll", handleScroll)
+  }, [handleScroll, activeScrollRef])
 
   const dismissPiP = () => {
     setPipDismissed(true)
@@ -133,23 +91,23 @@ export default function LearningStyleCourseMain({
 
   useEffect(() => {
     if (!pipDismissed) return
-    const el = scrollRef.current
-    if (!el) return
+    const element = activeScrollRef.current
+    if (!element) return
     const check = () => {
       if (!videoRef.current) return
-      const scrollTop = el.scrollTop
+      const scrollTop = element.scrollTop
       const videoBottom = videoRef.current.offsetTop + videoRef.current.offsetHeight
       if (scrollTop <= videoBottom) {
         setPipDismissed(false)
       }
     }
-    el.addEventListener("scroll", check, { passive: true })
-    return () => el.removeEventListener("scroll", check)
-  }, [pipDismissed])
+    element.addEventListener("scroll", check, { passive: true })
+    return () => element.removeEventListener("scroll", check)
+  }, [pipDismissed, activeScrollRef])
 
   return (
-    <main ref={scrollRef} className="flex-1 h-full min-w-0 overflow-y-auto bg-background transition-all duration-200">
-      <div className="px-6 py-4 max-w-4xl">
+    <main ref={internalScrollRef} className="flex-1 h-full min-w-0 overflow-y-auto bg-background transition-all duration-200">
+      <div className="px-7 py-4 max-w-[1200px]">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -209,9 +167,7 @@ export default function LearningStyleCourseMain({
                   Este es el modo de lectura del documento. Aqui se presenta el contenido con jerarquia clara,
                   espaciado amplio y una interfaz enfocada en lectura.
                 </p>
-                <p>
-                  Puedes usar los controles superiores para ajustar zoom, compartir o descargar el recurso.
-                </p>
+                <p>Puedes usar los controles superiores para ajustar zoom, compartir o descargar el recurso.</p>
                 <p>
                   Si el contenido real del PDF esta disponible, este bloque puede sustituirse por un render del
                   documento embebido.
@@ -220,25 +176,21 @@ export default function LearningStyleCourseMain({
             </div>
           </section>
         ) : (
-          <>
-            <div ref={videoRef} className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: "16/9" }}>
-              {activeYouTubeEmbedUrl ? (
-                <iframe
-                  src={activeYouTubeEmbedUrl}
-                  title={activeResourceLabel}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <video className="h-full w-full" controls src={activeResourceUrl}>
-                  Tu navegador no soporta la reproduccion de video.
-                </video>
-              )}
-            </div>
-
-
-          </>
+          <div ref={videoRef} className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: "16/9" }}>
+            {activeYouTubeEmbedUrl ? (
+              <iframe
+                src={activeYouTubeEmbedUrl}
+                title={activeResourceLabel}
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video className="h-full w-full" controls src={activeResourceUrl}>
+                Tu navegador no soporta la reproduccion de video.
+              </video>
+            )}
+          </div>
         )}
 
         <Tabs defaultValue="description" className="mb-8">
@@ -251,7 +203,6 @@ export default function LearningStyleCourseMain({
               <NotebookPen className="h-3.5 w-3.5" />
               Transcript
             </TabsTrigger>
-
           </TabsList>
 
           <TabsContent value="description" className="space-y-4 mt-0">
@@ -279,8 +230,6 @@ export default function LearningStyleCourseMain({
               </ul>
             </div>
           </TabsContent>
-
-
 
           <TabsContent value="transcript" className="mt-0">
             <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">

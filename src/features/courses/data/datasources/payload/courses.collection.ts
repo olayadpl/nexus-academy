@@ -1,7 +1,13 @@
 import type { CollectionConfig } from "payload"
+import { lexicalEditor } from "@payloadcms/richtext-lexical"
 
 export const CoursesCollection: CollectionConfig = {
   slug: "courses",
+  versions: {
+    drafts: {
+      maxPerDoc: 50,
+    },
+  },
   access: {
     read: () => true,
     create: () => true,
@@ -13,19 +19,20 @@ export const CoursesCollection: CollectionConfig = {
       name: "externalId",
       type: "text",
       required: true,
+      index: true,
       unique: true,
     },
     {
       name: "title",
       type: "text",
       required: true,
-      localized: true,
+      unique: true,
     },
     {
       name: "description",
-      type: "textarea",
+      type: "richText",
+      editor: lexicalEditor({}),
       required: true,
-      localized: true,
     },
     {
       name: "level",
@@ -35,10 +42,25 @@ export const CoursesCollection: CollectionConfig = {
       defaultValue: "beginner",
     },
     {
-      name: "durationHours",
-      type: "number",
-      required: true,
-      min: 0,
+      name: "duration",
+      type: "group",
+      fields: [
+        {
+          name: "hours",
+          type: "number",
+          required: true,
+          min: 0,
+          defaultValue: 0,
+        },
+        {
+          name: "minutes",
+          type: "number",
+          required: true,
+          min: 0,
+          max: 59,
+          defaultValue: 0,
+        },
+      ],
     },
     {
       name: "rating",
@@ -47,6 +69,9 @@ export const CoursesCollection: CollectionConfig = {
       min: 0,
       max: 5,
       defaultValue: 0,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: "reviewCount",
@@ -54,6 +79,9 @@ export const CoursesCollection: CollectionConfig = {
       required: true,
       min: 0,
       defaultValue: 0,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: "featured",
@@ -62,33 +90,35 @@ export const CoursesCollection: CollectionConfig = {
       defaultValue: false,
     },
     {
-      name: "progress",
-      type: "number",
-      min: 0,
-      max: 100,
-      defaultValue: 0,
-    },
-    {
-      name: "thumbnailUrl",
-      type: "text",
-      required: true,
-    },
-    {
       name: "thumbnail",
       type: "upload",
       relationTo: "media",
     },
     {
-      name: "authorName",
-      type: "text",
-    },
-    {
-      name: "authorAvatarUrl",
-      type: "text",
+      name: "author",
+      type: "group",
+      fields: [
+        {
+          name: "name",
+          type: "text",
+        },
+        {
+          name: "avatar",
+          type: "upload",
+          relationTo: "media",
+        },
+      ],
     },
     {
       name: "modules",
       type: "array",
+      labels: {
+        singular: "Modulo",
+        plural: "Modulos",
+      },
+      admin: {
+        initCollapsed: true,
+      },
       fields: [
         {
           name: "id",
@@ -99,62 +129,163 @@ export const CoursesCollection: CollectionConfig = {
           name: "title",
           type: "text",
           required: true,
-          localized: true,
         },
         {
           name: "resources",
-          type: "array",
-          fields: [
+          type: "blocks",
+          labels: {
+            singular: "Recurso",
+            plural: "Recursos",
+          },
+          blocks: [
             {
-              name: "id",
-              type: "text",
-              required: true,
+              slug: "video",
+              labels: {
+                singular: "Video",
+                plural: "Videos",
+              },
+              fields: [
+                {
+                  name: "id",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "title",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "videoFile",
+                  type: "upload",
+                  relationTo: "media",
+                },
+                {
+                  name: "youtubeUrl",
+                  type: "text",
+                },
+                {
+                  name: "duration",
+                  type: "group",
+                  fields: [
+                    {
+                      name: "hours",
+                      type: "number",
+                      required: true,
+                      min: 0,
+                      defaultValue: 0,
+                    },
+                    {
+                      name: "minutes",
+                      type: "number",
+                      required: true,
+                      min: 0,
+                      max: 59,
+                      defaultValue: 0,
+                    },
+                  ],
+                },
+                {
+                  name: "isPreview",
+                  type: "checkbox",
+                  required: true,
+                  defaultValue: false,
+                },
+              ],
             },
             {
-              name: "title",
-              type: "text",
-              required: true,
-              localized: true,
+              slug: "document",
+              labels: {
+                singular: "Documento",
+                plural: "Documentos",
+              },
+              fields: [
+                {
+                  name: "id",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "title",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "documentFile",
+                  type: "upload",
+                  relationTo: "media",
+                },
+                {
+                  name: "pages",
+                  type: "number",
+                  min: 1,
+                },
+              ],
             },
             {
-              name: "type",
-              type: "select",
-              required: true,
-              options: ["video", "pdf", "form"],
-            },
-            {
-              name: "youtubeUrl",
-              type: "text",
-            },
-            {
-              name: "videoFile",
-              type: "upload",
-              relationTo: "media",
-            },
-            {
-              name: "documentFile",
-              type: "upload",
-              relationTo: "media",
-            },
-            {
-              name: "formId",
-              type: "text",
-            },
-            {
-              name: "durationMinutes",
-              type: "number",
-              required: true,
-              min: 1,
-            },
-            {
-              name: "completed",
-              type: "checkbox",
-              required: true,
-              defaultValue: false,
+              slug: "quiz",
+              labels: {
+                singular: "Cuestionario",
+                plural: "Cuestionarios",
+              },
+              fields: [
+                {
+                  name: "id",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "title",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "quizRef",
+                  type: "text",
+                },
+              ],
             },
           ],
         },
       ],
+    },
+    {
+      name: "thumbnailUrl",
+      type: "text",
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: "authorName",
+      type: "text",
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: "authorAvatarUrl",
+      type: "text",
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: "durationHours",
+      type: "number",
+      min: 0,
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: "progress",
+      type: "number",
+      min: 0,
+      max: 100,
+      admin: {
+        hidden: true,
+      },
     },
   ],
 }

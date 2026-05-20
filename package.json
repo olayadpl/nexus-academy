@@ -16,13 +16,15 @@
     "gen:feature:multi": "node ./scripts/gen-feature-multi.mjs",
     "payload:collect": "node ./scripts/generate-payload-collections.mjs",
     "payload:seed": "node ./scripts/create-admin.mjs",
-    "payload:seed:courses": "node ./scripts/seed-courses.mjs"
+    "payload:seed:courses": "node ./scripts/seed-courses.mjs",
+    "payload:seed:enrollments": "node ./scripts/seed-enrollments.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
     "@hookform/resolvers": "^3.9.1",
     "@payloadcms/db-sqlite": "^3.83.0",
     "@payloadcms/next": "^3.83.0",
+    "@payloadcms/richtext-lexical": "^3.83.0",
     "@radix-ui/react-accordion": "1.2.12",
     "@radix-ui/react-alert-dialog": "1.1.15",
     "@radix-ui/react-aspect-ratio": "1.1.8",

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { ResourceViewerScreen } from "@/src/features/resources/presentation/screens/resource-viewer.screen"
+import { ResourceCourseViewerScreen } from "@/src/features/resources/presentation/screens/resource-course-viewer.screen"
 import { getCourseByIdAction } from "@/src/features/courses/presentation/states/courses.actions"
 import { listResourcesByCourseAction } from "@/src/features/resources/presentation/states/resources.actions"
 import { getUserLocale } from "@/src/lib/i18n/get-locale"
@@ -22,7 +22,7 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
   const resources = await listResourcesByCourseAction(course.id)
 
   return (
-    <ResourceViewerScreen
+    <ResourceCourseViewerScreen
       course={{
         id: course.id,
         title: course.title,

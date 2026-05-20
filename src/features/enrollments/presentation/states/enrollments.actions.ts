@@ -4,7 +4,10 @@ import { AppError } from "@/src/core/error/app-error"
 import { Failure } from "@/src/core/error/failures"
 import type { CourseEntity } from "@/src/features/courses/domain/entities/course.entity"
 import { listCoursesAction } from "@/src/features/courses/presentation/states/courses.actions"
+import { getUserLocale } from "@/src/lib/i18n/get-locale"
+import type { Locale } from "@/src/lib/i18n/translations"
 import { EnrollmentMockDataSource } from "../../data/datasources/mock/enrollment-mock.ds"
+import { EnrollmentPayloadDataSource } from "../../data/datasources/payload/enrollment-payload.ds"
 import { EnrollmentRepositoryImpl } from "../../data/repositories/enrollment.repository-impl"
 import type { EnrollmentEntity } from "../../domain/entities/enrollment.entity"
 import { ManageEnrollmentUseCase } from "../../domain/use-cases/manage-enrollment.use-case"
@@ -14,8 +17,14 @@ export interface ContinueLearningItem {
   course: CourseEntity
 }
 
-function createUseCases() {
-  const dataSource = new EnrollmentMockDataSource()
+function shouldUsePayload() {
+  return process.env.NEXT_PUBLIC_USE_PAYLOAD === "true"
+}
+
+function createUseCases(locale: Locale) {
+  const dataSource = shouldUsePayload()
+    ? new EnrollmentPayloadDataSource(locale)
+    : new EnrollmentMockDataSource()
   const repository = new EnrollmentRepositoryImpl(dataSource)
 
   return {
@@ -43,9 +52,15 @@ function mapError(error: unknown): never {
 
 export async function listUserEnrollmentsAction(userId = "demo-user"): Promise<EnrollmentEntity[]> {
   try {
-    const { manageEnrollmentUseCase } = createUseCases()
+    const locale = await getUserLocale()
+    const { manageEnrollmentUseCase } = createUseCases(locale)
     return await manageEnrollmentUseCase.getByUserId(userId)
   } catch (error) {
+    if (shouldUsePayload()) {
+      const { manageEnrollmentUseCase } = createUseCases("es")
+      return await manageEnrollmentUseCase.getByUserId(userId)
+    }
+
     mapError(error)
   }
 }

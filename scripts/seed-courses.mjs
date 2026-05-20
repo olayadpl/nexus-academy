@@ -130,6 +130,115 @@ async function ensureMediaForCourse(course) {
   }
 }
 
+function toLexicalRichText(text) {
+  return {
+    root: {
+      type: 'root',
+      format: '',
+      indent: 0,
+      version: 1,
+      direction: null,
+      children: [
+        {
+          type: 'paragraph',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: null,
+          textFormat: 0,
+          textStyle: '',
+          children: [
+            {
+              type: 'text',
+              version: 1,
+              text: text || '',
+              detail: 0,
+              format: 0,
+              mode: 'normal',
+              style: '',
+            },
+          ],
+        },
+      ],
+    },
+  }
+}
+
+function toDurationGroup(durationHours) {
+  const safe = Math.max(0, Number(durationHours) || 0)
+  const hours = Math.floor(safe)
+  const minutes = Math.round((safe - hours) * 60)
+
+  return {
+    hours: hours + Math.floor(minutes / 60),
+    minutes: minutes % 60,
+  }
+}
+
+function toResourceBlock(lesson, idx, externalId) {
+  const resourceId = lesson.id || `${externalId}-resource-${idx + 1}`
+  const durationMinutes = Math.max(1, Number(lesson.durationMinutes) || 1)
+  const duration = {
+    hours: Math.floor(durationMinutes / 60),
+    minutes: durationMinutes % 60,
+  }
+
+  if (lesson.type === 'pdf') {
+    return {
+      blockType: 'document',
+      id: resourceId,
+      title: lesson.title,
+    }
+  }
+
+  if (lesson.type === 'form') {
+    return {
+      blockType: 'quiz',
+      id: resourceId,
+      title: lesson.title,
+      quizRef: lesson.formId || resourceId,
+    }
+  }
+
+  return {
+    blockType: 'video',
+    id: resourceId,
+    title: lesson.title,
+    youtubeUrl: lesson.resourceUrl,
+    duration,
+    isPreview: false,
+  }
+}
+
+function normalizeCourseForPayload(course, media) {
+  const legacyModules = Array.isArray(course.modules) ? course.modules : []
+
+  return {
+    externalId: course.externalId,
+    title: course.title,
+    description: toLexicalRichText(course.description),
+    level: course.level,
+    duration: toDurationGroup(course.durationHours),
+    durationHours: course.durationHours,
+    rating: course.rating,
+    reviewCount: course.reviewCount,
+    featured: Boolean(course.featured),
+    progress: Number(course.progress) || 0,
+    thumbnail: media?.id,
+    thumbnailUrl: media?.url || course.thumbnailUrl,
+    author: {
+      name: course.authorName,
+    },
+    authorName: course.authorName,
+    authorAvatarUrl: course.authorAvatarUrl,
+    modules: legacyModules.map((lesson, idx) => ({
+      id: lesson.id || `${course.externalId}-module-${idx + 1}`,
+      title: lesson.title || `Modulo ${idx + 1}`,
+      resources: [toResourceBlock(lesson, idx, course.externalId)],
+    })),
+  }
+}
+
 /**
  * Seed de cursos idempotente.
  * Si existe un curso por externalId, lo actualiza; si no existe, lo crea.
@@ -377,11 +486,7 @@ async function main() {
     try {
       // ensure media is created and attach its id to `thumbnail` field
       const media = await ensureMediaForCourse(course)
-      if (media) {
-        // attach both relation and canonical url
-        course.thumbnail = media.id
-        if (media.url) course.thumbnailUrl = media.url
-      }
+      const payloadCourse = normalizeCourseForPayload(course, media)
 
       const existing = await payload.find({
         collection: 'courses',
@@ -411,18 +516,18 @@ async function main() {
           })
         ).docs[0]
 
-      if (fallbackByTitle) {
+        if (fallbackByTitle) {
         const updated = await payload.update({
           collection: 'courses',
           id: fallbackByTitle.id,
-          data: course,
+          data: { ...payloadCourse, _status: 'published' },
           overrideAccess: true,
         })
         console.log('Updated course:', updated.id || course.externalId)
       } else {
         const created = await payload.create({
           collection: 'courses',
-          data: course,
+          data: { ...payloadCourse, _status: 'published' },
           overrideAccess: true,
         })
         console.log('Created course:', created.id || course.externalId)

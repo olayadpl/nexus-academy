@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { listCoursesAction } from "@/src/features/courses/presentation/states/courses.actions"
+import { listCoursesAction, listFeaturedCoursesAction } from "@/src/features/courses/presentation/states/courses.actions"
 import { CourseCard } from "@/src/features/courses/presentation/components/course-card"
 import { listBriefsAction } from "@/src/features/briefs/presentation/states/briefs.actions"
 import { BriefCard } from "@/src/features/briefs/presentation/components/brief-card"
@@ -20,7 +20,7 @@ function SectionSkeleton() {
 
 export async function ExploreScreen() {
   const [featuredCourses, discover, briefs] = await Promise.all([
-    listCoursesAction(),
+    listFeaturedCoursesAction(),
     getDiscoverMainAction(),
     listBriefsAction(),
   ])
