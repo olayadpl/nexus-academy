@@ -4,9 +4,11 @@ import { CourseCard } from "@/src/features/courses/presentation/components/cours
 import { listBriefsAction } from "@/src/features/briefs/presentation/states/briefs.actions"
 import { BriefCard } from "@/src/features/briefs/presentation/components/brief-card"
 import { getDiscoverMainAction } from "../states/discover.actions"
+import { listRecommendedResourcesAction } from "@/src/features/resources/presentation/states/recommended-resources.actions"
 import { ExploreBottomBanner } from "../components/explore-bottom-banner"
 import { ExploreFaqSection } from "../components/explore-faq-section"
 import { ExploreMarketingBanner } from "../components/explore-marketing-banner"
+import { ExploreRecommendedResources } from "@/src/features/resources/presentation/components/explore-recommended-resources"
 
 function SectionSkeleton() {
   return (
@@ -19,17 +21,25 @@ function SectionSkeleton() {
 }
 
 export async function ExploreScreen() {
-  const [featuredCourses, discover, briefs] = await Promise.all([
+  const [featuredCourses, allCourses, discover, briefs, recommendedResources] = await Promise.all([
     listFeaturedCoursesAction(),
+    listCoursesAction(),
     getDiscoverMainAction(),
     listBriefsAction(),
+    listRecommendedResourcesAction(),
   ])
+
+  const featuredIds = new Set(featuredCourses.map((course) => course.id))
+  const fallbackCourses = allCourses.filter((course) => !featuredIds.has(course.id))
+  const displayedCourses = [...featuredCourses, ...fallbackCourses].slice(0, 3)
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="relative flex flex-col items-center overflow-x-hidden overflow-y-auto">
         <div className="flex w-full max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8 md:py-8">
           <ExploreMarketingBanner banner={discover.marketingBanner} />
+
+          <ExploreRecommendedResources resources={recommendedResources} />
 
           <div className="mb-8 mt-8">
             <h1 className="text-2xl font-bold">{discover.exploreTitle}</h1>
@@ -44,11 +54,11 @@ export async function ExploreScreen() {
                   Ver todos
                 </Link>
               </div>
-              {featuredCourses.length === 0 ? (
+              {displayedCourses.length === 0 ? (
                 <SectionSkeleton />
               ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {featuredCourses.slice(0, 3).map((course, idx) => (
+                  {displayedCourses.map((course, idx) => (
                     <CourseCard key={course.id} course={course} index={idx} />
                   ))}
                 </div>

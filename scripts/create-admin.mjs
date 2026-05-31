@@ -2,27 +2,15 @@ import payload from 'payload'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { buildConfig } from 'payload'
 
+import { featureCollections } from '../src/payload-collections.generated.ts'
+
 async function main() {
   const secret = process.env.PAYLOAD_SECRET || 'dev-secret-change-me'
   const dbUrl = process.env.DATABASE_URL || 'file:./payload.db'
 
-  const adminsCollection = {
-    slug: 'admins',
-    auth: true,
-    admin: { useAsTitle: 'email' },
-    access: {
-      read: () => false,
-    },
-    fields: [
-      { name: 'email', type: 'email', required: true },
-      { name: 'name', type: 'text' },
-      { name: 'password', type: 'password', required: true },
-    ],
-  }
-
   const config = buildConfig({
     secret,
-    collections: [adminsCollection],
+    collections: featureCollections,
     db: sqliteAdapter({ client: { url: dbUrl } }),
   })
 

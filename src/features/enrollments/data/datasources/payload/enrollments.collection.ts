@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload"
 
 export const EnrollmentsCollection: CollectionConfig = {
   slug: "enrollments",
+  admin: {
+    useAsTitle: "externalId",
+  },
   access: {
     read: () => true,
     create: () => true,

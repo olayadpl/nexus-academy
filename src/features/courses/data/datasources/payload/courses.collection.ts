@@ -3,6 +3,9 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical"
 
 export const CoursesCollection: CollectionConfig = {
   slug: "courses",
+  admin: {
+    useAsTitle: "title",
+  },
   versions: {
     drafts: {
       maxPerDoc: 50,

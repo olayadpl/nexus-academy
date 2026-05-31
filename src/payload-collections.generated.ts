@@ -4,5 +4,6 @@ import { CourseReviewsCollection as Collection1 } from './features/courses/data/
 import { CoursesCollection as Collection2 } from './features/courses/data/datasources/payload/courses.collection.ts'
 import { EnrollmentsCollection as Collection3 } from './features/enrollments/data/datasources/payload/enrollments.collection.ts'
 import { MediaCollection as Collection4 } from './features/media/data/datasources/payload/media.collection.ts'
+import { RecommendedResourcesCollection as Collection5 } from './features/resources/data/datasources/payload/recommended-resources.collection.ts'
 
-export const featureCollections = [Collection0, Collection1, Collection2, Collection3, Collection4]
+export const featureCollections = [Collection0, Collection1, Collection2, Collection3, Collection4, Collection5]
